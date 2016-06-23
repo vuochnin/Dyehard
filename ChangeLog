@@ -1,0 +1,28 @@
+Done:
+
+- Removed Obstacle
+- created a button class to encapsulate magic numbers in the menu classes and to handle button clicks.
+- Refactered the button clicking code in the menu classes
+- Moved the private menuselect classes out of the menu classes into its own public class
+- Finish refactoring the buttons in the menu classes
+- add the buttons to the arraylist
+- explore instanceofs
+- PlatformSingle now extends CollidableGameObject instead of Obstacle
+- make sure that the names are good
+- Moved CollidableGameObject, Collision, ConfigurationFileParser into the Util folder
+- Explore the packages for poorly names classes and rename them
+- Look at how the sounds is being handled so we can convert the wavs to something more efficient
+	(javax.sound.sample can use AIFF, AU and WAV)
+- Changed the members in DyehardDistanceMeter to be private instead of protected
+	Also trying to figure out what it does, it is only called once in 
+	DyehardUI
+	
+ToDo:
+ 
+- look at the CollisionManager as it is not being called by any class 
+				(was made to be used with Collidable.js which was removed)
+- PrimitiveSet is never called
+- UpdateManager is never called
+- Make button Hierarchy and make a do action
+- java.sound, we need mp3's, how to play an mp3 in java, how to make an mp3 file reader
+	that works with java sound
