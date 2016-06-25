@@ -5,6 +5,7 @@
 	<classpathentry kind="src" path="DyeHardUser/src"/>
 	<classpathentry kind="src" path="GameEngine/src"/>
 	<classpathentry kind="src" path="DyeHardTutorials"/>
+	<classpathentry kind="src" path="NinProceduralAPI"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="DyeHardAPI/bin"/>
 </classpath>
