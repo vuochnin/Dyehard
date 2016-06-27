@@ -61,7 +61,7 @@ public class SampleUserCode extends DyeHardGame {
         sample1Ini();
         sample2Ini();
         sample3Ini();
-        // sample4Ini();
+        //sample4Ini();
     }
 
     /**
@@ -103,7 +103,7 @@ public class SampleUserCode extends DyeHardGame {
      * Sample4 ini.
      */
     private void sample4Ini() {
-        // new WormHole(hero, Colors.randomColor(), 30f, 15f, 100f, 20f);
+        //new WormHole(hero, Colors.randomColor(), 30f, 15f, 100f, 20f);
     }
 
     /* (non-Javadoc)
