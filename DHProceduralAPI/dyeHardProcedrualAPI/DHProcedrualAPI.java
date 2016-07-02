@@ -10,6 +10,7 @@ import dyehard.DyeHardGame;
 import dyehard.UpdateManager;
 import dyehard.Collision.CollisionManager;
 import dyehard.Resources.ConfigurationFileParser;
+import dyehard.Ui.DyehardUI;
 import dyehard.World.GameState;
 import dyehard.Player.Hero;
 import dyehard.Weapons.*;
@@ -45,13 +46,14 @@ public class DHProcedrualAPI extends DyeHardGame{
 	};
 	
 	private Hero hero;
+	private DyehardUI ui;
 	
 	/**
 	 * @Override 
 	 * Must override the initialize() method from the abstract super class, DyeHardGame
 	 */
 	public void initialize(){
-		requestFocusInWindow();
+		window.requestFocusInWindow();
 		setGoalDistance();
 		
 		buildGame();
@@ -66,11 +68,9 @@ public class DHProcedrualAPI extends DyeHardGame{
 	 * Must override the update() method from the abstract super class, DyeHardGame
 	 */
 	public void update(){
-		// following the DyeHardUser code
-		//keyboardUpdate();
 		
-		runUpdateManager();
-		handleCollisions();
+		UpdateManager.getInstance().update();
+		CollisionManager.getInstance().update();
 		
 		updateGame();
 		
@@ -83,10 +83,12 @@ public class DHProcedrualAPI extends DyeHardGame{
 		if(isMouseLeftClicked()){
 			firePaint();
 		}
-		
 	}
+//--------------------------------------------------------------------------------------------	
+//--------------------- SOME POSSIBLE PROCEDURAL FUNCTIONS -----------------------------------
+//--------------------------------------------------------------------------------------------
 	
-//----------------------SOME POSSIBLE PROCEDURAL FUNCTIONS -----------------------------------
+	
 	/**
 	 * Fire the current weapon
 	 */
@@ -100,7 +102,18 @@ public class DHProcedrualAPI extends DyeHardGame{
 	 */
 	public void startHero(){					// Create new Hero
 		hero = new Hero();
-		setCursorToCenterOfHero();	// move the cursor to the center of the hero
+		
+		// Move cursor to the center of the hero
+		try{
+			Robot robot = new Robot();
+			
+			robot.mouseMove(window.getLocationOnScreen().x + (int)(hero.center.getX() 
+								* window.getWidth() / BaseCode.world.getWidth()), 
+							window.getLocationOnScreen().y + window.getHeight() - (int)(hero.center.getX() 
+								* window.getWidth() / BaseCode.world.getWidth()));
+		} catch(AWTException e){
+			e.printStackTrace();
+		}
 	}
 	
 	public void moveHero(float x, float y){
@@ -109,8 +122,10 @@ public class DHProcedrualAPI extends DyeHardGame{
 	
 	// Make hero follow the mouse movement
 	public void heroFollowTheMouse(){
-		moveHero(mouse.getWorldX(), mouse.getWorldY());
+		moveHero(mousePositionX(), mousePositionY());
 	}
+	
+	// ---------------- MOUSE / KEYBOARD ----------------------------
 	
 	/**
 	 * Get the x-coordinate position of the mouse
@@ -178,15 +193,12 @@ public class DHProcedrualAPI extends DyeHardGame{
 	public boolean isKeyboardDownPressed(){
 		return isKeyboardButtonDown(KeysEnum.DOWN);
 	}
-	
+	// ---------------- MOUSE / KEYBOARD end ----------------------------
 	
 	// ---------- Utilities functions ------------
 	
-	/**
-	 * 
-	 */
-	private void requestFocusInWindow(){
-		window.requestFocusInWindow();
+	public void setLives(int numOfLives){
+		//GameState.RemainingLives = numOfLives;
 	}
 	
 	/**
@@ -204,28 +216,15 @@ public class DHProcedrualAPI extends DyeHardGame{
 		GameState.TargetDistance = distance;
 	}
 	
-	
-	private void setCursorToCenterOfHero(){
-		try{
-			Robot robot = new Robot();
-			
-			robot.mouseMove(window.getLocationOnScreen().x + (int)(hero.center.getX() 
-								* window.getWidth() / BaseCode.world.getWidth()), 
-							window.getLocationOnScreen().y + window.getHeight() - (int)(hero.center.getX() 
-								* window.getWidth() / BaseCode.world.getWidth()));
-		} catch(AWTException e){
-			e.printStackTrace();
-		}
+	/**
+	 * Generate a random number between 0 and n
+	 * @param n the upper range
+	 * @return a random number between 0 and n
+	 */
+	public int randomInt(int n){
+		Random rand = new Random();
+		return rand.nextInt(n);
 	}
-	
-	private void handleCollisions(){					// Handle collisions
-		CollisionManager.getInstance().update();
-	}
-	
-	private void runUpdateManager(){			// Handle UpdateManager, called in initialize function
-		UpdateManager.getInstance().update();
-	}
-	
 	// ---------- Utilities functions end ------------
 	
 	
