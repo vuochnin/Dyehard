@@ -18,7 +18,7 @@ import dyehard.Weapons.*;
 
 /**
  * @author vuochnin
- *
+ * @author Holden
  */
 public class DHProcedrualAPI extends DyeHardGame{
 	
@@ -61,6 +61,7 @@ public class DHProcedrualAPI extends DyeHardGame{
 	
 	public void buildGame(){
 		startHero();
+		DebrisGenerator.enable();
 	}
 	
 	/**
@@ -71,7 +72,8 @@ public class DHProcedrualAPI extends DyeHardGame{
 		
 		UpdateManager.getInstance().update();
 		CollisionManager.getInstance().update();
-		
+		DebrisGenerator.update();
+
 		updateGame();
 		
 	}
@@ -225,9 +227,50 @@ public class DHProcedrualAPI extends DyeHardGame{
 		Random rand = new Random();
 		return rand.nextInt(n);
 	}
+
+	/**
+	 * Sets a timer associated with an ID.
+	 * <br><br>
+	 * If there is already a timer associated with the ID,<br>
+	 * * Resets the timer.
+	 *
+	 * @param id The string ID
+	 * @param seconds The length of the timer in seconds
+	 */
+	public void setSingleTimer(String id, float seconds)
+	{
+		TimeManager.setTimer(id, seconds);
+	}
+
+	/**
+	 * Reports whether a timer associated with an ID has finished
+	 *
+	 * @param id The ID of the timer to check
+	 */
+	public static boolean isTimerFinished(String id)
+	{
+		return TimeManager.isTimerFinished(id);
+	}
+
+	/**
+	 * Handles a repeating timer.
+	 * <br><br>
+	 * Returns true every time the timer elapses, false otherwise.
+	 *
+	 * @param id
+	 * @param seconds
+	 */
+	public static boolean repeatingTimer(String id, float seconds)
+	{
+		return TimeManager.repeatingTimer(id, seconds);
+	}
 	// ---------- Utilities functions end ------------
 	
-	
+	//-------------- DEBRIS ------------------------------------
+
+	// TODO: Expose generator functions
+
+	//-------------- DEBRIS end --------------------------------
 	
 	//-------------- WEAPONS -----------------------------------
 	public void addSpreadFireWeapon(){
