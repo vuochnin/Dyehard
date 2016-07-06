@@ -6,6 +6,7 @@
 	<classpathentry kind="src" path="GameEngine/src"/>
 	<classpathentry kind="src" path="DyeHardTutorials"/>
 	<classpathentry kind="src" path="DHProceduralAPI"/>
+	<classpathentry kind="src" path="DHDemos"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="DyeHardAPI/bin"/>
 </classpath>

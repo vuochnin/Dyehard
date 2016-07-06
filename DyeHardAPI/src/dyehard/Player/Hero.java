@@ -371,7 +371,7 @@ public class Hero extends Actor implements HeroCollision, HeroDamage {
         }
         applyPowerups();
 
-        // handleInput();
+        //handleInput();
         // updateDirectionState();
         // updateMovement();
         // selectWeapon();

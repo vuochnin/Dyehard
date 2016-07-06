@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.util.Random;
 
 import Engine.BaseCode;
+import Engine.Vector2;
 import dyehard.DyeHardGame;
 import dyehard.UpdateManager;
 import dyehard.Collision.CollisionManager;
@@ -73,7 +74,8 @@ public class DHProcedrualAPI extends DyeHardGame{
 		UpdateManager.getInstance().update();
 		CollisionManager.getInstance().update();
 		DebrisGenerator.update();
-
+		keyboard.update();
+		
 		updateGame();
 		
 	}
@@ -118,13 +120,40 @@ public class DHProcedrualAPI extends DyeHardGame{
 		}
 	}
 	
-	public void moveHero(float x, float y){
+	public void moveTo(float x, float y){
 		hero.moveTo(x, y);
 	}
 	
 	// Make hero follow the mouse movement
 	public void heroFollowTheMouse(){
-		moveHero(mousePositionX(), mousePositionY());
+		moveTo(mousePositionX(), mousePositionY());
+	}
+	
+	public void moveLeft()
+	{
+		Vector2 result = hero.center;
+		result.add( new Vector2(-1,0));
+		moveTo(result.getX(), result.getY());
+	}
+	
+	public void moveRight()
+	{
+		Vector2 result = hero.center;
+		result.add( new Vector2(1,0));
+		moveTo(result.getX(), result.getY());
+	}	
+	public void moveUp()
+	{
+		Vector2 result = hero.center;
+		result.add( new Vector2(0,1));
+		moveTo(result.getX(), result.getY());
+	}
+	
+	public void moveDown()
+	{
+		Vector2 result = hero.center;
+		result.add( new Vector2(0,-1));
+		moveTo(result.getX(), result.getY());
 	}
 	
 	// ---------------- MOUSE / KEYBOARD ----------------------------
