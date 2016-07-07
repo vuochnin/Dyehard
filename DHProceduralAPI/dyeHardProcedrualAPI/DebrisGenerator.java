@@ -63,11 +63,20 @@ public class DebrisGenerator
 
 	/**
 	 * Spawns a single debris
-	 * TODO: Overload with Y parameter *Requires modification to Debris class*
 	 */
 	public static void spawnDebris()
 	{
 		Debris d = new Debris(100,100);// spawns debris at right edge of screen
+		debrisList.add(d);
+	}
+
+	/**
+	 * Spawns a single debris with a specified height
+	 * @param height The height at which to spawn the debris
+	 */
+	public static void spawnDebris(float height)
+	{
+		Debris d = new Debris(100,100, height, height);// spawns debris at right edge of screen
 		debrisList.add(d);
 	}
 

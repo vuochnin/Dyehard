@@ -29,11 +29,22 @@ public class Debris extends CollidableGameObject {
      * @param maxX, the max x of where to spawn
      */
     public Debris(float minX, float maxX) {
-        float randomX = (maxX - minX - width) * RANDOM.nextFloat() + minX
-                + width / 2f;
-        float randomY = (BaseCode.world.getHeight()
-                - BaseCode.world.getWorldPositionY() - height)
-                * RANDOM.nextFloat() + height / 2f;
+        this(minX,maxX, BaseCode.world.getWorldPositionY(), BaseCode.world.getHeight());
+    }
+
+    /**
+     * Instantiates a new debris.
+     *
+     * @param minX, the min x of where to spawn
+     * @param maxX, the max x of where to spawn
+     * @param minY, the min y of where to spawn
+     * @param maxY, the max y of where to spawn
+     */
+    public Debris(float minX, float maxX, float minY, float maxY) {
+        float randomX = (maxX - minX - width) * RANDOM.nextFloat()
+                        + minX + width / 2f;
+        float randomY = (maxY - minY - height)* RANDOM.nextFloat()
+                        + minY + height / 2f;
 
         center.set(new Vector2(randomX, randomY));
         size.set(width, height);

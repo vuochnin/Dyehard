@@ -62,7 +62,11 @@ public class DHProcedrualAPI extends DyeHardGame{
 	
 	public void buildGame(){
 		startHero();
-		DebrisGenerator.enable();
+		startDebrisSpawner();
+		for(float i = 0; i < 60; i += 5)
+		{
+			spawnSingleDebris(i);
+		}
 	}
 	
 	/**
@@ -227,7 +231,11 @@ public class DHProcedrualAPI extends DyeHardGame{
 	// ---------------- MOUSE / KEYBOARD end ----------------------------
 	
 	// ---------- Utilities functions ------------
-	
+
+	/**
+	 * Set the number of lives the hero has
+	 * @param numOfLives The new number of lives
+	 */
 	public void setLives(int numOfLives){
 		//GameState.RemainingLives = numOfLives;
 	}
@@ -297,7 +305,60 @@ public class DHProcedrualAPI extends DyeHardGame{
 	
 	//-------------- DEBRIS ------------------------------------
 
-	// TODO: Expose generator functions
+	/**
+	 * Sets up the debris generator with a default interval.
+	 * <br><br>
+	 * Debris spawn at random locations along the right edge.
+	 */
+	public void startDebrisSpawner()
+	{
+		startDebrisSpawner(1);
+	}
+
+	/**
+	 * Sets up the debris generator using a specified interval.
+	 * <br><br>
+	 * Debris spawn at random locations along the right edge.
+	 * @param interval The interval to spawn debris.
+	 */
+	public void startDebrisSpawner(float interval)
+	{
+		DebrisGenerator.enable();
+		DebrisGenerator.setInterval(interval);
+	}
+
+	/**
+	 * Stops the automatic debris generator.
+	 */
+	public void stopDebrisSpawner()
+	{
+		DebrisGenerator.disable();
+	}
+
+	/**
+	 * Spawn a single debris at a random height
+	 */
+	public void spawnSingleDebris()
+	{
+		DebrisGenerator.spawnDebris();
+	}
+
+	/**
+	 * Spawn a single debris at a specific height
+	 */
+	public void spawnSingleDebris(float height)
+	{
+		DebrisGenerator.spawnDebris(height);
+	}
+
+	/**
+	 * Reports the number of debris in play
+	 * @return The number of debris
+	 */
+	public int debrisCount()
+	{
+		return DebrisGenerator.debrisCount();
+	}
 
 	//-------------- DEBRIS end --------------------------------
 	

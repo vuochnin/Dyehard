@@ -52,6 +52,7 @@ public class TimeManager
 				t.setInterval(seconds);
 			}
 			t.reset();
+			t.setActive(true);
 		}
 		else
 		{
@@ -62,6 +63,8 @@ public class TimeManager
 
 	/**
 	 * Reports whether a timer associated with an ID has finished
+	 *<br><br>
+	 * Only returns true for one frame
 	 *
 	 * @param id The ID of the timer to check
 	 */
@@ -69,7 +72,35 @@ public class TimeManager
 	{
 		if(timers.containsKey(id))
 		{
-			return timers.get(id).isDone();
+			Timer t = timers.get(id);
+			boolean result = t.isDone();
+
+			if (result)
+			{
+				t.setActive(false);
+			}
+
+			return result;
+		}
+
+		System.err.println("Timer \"" + id + "\" has not been created.");
+
+		return false;
+	}
+
+	/**
+	 * Reports whether a timer associated with an ID has finished
+	 *<br><br>
+	 * Returns true continuously when timer has elapsed
+	 *
+	 * @param id The ID of the timer to check
+	 */
+	public static boolean isTimerFinishedContinuous(String id)
+	{
+		if(timers.containsKey(id))
+		{
+			Timer t = timers.get(id);
+			return t.isDone();
 		}
 
 		System.err.println("Timer \"" + id + "\" has not been created.");
