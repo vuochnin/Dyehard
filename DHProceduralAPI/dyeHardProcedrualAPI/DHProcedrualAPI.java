@@ -23,31 +23,8 @@ import dyehard.Weapons.*;
  */
 public class DHProcedrualAPI extends DyeHardGame{
 	
-	/**
-     * Used in the wrapper API function isKeyboardButtonDown, this array 
-     * maps a shorter abbreviation like 'RIGHT' to the virtual key event 'KeyEvent.VK_RIGHT'
-     * (Source: SpaceSmasherFunctionalAPI/SpaceSmasherProceduralAPI)
-     */
-	public static final int[] keyEventMap = {
-		KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_UP, KeyEvent.VK_DOWN, 
-		KeyEvent.VK_SPACE, KeyEvent.VK_ENTER, KeyEvent.VK_ESCAPE, KeyEvent.VK_SHIFT, 
-		KeyEvent.VK_LESS, KeyEvent.VK_GREATER,
-		KeyEvent.VK_0, KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4,
-        KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9, 
-        KeyEvent.VK_A, KeyEvent.VK_B, KeyEvent.VK_C, KeyEvent.VK_D, KeyEvent.VK_E, KeyEvent.VK_F,
-        KeyEvent.VK_G, KeyEvent.VK_H, KeyEvent.VK_I, KeyEvent.VK_J, KeyEvent.VK_K, KeyEvent.VK_L,
-        KeyEvent.VK_M, KeyEvent.VK_N, KeyEvent.VK_O, KeyEvent.VK_P, KeyEvent.VK_Q, KeyEvent.VK_R,
-        KeyEvent.VK_S, KeyEvent.VK_T, KeyEvent.VK_U, KeyEvent.VK_V, KeyEvent.VK_W, KeyEvent.VK_X,
-        KeyEvent.VK_Y, KeyEvent.VK_Z,
-        KeyEvent.VK_A, KeyEvent.VK_B, KeyEvent.VK_C, KeyEvent.VK_D, KeyEvent.VK_E, KeyEvent.VK_F,
-        KeyEvent.VK_G, KeyEvent.VK_H, KeyEvent.VK_I, KeyEvent.VK_J, KeyEvent.VK_K, KeyEvent.VK_L,
-        KeyEvent.VK_M, KeyEvent.VK_N, KeyEvent.VK_O, KeyEvent.VK_P, KeyEvent.VK_Q, KeyEvent.VK_R,
-        KeyEvent.VK_S, KeyEvent.VK_T, KeyEvent.VK_U, KeyEvent.VK_V, KeyEvent.VK_W, KeyEvent.VK_X,
-        KeyEvent.VK_Y, KeyEvent.VK_Z
-	};
-	
 	private Hero hero;
-	private DyehardUI ui;
+	private EnemyGenerator enemyGenerator;
 	
 	/**
 	 * @Override 
@@ -56,16 +33,16 @@ public class DHProcedrualAPI extends DyeHardGame{
 	public void initialize(){
 		window.requestFocusInWindow();
 		setGoalDistance();
-		
 		buildGame();
 	}
 	
 	public void buildGame(){
 		startHero();
 		startDebrisSpawner();
+		//startEnemySpawner();
 		for(float i = 0; i < 60; i += 5)
 		{
-			spawnSingleDebris(i);
+			//spawnSingleDebris(i);
 		}
 	}
 	
@@ -74,21 +51,36 @@ public class DHProcedrualAPI extends DyeHardGame{
 	 * Must override the update() method from the abstract super class, DyeHardGame
 	 */
 	public void update(){
-		
+		keyboard.update();
 		UpdateManager.getInstance().update();
 		CollisionManager.getInstance().update();
 		DebrisGenerator.update();
-		keyboard.update();
+		enemyGenerator.update();
 		
 		updateGame();
-		
 	}
 	
 	public void updateGame()
 	{
 		heroFollowTheMouse();
 		
-		if(isMouseLeftClicked()){
+		// TEST Change the weapon according to the keyboard inputs
+		if(isKeyboardLeftPressed()){
+			activateSpreadFireWeapon();
+		}
+		if(isKeyboardRightPressed()){
+			activateLimitedAmmoWeapon();
+		}
+		if(isKeyboardDownPressed()){
+			defaultWeapon();
+		}
+		
+		if(isKeyboardUpPressed()){
+			spawnSingleEnemy(25);			//TEST SpawnSingleEnemy()
+		}
+		
+		// Fire the paint
+		if(isMouseLeftClicked() || isKeyboardButtonDown(KeysEnum.SPACE)){
 			firePaint();
 		}
 	}
@@ -110,6 +102,7 @@ public class DHProcedrualAPI extends DyeHardGame{
 	 */
 	public void startHero(){					// Create new Hero
 		hero = new Hero();
+		enemyGenerator = new EnemyGenerator(hero);
 		
 		// Move cursor to the center of the hero
 		try{
@@ -232,13 +225,13 @@ public class DHProcedrualAPI extends DyeHardGame{
 	
 	// ---------- Utilities functions ------------
 
-	/**
-	 * Set the number of lives the hero has
-	 * @param numOfLives The new number of lives
-	 */
-	public void setLives(int numOfLives){
-		//GameState.RemainingLives = numOfLives;
-	}
+//	/**
+//	 * Set the number of lives the hero has
+//	 * @param numOfLives The new number of lives
+//	 */
+//	public void setLives(int numOfLives){
+//		//GameState.RemainingLives = numOfLives;
+//	}
 	
 	/**
 	 * Sets the distance the player must travel to beat the game to a default value
@@ -303,6 +296,8 @@ public class DHProcedrualAPI extends DyeHardGame{
 	}
 	// ---------- Utilities functions end ------------
 	
+	
+	
 	//-------------- DEBRIS ------------------------------------
 
 	/**
@@ -344,7 +339,7 @@ public class DHProcedrualAPI extends DyeHardGame{
 	}
 
 	/**
-	 * Spawn a single debris at a specific height
+	 * Spawn a single debris at a specific height (y-coordinate)
 	 */
 	public void spawnSingleDebris(float height)
 	{
@@ -362,17 +357,80 @@ public class DHProcedrualAPI extends DyeHardGame{
 
 	//-------------- DEBRIS end --------------------------------
 	
+	
+	//-------------------- ENEMY --------------------------------
+	
+	/**
+	 * Spawn a random enemy at a random position on the right of the 
+	 * game window with the default interval of 3 seconds
+	 */
+	public void startEnemySpawner(){
+		startEnemySpawner(3);
+	}
+	
+	/**
+	 * Spawn a random enemy at a random position on the right of the 
+	 * game window with the given interval
+	 */
+	public void startEnemySpawner(float interval){
+		EnemyGenerator.enable();
+		EnemyGenerator.setInterval(interval);
+	}
+	
+	public void spawnSingleEnemy(){
+		enemyGenerator.spawnEnemy();
+	}
+	
+	public void spawnSingleEnemy(float height){
+		enemyGenerator.spawnEnemy(height);
+	}
+	
+	/**
+	 * Disable the enemy spawner
+	 */
+	public void stopEnemySpawner(){
+		EnemyGenerator.disable();
+	}
+	//------------------ ENEMY end --------------------------------
+	
+	
+	
 	//-------------- WEAPONS -----------------------------------
-	public void addSpreadFireWeapon(){
-		hero.registerWeapon(new SpreadFireWeapon(hero));
+	public void activateSpreadFireWeapon(){
+		// add a new weapon to the WeaponRack list
+		//hero.registerWeapon(new SpreadFireWeapon(hero));
+		hero.changeWeapon(new SpreadFireWeapon(hero));
 	}
 	
-	public void addOverHeatWeapon(){
-		hero.registerWeapon(new OverHeatWeapon(hero));
+	public void activateLimitedAmmoWeapon(){
+		hero.changeWeapon(new LimitedAmmoWeapon(hero));
 	}
 	
-	public void addLimitedAmmoWeapon(){
-		hero.registerWeapon(new LimitedAmmoWeapon(hero));
+	public void defaultWeapon(){
+		hero.changeWeapon(new OverHeatWeapon(hero));
 	}
 	//-------------- WEAPONS end-----------------------------------
+	
+	/**
+     * Used in the wrapper API function isKeyboardButtonDown, this array 
+     * maps a shorter abbreviation like 'RIGHT' to the virtual key event 'KeyEvent.VK_RIGHT'
+     * (Source: SpaceSmasherFunctionalAPI/SpaceSmasherProceduralAPI)
+     */
+	public static final int[] keyEventMap = {
+		KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_UP, KeyEvent.VK_DOWN, 
+		KeyEvent.VK_SPACE, KeyEvent.VK_ENTER, KeyEvent.VK_ESCAPE, KeyEvent.VK_SHIFT, 
+		KeyEvent.VK_LESS, KeyEvent.VK_GREATER,
+		KeyEvent.VK_0, KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4,
+        KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9, 
+        KeyEvent.VK_A, KeyEvent.VK_B, KeyEvent.VK_C, KeyEvent.VK_D, KeyEvent.VK_E, KeyEvent.VK_F,
+        KeyEvent.VK_G, KeyEvent.VK_H, KeyEvent.VK_I, KeyEvent.VK_J, KeyEvent.VK_K, KeyEvent.VK_L,
+        KeyEvent.VK_M, KeyEvent.VK_N, KeyEvent.VK_O, KeyEvent.VK_P, KeyEvent.VK_Q, KeyEvent.VK_R,
+        KeyEvent.VK_S, KeyEvent.VK_T, KeyEvent.VK_U, KeyEvent.VK_V, KeyEvent.VK_W, KeyEvent.VK_X,
+        KeyEvent.VK_Y, KeyEvent.VK_Z,
+        KeyEvent.VK_A, KeyEvent.VK_B, KeyEvent.VK_C, KeyEvent.VK_D, KeyEvent.VK_E, KeyEvent.VK_F,
+        KeyEvent.VK_G, KeyEvent.VK_H, KeyEvent.VK_I, KeyEvent.VK_J, KeyEvent.VK_K, KeyEvent.VK_L,
+        KeyEvent.VK_M, KeyEvent.VK_N, KeyEvent.VK_O, KeyEvent.VK_P, KeyEvent.VK_Q, KeyEvent.VK_R,
+        KeyEvent.VK_S, KeyEvent.VK_T, KeyEvent.VK_U, KeyEvent.VK_V, KeyEvent.VK_W, KeyEvent.VK_X,
+        KeyEvent.VK_Y, KeyEvent.VK_Z
+	};
 }
