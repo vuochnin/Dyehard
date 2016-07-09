@@ -65,16 +65,16 @@ public class Enemy extends Actor {
      */
     protected enum EnemyState {
         
-        /** The begin. */
+        /** The begin state. */
         BEGIN, 
         
-        /** The chasehero. */
+        /** The chasehero state. */
         CHASEHERO, 
  		
-		 /** The playing. */
+		 /** The playing state... Never called? */
 		 PLAYING, 
  		
-		 /** The dead. */
+		 /** The dead state... Never called? */
 		 DEAD
     };
 

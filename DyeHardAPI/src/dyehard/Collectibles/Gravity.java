@@ -1,6 +1,3 @@
-/*
- * 
- */
 package dyehard.Collectibles;
 
 import Engine.BaseCode;
@@ -9,9 +6,10 @@ import dyehard.Player.Hero;
 import dyehard.Player.Hero.CurPowerUp;
 import dyehard.Resources.ConfigurationFileParser;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Gravity.
+ * The Gravity Powerup turns off the effects of gravity on Dye. This is mainly
+ * important for movement and when she thrusts upwards.
  */
 public class Gravity extends PowerUp {
 
@@ -21,7 +19,7 @@ public class Gravity extends PowerUp {
 //    protected float magnitude = ConfigurationFileParser
 //            .getPowerUpData(ConfigurationFileParser.PowerUpType.GRAVITY).magnitude;
 
-    /**
+/**
  * Instantiates a new gravity.
  */
 public Gravity() {

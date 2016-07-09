@@ -1,6 +1,3 @@
-/*
- * 
- */
 package dyehard.Collectibles;
 
 import Engine.BaseCode;
@@ -9,9 +6,10 @@ import dyehard.Player.Hero;
 import dyehard.Player.Hero.CurPowerUp;
 import dyehard.Resources.ConfigurationFileParser;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Invincibility.
+ * The Invincibility Powerup makes Dye invulnerable to damage. This powerup is
+ * similar to the Ghost Powerup, but she can still collide with objects.
  */
 public class Invincibility extends PowerUp {
 

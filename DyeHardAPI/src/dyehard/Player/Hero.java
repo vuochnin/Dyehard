@@ -231,6 +231,9 @@ public class Hero extends Actor implements HeroCollision, HeroDamage {
  		
 		 /** The repel. */
 		 REPEL, 
+		 
+		 /** Used in PowerupExample.java */
+		 POWERUPEXAMPLE,
  		
 		 /** The none. */
 		 NONE

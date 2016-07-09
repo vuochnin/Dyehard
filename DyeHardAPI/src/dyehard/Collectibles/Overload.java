@@ -14,6 +14,9 @@ import dyehard.Weapons.OverHeatWeapon;
 // TODO: Auto-generated Javadoc
 /**
  * The Class Overload.
+ * The Overload Powerup resets her weapon's currentHeatLevels to zero if the
+ * weapon is an OverHeatWeapon. Otherwise, it replenishes her LImitedAmmoWeapon
+ * ammo stock.
  */
 public class Overload extends PowerUp {
     // public static PowerUpMeter meter = new PowerUpMeter(2, Game.Pink);

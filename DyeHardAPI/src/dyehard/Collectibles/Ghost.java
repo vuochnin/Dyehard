@@ -1,6 +1,3 @@
-/*
- * 
- */
 package dyehard.Collectibles;
 
 import Engine.BaseCode;
@@ -9,21 +6,20 @@ import dyehard.Player.Hero;
 import dyehard.Player.Hero.CurPowerUp;
 import dyehard.Resources.ConfigurationFileParser;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Ghost.
+ * The Ghost Powerup makes Dye invulnerable to damage, and turns off her 
+ * collision, allowing her to pass freely through objects.
  */
 public class Ghost extends PowerUp {
     // public static PowerUpMeter meter = new PowerUpMeter(1, Game.Blue);
 
     /**
-     * Instantiates a new ghost.
+     * Instantiates a new ghost objectg.
      */
     public Ghost() {
         super();
         duration = ConfigurationFileParser.getInstance().getPowerupType(PowerUpType.GHOST).getDuration() * 1000;
-//        duration = ConfigurationFileParser
-//                .getPowerUpData(ConfigurationFileParser.PowerUpType.GHOST).duration * 1000;
         texture = BaseCode.resources.loadImage("Textures/PowerUp_Ghost.png");
         applicationOrder = 90;
         // label.setText("Ghost");
