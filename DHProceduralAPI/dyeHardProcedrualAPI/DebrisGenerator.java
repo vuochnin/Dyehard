@@ -61,6 +61,11 @@ public class DebrisGenerator
 		return debrisList.size();
 	}
 
+	public static int getID(Debris item)
+	{
+		return debrisList.indexOf(item);
+	}
+	
 	/**
 	 * Spawns a single debris
 	 */

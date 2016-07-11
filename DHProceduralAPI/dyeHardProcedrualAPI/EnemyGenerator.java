@@ -83,8 +83,8 @@ public class EnemyGenerator {
     	String type = EnemyType.toLowerCase();
     	switch(type){
     	case "portal":
-    		//EnemyManager.getInstance().registerEnemy(new PortalEnemy(randomPosition(), hero));
-        	//count++;
+    		EnemyManager.getInstance().registerEnemy(new PortalEnemy(randomPosition(), hero));
+        	count++;
             break;
     	case "charger":
         	EnemyManager.getInstance().registerEnemy(new ChargerEnemy(randomPosition(), hero));
@@ -133,21 +133,6 @@ public class EnemyGenerator {
             break;
         }
     }
-
-	public void spawnEnemy(String type){
-		Vector2 position = randomPosition();
-		switch (type.toLowerCase())
-		{
-		case "charger":
-			EnemyManager.getInstance().registerEnemy(new ChargerEnemy(position, hero));
-			count++;
-			break;
-		default:
-			EnemyManager.getInstance().registerEnemy(new RegularEnemy(position, hero));
-			count++;
-			break;
-		}
-	}
 
     public int enemyCount(){
     	return count;

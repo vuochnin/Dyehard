@@ -80,7 +80,7 @@ public class CollisionManager {
      * Update.
      */
     public void update() {
-
+    	
         for (CollidableGameObject c1 : collidables) {
             if (c1.collideState() != ManagerStateEnum.ACTIVE) {
                 continue;
@@ -91,8 +91,10 @@ public class CollisionManager {
                     }
 
                     else if (c1 != c2 && c1.collided(c2)) {
+                    	//System.out.println(c1.toString() + " Collided with " + c2.toString());
                         c1.handleCollision(c2);
-                        c2.handleCollision(c1);
+                        //c2.handleCollision(c1);
+                        
                     }
                 }
             }
@@ -126,5 +128,15 @@ public class CollisionManager {
      */
     public final Set<CollidableGameObject> getCollidables() {
         return collidables;
+    }
+    
+    /**
+     * Updates the set of active collidable game objects
+     */
+    public void updateSet()
+    {
+        collidables.addAll(newCollidables);
+        newCollidables.clear();
+        removeInactiveObjects(collidables);
     }
 }

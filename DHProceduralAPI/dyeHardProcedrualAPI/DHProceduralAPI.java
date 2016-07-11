@@ -23,7 +23,7 @@ import dyehard.World.WormHole;
  * @author vuochnin
  * @author Holden
  */
-public class DHProceduralADI extends DyeHardGame{
+public class DHProceduralAPI extends DyeHardGame{
 	
 	private Hero hero;
 	private EnemyGenerator enemyGenerator;
@@ -45,7 +45,7 @@ public class DHProceduralADI extends DyeHardGame{
 		startHero();
 		startDebrisSpawner(1.5f);
 		startDyePackSpawner();
-		//startEnemySpawner();
+		startEnemySpawner();
 
 		spawnGates();
 	}
@@ -55,7 +55,6 @@ public class DHProceduralADI extends DyeHardGame{
 	 * Must override the update() method from the abstract super class, DyeHardGame
 	 */
 	public void update(){
-		keyboard.update();
 		UpdateManager.getInstance().update();
 		CollisionManager.getInstance().update();
 		DebrisGenerator.update();
@@ -81,8 +80,8 @@ public class DHProceduralADI extends DyeHardGame{
 			defaultWeapon();
 		}
 		
-		if(isKeyboardUpPressed()){
-			spawnSingleEnemy(25);			//TEST SpawnSingleEnemy()
+		if(isKeyboardButtonTapped(KeysEnum.E)){
+			spawnSingleEnemy("charger");			//TEST SpawnSingleEnemy()
 		}
 
 
@@ -93,7 +92,7 @@ public class DHProceduralADI extends DyeHardGame{
 		}
 
 		// Fire the paint
-		if(isMouseLeftClicked() || isKeyboardButtonDown(KeysEnum.SPACE)){
+		if(isMouseLeftClicked() || isKeyboardSpacePressed()){
 			firePaint();
 		}
 	}
@@ -130,15 +129,33 @@ public class DHProceduralADI extends DyeHardGame{
 		}
 	}
 	
+	/**
+	 * Gets the current color of the DyePack the hero is carrying
+	 * @return the hero's dyepack color
+	 */
+	public Color getHeroColor(){
+		return hero.getColor();
+	}
+	
+	/**
+	 * Moves the hero to a specific position
+	 * @param x the X-coordinate position
+	 * @param y the Y-coordinate position
+	 */
 	public void moveTo(float x, float y){
 		hero.moveTo(x, y);
 	}
 	
-	// Make hero follow the mouse movement
+	/**
+	 * Makes the hero follow the mouse movement
+	 */
 	public void heroFollowTheMouse(){
 		moveTo(mousePositionX(), mousePositionY());
 	}
 	
+	/**
+	 * Moves the hero to the left direction
+	 */
 	public void moveLeft()
 	{
 		Vector2 result = hero.center;
@@ -146,12 +163,19 @@ public class DHProceduralADI extends DyeHardGame{
 		moveTo(result.getX(), result.getY());
 	}
 	
+	/**
+	 * Moves the hero to the right direction
+	 */
 	public void moveRight()
 	{
 		Vector2 result = hero.center;
 		result.add( new Vector2(1,0));
 		moveTo(result.getX(), result.getY());
 	}	
+	
+	/**
+	 * Moves the hero to the upward direction
+	 */
 	public void moveUp()
 	{
 		Vector2 result = hero.center;
@@ -159,6 +183,9 @@ public class DHProceduralADI extends DyeHardGame{
 		moveTo(result.getX(), result.getY());
 	}
 	
+	/**
+	 * Moves the hero to the downward direction
+	 */
 	public void moveDown()
 	{
 		Vector2 result = hero.center;
@@ -199,40 +226,48 @@ public class DHProceduralADI extends DyeHardGame{
      * @param key - the key we're investigating
      * @return - true if the key we're investigating is currently being pressed
      */
-	public boolean isKeyboardButtonDown(KeysEnum key) {
-        return keyboard.isButtonDown(keyEventMap[key.ordinal()]);  //ordinal is like indexOf for enums->ints
+	public boolean isKeyboardButtonTapped(KeysEnum key) {
+        return keyboard.isButtonTapped(keyEventMap[key.ordinal()]);  //ordinal is like indexOf for enums->ints
     }
 	
 	/**
-	 * Check if the LEFT arrow on the keyboard is pressed
-	 * @return true if the left arrow key on the keyboard is pressed
+	 * Check if the LEFT arrow on the keyboard is down
+	 * @return true if the left arrow key on the keyboard is down
 	 */
 	public boolean isKeyboardLeftPressed(){
-		return isKeyboardButtonDown(KeysEnum.LEFT);
+		return keyboard.isButtonDown(KeyEvent.VK_LEFT);
 	}
 	
 	/**
-	 * Check if the RIGHT arrow on the keyboard is pressed
-	 * @return true if the right arrow key on the keyboard is pressed
+	 * Check if the RIGHT arrow on the keyboard is down
+	 * @return true if the right arrow key on the keyboard is down
 	 */
 	public boolean isKeyboardRightPressed(){
-		return isKeyboardButtonDown(KeysEnum.RIGHT);
+		return keyboard.isButtonDown(KeyEvent.VK_RIGHT);
 	}
 	
 	/**
-	 * Check if the UP arrow on the keyboard is pressed
-	 * @return true if the up arrow key on the keyboard is pressed
+	 * Check if the UP arrow on the keyboard is down
+	 * @return true if the up arrow key on the keyboard is down
 	 */
 	public boolean isKeyboardUpPressed(){
-		return isKeyboardButtonDown(KeysEnum.UP);
+		return keyboard.isButtonDown(KeyEvent.VK_UP);
 	}
 	
 	/**
-	 * Check if the DOWN arrow on the keyboard is pressed
-	 * @return true if the down arrow key on the keyboard is pressed
+	 * Check if the DOWN arrow on the keyboard is down
+	 * @return true if the down arrow key on the keyboard is down
 	 */
 	public boolean isKeyboardDownPressed(){
-		return isKeyboardButtonDown(KeysEnum.DOWN);
+		return keyboard.isButtonDown(KeyEvent.VK_DOWN);
+	}
+	
+	/**
+	 * Check if the SPACE arrow on the keyboard is down
+	 * @return true if the space key on the keyboard is down
+	 */
+	public boolean isKeyboardSpacePressed(){
+		return keyboard.isButtonDown(KeyEvent.VK_SPACE);
 	}
 	// ---------------- MOUSE / KEYBOARD end ----------------------------
 	
@@ -390,14 +425,26 @@ public class DHProceduralADI extends DyeHardGame{
 		EnemyGenerator.setInterval(interval);
 	}
 	
+	/**
+	 * Spawn a single random enemy at a random position on the right of the 
+	 * game window
+	 */
 	public void spawnSingleEnemy(){
 		enemyGenerator.spawnEnemy();
 	}
 	
+	/**
+	 * Spawn a single random enemy at a random position on the right of the 
+	 * game window with the given y-coordinate position
+	 */
 	public void spawnSingleEnemy(float height){
 		enemyGenerator.spawnEnemy(height);
 	}
 
+	/**
+	 * Spawn a single enemy of the given type at a random position on the right of the 
+	 * game window
+	 */
 	public void spawnSingleEnemy(String type){
 		enemyGenerator.spawnEnemy(type);
 	}
@@ -504,14 +551,30 @@ public class DHProceduralADI extends DyeHardGame{
 
 	//-------------- COLLECTIBLES end -------------------------------
 
-	//-------------- WORMHOLES --------------------------------------
+	//-------------- WORMHOLES / GATES --------------------------------------
 
 	public void spawnGates()
 	{
-		new WormHole(hero, Colors.randomColor(), 40f, 15f, 120f, 5f);
-		new WormHole(hero, hero.getColor(), 40f, 15f, 120f, 20f);
-		new WormHole(hero, Colors.randomColor(), 40f, 15f, 120f, 35f);
-		new WormHole(hero, Colors.randomColor(), 40f, 15f, 120f, 50f);
+//		new WormHole(hero, Colors.randomColor(), 40f, 15f, 120f, 5f);
+//		new WormHole(hero, getHeroColor(), 40f, 15f, 120f, 20f);
+//		new WormHole(hero, Colors.randomColor(), 40f, 15f, 120f, 35f);
+//		new WormHole(hero, Colors.randomColor(), 40f, 15f, 120f, 50f);
+		addOneWormHole(Colors.randomColor(), 40f, 15f, 120f, 5f);
+		addOneWormHole(getHeroColor(), 40f, 15f, 120f, 20f);
+		addOneWormHole(Colors.randomColor(), 40f, 15f, 120f, 35f);
+		addOneWormHole(Colors.randomColor(), 40f, 15f, 120f, 50f);
+	}
+	
+	/**
+	 * Adds a WormHole to the game with the given Color, Width, Height, X-coordinate, Y-coordinate
+	 * @param color the color of the WormHole
+	 * @param width the width of the WormHole
+	 * @param height the height of the WormHole
+	 * @param x the X-coordinate position of the WormHole
+	 * @param y the Y-coordinate position of the WormHole
+	 */
+	public void addOneWormHole(Color color, float width, float height, float x, float y){
+		new WormHole(hero, color, width, height, x, y);
 	}
 
 	// -------------- WORMHOLES end ---------------------------------
