@@ -1,27 +1,29 @@
 package dyeHardProcedrualAPI;
 
-import java.awt.AWTException;
-import java.awt.Robot;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Random;
 
 import Engine.BaseCode;
 import Engine.Vector2;
+import dyehard.Collectibles.*;
 import dyehard.DyeHardGame;
 import dyehard.UpdateManager;
 import dyehard.Collision.CollisionManager;
 import dyehard.Resources.ConfigurationFileParser;
 import dyehard.Ui.DyehardUI;
+import dyehard.Util.Colors;
 import dyehard.World.GameState;
 import dyehard.Player.Hero;
 import dyehard.Weapons.*;
+import dyehard.World.WormHole;
 //import dyehard.Updateable;
 
 /**
  * @author vuochnin
  * @author Holden
  */
-public class DHProcedrualAPI extends DyeHardGame{
+public class DHProceduralADI extends DyeHardGame{
 	
 	private Hero hero;
 	private EnemyGenerator enemyGenerator;
@@ -34,16 +36,18 @@ public class DHProcedrualAPI extends DyeHardGame{
 		window.requestFocusInWindow();
 		setGoalDistance();
 		buildGame();
+
+		// TODO: Look into possibility of separating individual UI elements into functions
+		new DyehardUI(hero);
 	}
 	
 	public void buildGame(){
 		startHero();
-		startDebrisSpawner();
+		startDebrisSpawner(1.5f);
+		startDyePackSpawner();
 		//startEnemySpawner();
-		for(float i = 0; i < 60; i += 5)
-		{
-			//spawnSingleDebris(i);
-		}
+
+		spawnGates();
 	}
 	
 	/**
@@ -55,8 +59,10 @@ public class DHProcedrualAPI extends DyeHardGame{
 		UpdateManager.getInstance().update();
 		CollisionManager.getInstance().update();
 		DebrisGenerator.update();
+		DyePackGenerator.update();
 		enemyGenerator.update();
-		
+
+
 		updateGame();
 	}
 	
@@ -78,7 +84,14 @@ public class DHProcedrualAPI extends DyeHardGame{
 		if(isKeyboardUpPressed()){
 			spawnSingleEnemy(25);			//TEST SpawnSingleEnemy()
 		}
-		
+
+
+
+		if(repeatingTimer("powerup", 4))
+		{
+			spawnSinglePowerUp(100, 30);
+		}
+
 		// Fire the paint
 		if(isMouseLeftClicked() || isKeyboardButtonDown(KeysEnum.SPACE)){
 			firePaint();
@@ -384,7 +397,12 @@ public class DHProcedrualAPI extends DyeHardGame{
 	public void spawnSingleEnemy(float height){
 		enemyGenerator.spawnEnemy(height);
 	}
-	
+
+	public void spawnSingleEnemy(String type){
+		enemyGenerator.spawnEnemy(type);
+	}
+
+
 	/**
 	 * Disable the enemy spawner
 	 */
@@ -392,9 +410,112 @@ public class DHProcedrualAPI extends DyeHardGame{
 		EnemyGenerator.disable();
 	}
 	//------------------ ENEMY end --------------------------------
-	
-	
-	
+
+	//-------------- COLLECTIBLES -----------------------------------
+
+	public void startDyePackSpawner()
+	{
+		startDyePackSpawner(2);
+	}
+
+	public void startDyePackSpawner(float interval)
+	{
+		DyePackGenerator.initialize(100);
+		DyePackGenerator.setInterval(interval);
+		DyePackGenerator.setActive(true);
+	}
+
+	public void stopDyePackSpawner()
+	{
+		DyePackGenerator.setActive(false);
+	}
+
+	public void spawnSinglePowerUp(float positionX, float positionY)
+	{
+		PowerUp spawned;
+		switch (randomInt(8))
+		{
+		case 0:
+			spawned = new Unarmed();
+			break;
+		case 1:
+			spawned = new SpeedUp();
+			break;
+		case 2:
+			spawned = new SlowDown();
+			break;
+		case 3:
+			spawned = new Overload();
+			break;
+		case 4:
+			spawned = new Gravity();
+			break;
+		case 5:
+			spawned = new Magnetism();
+			break;
+		case 6:
+			spawned = new Ghost();
+			break;
+		case 7:
+			spawned = new Repel();
+			break;
+		default:
+			// Defaults to invincibility
+			spawned = new Invincibility();
+		}
+		spawned.initialize(new Vector2(positionX, positionY));
+	}
+
+	public void spawnSinglePowerUp(String type, float positionX, float positionY)
+	{
+		PowerUp spawned;
+		switch (type.toLowerCase())
+		{
+		case "unarmed":
+			spawned = new Unarmed();
+			break;
+		case "speedup":
+			spawned = new SpeedUp();
+			break;
+		case "slowdown":
+			spawned = new SlowDown();
+			break;
+		case "overload":
+			spawned = new Overload();
+			break;
+		case "gravity":
+			spawned = new Gravity();
+			break;
+		case "magnet":
+			spawned = new Magnetism();
+			break;
+		case "ghost":
+			spawned = new Ghost();
+			break;
+		case "repel":
+			spawned = new Repel();
+			break;
+		default:
+			// Defaults to invincibility
+			spawned = new Invincibility();
+		}
+		spawned.initialize(new Vector2(positionX, positionY));
+	}
+
+	//-------------- COLLECTIBLES end -------------------------------
+
+	//-------------- WORMHOLES --------------------------------------
+
+	public void spawnGates()
+	{
+		new WormHole(hero, Colors.randomColor(), 40f, 15f, 120f, 5f);
+		new WormHole(hero, hero.getColor(), 40f, 15f, 120f, 20f);
+		new WormHole(hero, Colors.randomColor(), 40f, 15f, 120f, 35f);
+		new WormHole(hero, Colors.randomColor(), 40f, 15f, 120f, 50f);
+	}
+
+	// -------------- WORMHOLES end ---------------------------------
+
 	//-------------- WEAPONS -----------------------------------
 	public void activateSpreadFireWeapon(){
 		// add a new weapon to the WeaponRack list
@@ -409,6 +530,7 @@ public class DHProcedrualAPI extends DyeHardGame{
 	public void defaultWeapon(){
 		hero.changeWeapon(new OverHeatWeapon(hero));
 	}
+
 	//-------------- WEAPONS end-----------------------------------
 	
 	/**

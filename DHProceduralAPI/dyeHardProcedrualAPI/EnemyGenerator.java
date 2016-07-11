@@ -89,6 +89,21 @@ public class EnemyGenerator {
         }
     }
 
+	public void spawnEnemy(String type){
+		Vector2 position = randomPosition();
+		switch (type.toLowerCase())
+		{
+		case "charger":
+			EnemyManager.getInstance().registerEnemy(new ChargerEnemy(position, hero));
+			count++;
+			break;
+		default:
+			EnemyManager.getInstance().registerEnemy(new RegularEnemy(position, hero));
+			count++;
+			break;
+		}
+	}
+
     public int enemyCount(){
     	return count;
     }

@@ -1,4 +1,4 @@
-import dyeHardProcedrualAPI.DHProcedrualAPI;
+import dyeHardProcedrualAPI.DHProceduralADI;
 
 /**
  * NOTE: NO NEED TO PUT ANY CODE IN THIS CLASS YET
@@ -7,6 +7,7 @@ import dyeHardProcedrualAPI.DHProcedrualAPI;
  * @author vuochnin
  *
  */
-public class NinDemo extends DHProcedrualAPI{
+public class NinDemo extends DHProceduralADI
+{
 	
 }

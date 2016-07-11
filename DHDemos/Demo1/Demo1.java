@@ -1,12 +1,13 @@
 package Demo1;
-import dyeHardProcedrualAPI.DHProcedrualAPI;
+import dyeHardProcedrualAPI.DHProceduralADI;
 
 /**
  * 
  * @author vuochnin
  *
  */
-public class Demo1 extends DHProcedrualAPI{
+public class Demo1 extends DHProceduralADI
+{
 
 	public void buildGame()
 	{
