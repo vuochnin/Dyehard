@@ -21,7 +21,7 @@ public class Bullet extends CollidableGameObject {
     public Color dyeColor;
     
     /** The muzzle. */
-    private final DyehardRectangle muzzle;
+    private static DyehardRectangle muzzle;
     
     /** The hero. */
     Hero hero;
