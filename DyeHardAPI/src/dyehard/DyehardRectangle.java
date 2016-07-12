@@ -267,10 +267,8 @@ public class DyehardRectangle extends Primitive {
                     currentFrame = totalFrames - 1;
                     return;
                 }
-                if (currentFrame == 0) {
+                else {
                     spriteCycleDone = true;
-                } else {
-                    spriteCycleDone = false;
                 }
             } else {
                 if (currentFrame >= totalFrames - 1) {
@@ -281,9 +279,7 @@ public class DyehardRectangle extends Primitive {
                         currentFrame = 0;
                         return;
                     }
-                } else {
-                    spriteCycleDone = false;
-                }
+                } 
                 ++currentFrame;
             }
         }
@@ -891,8 +887,9 @@ public class DyehardRectangle extends Primitive {
      */
     @Override
     public void destroy() {
-        super.destroy();
+    	flash = false;
         texture = null;
+        super.destroy();
     }
 
     /*

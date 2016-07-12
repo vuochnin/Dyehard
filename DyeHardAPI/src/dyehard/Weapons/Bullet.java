@@ -21,7 +21,7 @@ public class Bullet extends CollidableGameObject {
     public Color dyeColor;
     
     /** The muzzle. */
-    private static DyehardRectangle muzzle;
+    private final DyehardRectangle muzzle;
     
     /** The hero. */
     Hero hero;
@@ -49,6 +49,7 @@ public class Bullet extends CollidableGameObject {
         muzzle.texture = hero.muzzleTextures.get(dyeColor);
         muzzle.setUsingSpriteSheet(true);
         muzzle.setSpriteSheet(muzzle.texture, 50, 70, 3, 3);
+        muzzle.stopAtEnd = true;
 
         hero.isFiring = true;
     }
@@ -58,12 +59,13 @@ public class Bullet extends CollidableGameObject {
      */
     @Override
     public void update() {
-        setPosition(muzzle);
         if ((muzzle.spriteCycleDone) && (firing)) {
+        	muzzle.center = new Vector2(-10f, -10f);
             hero.isFiring = false;
             muzzle.destroy();
             firing = false;
         } else if (!muzzle.spriteCycleDone) {
+            setPosition(muzzle);
             hero.isFiring = true;
         }
         super.update();
