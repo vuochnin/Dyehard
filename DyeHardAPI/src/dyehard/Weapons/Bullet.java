@@ -43,7 +43,7 @@ public class Bullet extends CollidableGameObject {
         setPosition(this);
         shouldTravel = true;
         velocity = new Vector2(3f, 0f);
-
+        
         muzzle = new DyehardRectangle();
         muzzle.size = new Vector2(2.5f, 3.5f);
         muzzle.texture = hero.muzzleTextures.get(dyeColor);
@@ -60,7 +60,6 @@ public class Bullet extends CollidableGameObject {
     @Override
     public void update() {
         if ((muzzle.spriteCycleDone) && (firing)) {
-        	muzzle.center = new Vector2(-10f, -10f);
             hero.isFiring = false;
             muzzle.destroy();
             firing = false;
@@ -70,7 +69,17 @@ public class Bullet extends CollidableGameObject {
         }
         super.update();
     }
-
+    
+	/* (non-Javadoc)
+	* @see Engine.Primitive#destroy()
+	*/
+	@Override
+	public void destroy() 
+	{
+		muzzle.destroy();
+		super.destroy();
+	}
+    
     /**
      * Sets the position.
      *
