@@ -10,7 +10,11 @@ import dyehard.Collectibles.*;
 import dyehard.DyeHardGame;
 import dyehard.UpdateManager;
 import dyehard.Collision.CollisionManager;
+import dyehard.GameScreens.LogScreen;
+import dyehard.GameScreens.StartScreen;
 import dyehard.Resources.ConfigurationFileParser;
+import dyehard.Ui.DyehardEndMenu;
+import dyehard.Ui.DyehardMenuUI;
 import dyehard.Ui.DyehardUI;
 import dyehard.Util.Colors;
 import dyehard.World.GameState;
@@ -27,6 +31,13 @@ public class DHProceduralAPI extends DyeHardGame{
 	
 	private Hero hero;
 	private EnemyGenerator enemyGenerator;
+	private DyehardUI ui;
+	
+	private DyehardMenuUI menu;
+	private DyehardEndMenu endMenu;
+	private LogScreen start;			// "Click Anywhere to Start"
+	
+	
 	
 	/**
 	 * @Override 
@@ -36,9 +47,16 @@ public class DHProceduralAPI extends DyeHardGame{
 		window.requestFocusInWindow();
 		setGoalDistance();
 		buildGame();
-
+		
+		menu = new DyehardMenuUI();
+		endMenu = new DyehardEndMenu();
+		start = new LogScreen();
+		
 		// TODO: Look into possibility of separating individual UI elements into functions
-		new DyehardUI(hero);
+		ui = new DyehardUI(hero);
+		setLivesTo(6);
+		
+		displayScore(true);
 	}
 	
 	public void buildGame(){
@@ -79,7 +97,9 @@ public class DHProceduralAPI extends DyeHardGame{
 		if(isKeyboardDownPressed()){
 			defaultWeapon();
 		}
-		
+		if(isKeyboardButtonTapped(KeysEnum.p)){
+			increaseScoreBy(2);
+		}
 		if(isKeyboardButtonTapped(KeysEnum.E)){
 			spawnSingleEnemy("charger");			//TEST SpawnSingleEnemy()
 		}
@@ -220,11 +240,11 @@ public class DHProceduralAPI extends DyeHardGame{
 	}
 	
 	/**
-     * API utility method
-     * Check if the key we're investigating is currently being pressed
-     * (Source: SpaceSmasherFunctionalAPI/SpaceSmasherProceduralAPI)
-     * @param key - the key we're investigating
-     * @return - true if the key we're investigating is currently being pressed
+     * Check if the given key is tapped on the keyboard. 
+     * The key is triggered only once when the key is tapped.
+     * (Note: the button 'tapped' and button 'down' or 'press' are different.)
+     * @param key - the key on the keyboard. Ex: KeysEnum.a => the 'a' key.
+     * @return - true if the key is tapped, false otherwise
      */
 	public boolean isKeyboardButtonTapped(KeysEnum key) {
         return keyboard.isButtonTapped(keyEventMap[key.ordinal()]);  //ordinal is like indexOf for enums->ints
@@ -271,15 +291,23 @@ public class DHProceduralAPI extends DyeHardGame{
 	}
 	// ---------------- MOUSE / KEYBOARD end ----------------------------
 	
-	// ---------- Utilities functions ------------
-
-//	/**
-//	 * Set the number of lives the hero has
-//	 * @param numOfLives The new number of lives
-//	 */
-//	public void setLives(int numOfLives){
-//		//GameState.RemainingLives = numOfLives;
-//	}
+	// -------------------- Utilities functions ------------------
+	
+	/**
+	 * Increases the score according to the argument.
+	 * @param n - the number of score to increase by
+	 */
+	public void increaseScoreBy(int n){
+		GameState.Score += n;
+	}
+	
+	/**
+	 * Sets the number of lives the hero has to the number, n
+	 * @param n the number of lives to set to
+	 */
+	public void setLivesTo(int n){
+		ui.setRemainingLives(n);
+	}
 	
 	/**
 	 * Sets the distance the player must travel to beat the game to a default value
@@ -595,6 +623,49 @@ public class DHProceduralAPI extends DyeHardGame{
 	}
 
 	//-------------- WEAPONS end-----------------------------------
+	
+	
+	//------------------ MENU (not functioning yet)/ UI-------------------
+	
+	/**
+	 * Displays the Winning menu on the screen
+	 */
+	public void showWinMenu(){
+		endMenu.setMenu(true);
+		endMenu.active(true);
+	}
+	
+	/**
+	 * Displays the Losing menu on the screen
+	 */
+	public void showLoseMenu(){
+		endMenu.setMenu(false);
+		endMenu.active(true);
+	}
+	
+	/**
+	 * Displays the Start menu on the screen
+	 */
+	public void showStartMenu(){
+		start.showScreen(true); // "Click Anywhere to Start"
+	}
+	
+	/**
+	 * Display the Menu on the screen (Ex: when the game is paused)
+	 */
+	public void showMenu(){
+		menu.active(true);
+	}
+	
+	/**
+	 * Displays the score UI on the game screen. 
+	 * @param display true to display, false otherwise
+	 */
+	public void displayScore(boolean display){
+		ui.displayScore(display);
+	}
+	//------------------ MENU / UI end -----------------------------------
+	
 	
 	/**
      * Used in the wrapper API function isKeyboardButtonDown, this array 

@@ -22,6 +22,9 @@ import dyehard.World.GameState;
  * The Class DyehardUI.
  */
 public class DyehardUI extends UpdateableObject {
+	
+	private boolean livesIsSet = false;
+	private boolean displayScore = false;
     
     /** The hero. */
     protected Hero hero;
@@ -51,11 +54,42 @@ public class DyehardUI extends UpdateableObject {
         hud.center.setX(BaseCode.world.getWidth() / 2);
         hud.center.setY(fromTop(hud, 0f));
         hud.alwaysOnTop = true;
+        //setRemainingLives(10);
+//        Rectangle baseHeart = DyeHardResources.getInstance().getScaledRectangle(ImageID.UI_HEART);
+//        baseHeart.alwaysOnTop = true;
+//        hearts = new ArrayList<Rectangle>();
+//        for (int i = 0; i < 10; ++i) {
+//            Rectangle heart = new Rectangle(baseHeart);
+//            float width = heart.size.getX();
+//
+//            // TODO magic numbers
+//            heart.center = new Vector2(BaseCode.world.getWidth() - i * 1.62f
+//                    * width - 4f, BaseCode.world.getHeight() - width / 2 - 1.4f);
+//            hearts.add(heart);
+//        }
+//
+//        baseHeart.visible = false;
 
+        distanceMeter = new DyehardDistanceMeter(GameState.TargetDistance);
+
+        // TODO magic numbers
+        scoreText = new Text("", 4f, BaseCode.world.getHeight() - 3.25f);
+        scoreText.setFrontColor(Color.white);
+        scoreText.setBackColor(Color.black);
+        scoreText.setFontSize(18);
+        scoreText.setFontName("Arial");
+    }
+    
+    public void displayScore(boolean display){
+    	displayScore = display;
+    }
+    
+    public void setRemainingLives(int lives){
+    	livesIsSet = true;
         Rectangle baseHeart = DyeHardResources.getInstance().getScaledRectangle(ImageID.UI_HEART);
         baseHeart.alwaysOnTop = true;
         hearts = new ArrayList<Rectangle>();
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < lives; ++i) {
             Rectangle heart = new Rectangle(baseHeart);
             float width = heart.size.getX();
 
@@ -66,15 +100,7 @@ public class DyehardUI extends UpdateableObject {
         }
 
         baseHeart.visible = false;
-
-        distanceMeter = new DyehardDistanceMeter(GameState.TargetDistance);
-
-        // TODO magic numbers
-        scoreText = new Text("", 4f, BaseCode.world.getHeight() - 3.25f);
-        scoreText.setFrontColor(Color.white);
-        scoreText.setBackColor(Color.black);
-        scoreText.setFontSize(18);
-        scoreText.setFontName("Arial");
+        GameState.RemainingLives = lives;
     }
 
     /**
@@ -104,12 +130,15 @@ public class DyehardUI extends UpdateableObject {
         for (Rectangle r : hearts) {
             r.visible = false;
         }
-
-        int numHearts = hearts.size() - 1;
-        for (int i = 0; i < GameState.RemainingLives; ++i) {
-            hearts.get(numHearts - i).visible = true;
+        if(livesIsSet){
+	        int numHearts = hearts.size() - 1;
+	        for (int i = 0; i < GameState.RemainingLives; ++i) {
+	        	hearts.get(numHearts - i).visible = true;
+	        }
         }
-        scoreText.setText(Integer.toString(GameState.Score));
+        if(displayScore){
+        	scoreText.setText(Integer.toString(GameState.Score));
+        }
         distanceMeter.setValue(GameState.DistanceTravelled);
 
         // controls texture of the progress marker in UI Bar
