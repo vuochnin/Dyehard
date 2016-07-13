@@ -9,7 +9,7 @@ import Engine.Vector2;
 import dyehard.Collectibles.*;
 import dyehard.DyeHardGame;
 import dyehard.UpdateManager;
-import dyehard.Collision.CollisionManager;
+//import dyehard.Collision.CollisionManager;
 import dyehard.GameScreens.LogScreen;
 import dyehard.GameScreens.StartScreen;
 import dyehard.Resources.ConfigurationFileParser;
@@ -44,6 +44,9 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * Must override the initialize() method from the abstract super class, DyeHardGame
 	 */
 	public void initialize(){
+		CollisionManager.register(this);
+		
+		
 		window.requestFocusInWindow();
 		setGoalDistance();
 		buildGame();
@@ -52,20 +55,20 @@ public class DHProceduralAPI extends DyeHardGame{
 		endMenu = new DyehardEndMenu();
 		start = new LogScreen();
 		
-		// TODO: Look into possibility of separating individual UI elements into functions
-		ui = new DyehardUI(hero);
-		setLivesTo(6);
 		
-		displayScore(true);
 	}
 	
 	public void buildGame(){
-		startHero();
-		startDebrisSpawner(1.5f);
-		startDyePackSpawner();
-		startEnemySpawner();
-
-		spawnGates();
+//		startHero();
+//		
+//		setLivesTo(6);
+//		displayScore(true);
+//		
+//		startDebrisSpawner(1.5f);
+//		startDyePackSpawner();
+//		startEnemySpawner();
+//
+//		spawnGates();
 	}
 	
 	/**
@@ -74,47 +77,50 @@ public class DHProceduralAPI extends DyeHardGame{
 	 */
 	public void update(){
 		UpdateManager.getInstance().update();
-		CollisionManager.getInstance().update();
+		CollisionManager.update();
 		DebrisGenerator.update();
 		DyePackGenerator.update();
 		enemyGenerator.update();
-
-
 		updateGame();
 	}
 	
 	public void updateGame()
 	{
-		heroFollowTheMouse();
-		
-		// TEST Change the weapon according to the keyboard inputs
-		if(isKeyboardLeftPressed()){
-			activateSpreadFireWeapon();
-		}
-		if(isKeyboardRightPressed()){
-			activateLimitedAmmoWeapon();
-		}
-		if(isKeyboardDownPressed()){
-			defaultWeapon();
-		}
-		if(isKeyboardButtonTapped(KeysEnum.p)){
-			increaseScoreBy(2);
-		}
-		if(isKeyboardButtonTapped(KeysEnum.E)){
-			spawnSingleEnemy("charger");			//TEST SpawnSingleEnemy()
-		}
-
-
-
-		if(repeatingTimer("powerup", 4))
-		{
-			spawnSinglePowerUp(100, 30);
-		}
-
-		// Fire the paint
-		if(isMouseLeftClicked() || isKeyboardSpacePressed()){
-			firePaint();
-		}
+//		heroFollowTheMouse();
+//		
+//		// TEST Change the weapon according to the keyboard inputs
+//		if(isKeyboardLeftPressed()){
+//			activateSpreadFireWeapon();
+//		}
+//		if(isKeyboardRightPressed()){
+//			activateLimitedAmmoWeapon();
+//		}
+//		if(isKeyboardDownPressed()){
+//			defaultWeapon();
+//		}
+//		if(isKeyboardButtonTapped(KeysEnum.p)){
+//			increaseScoreBy(2);
+//		}
+//		if(isKeyboardButtonTapped(KeysEnum.E)){
+//			spawnSingleEnemy("charger");			//TEST SpawnSingleEnemy()
+//		}
+//
+//
+//
+//		if(repeatingTimer("powerup", 4))
+//		{
+//			spawnSinglePowerUp(100, 30);
+//		}
+//
+//		// Fire the paint
+//		if(isMouseLeftClicked() || isKeyboardSpacePressed()){
+//			firePaint();
+//		}
+	}
+	
+	public void handleCollisions(String type1, String subtype1, int id1, String type2, String subtype2, int id2)
+	{
+		// User overrides this
 	}
 //--------------------------------------------------------------------------------------------	
 //--------------------- SOME POSSIBLE PROCEDURAL FUNCTIONS -----------------------------------
@@ -135,6 +141,8 @@ public class DHProceduralAPI extends DyeHardGame{
 	public void startHero(){					// Create new Hero
 		hero = new Hero();
 		enemyGenerator = new EnemyGenerator(hero);
+		// TODO: Look into possibility of separating individual UI elements into functions
+		ui = new DyehardUI(hero);
 		
 		// Move cursor to the center of the hero
 		try{

@@ -1,6 +1,9 @@
 package dyeHardProcedrualAPI;
 
 
+import java.util.Arrays;
+import java.util.Set;
+
 import dyehard.Collectibles.*;
 import dyehard.Collectibles.PowerUp;
 import dyehard.Collision.CollidableGameObject;
@@ -12,44 +15,55 @@ import dyehard.Player.Hero;
 
 public class CollisionManager {
 
+	private static DHProceduralAPI api;
+	
+	private static boolean collisionIsDirty;
+	
+	private static int firstID, secondID;
+	
 	private static dyehard.Collision.CollisionManager instance;
 	static
 	{
 		instance = dyehard.Collision.CollisionManager.getInstance();
 	}
-	public void update(){
-		CollidableGameObject[] objects =
-		(CollidableGameObject[]) instance.getCollidables().toArray();
+	public static void register(DHProceduralAPI newApi)
+	{
+		api = newApi;
+	}
+	
+	public static void update(){
+		Set<CollidableGameObject> orig = instance.getCollidables();
 		
+		CollidableGameObject[] objects = orig.toArray(new CollidableGameObject[0]);
+				
 		int count = objects.length;
 		
 		
 		// ACTORS: Hero, Enemies
 		// CollidableGameObjects: DyePacks, PowerUps, Bullets, and Debris
-		for(int i = 0; i < count; i++)
+		for(firstID = 0; firstID < count; firstID++)
 		{
-			if(objects[i].collideState() != ManagerStateEnum.ACTIVE)
+			if(objects[firstID].collideState() != ManagerStateEnum.ACTIVE)
 				continue;
 			
-			for(int j = i+1; j < count; j++)
+			for(secondID = firstID+1; secondID < count; secondID++)
 			{
-				if(objects[j].collideState() != ManagerStateEnum.ACTIVE)
+				if(objects[secondID].collideState() != ManagerStateEnum.ACTIVE)
 					continue;
 				
-				if(objects[i].collided(objects[j]))
-				{
-					if(objects[i] instanceof Hero)
+				if(objects[firstID].collided(objects[secondID]))
+				{					
+					collisionIsDirty = false;
+
+					handleCollision(objects[firstID], objects[secondID]);
+					handleCollision(objects[secondID], objects[firstID]);
+					
+					// if the user has not executed custom behavior
+					// do default behavior
+					if(!collisionIsDirty) 
 					{
-						handleHeroCollisions(objects[i], objects[j]);
-					}
-					else if (objects[j] instanceof Hero)
-					{
-						handleHeroCollisions(objects[j], objects[i]);
-					}
-					else
-					{
-						objects[i].handleCollision(objects[j]);
-						objects[j].handleCollision(objects[i]);
+						objects[firstID].handleCollision(objects[secondID]);
+						objects[secondID].handleCollision(objects[firstID]);
 					}
 				}
 				
@@ -59,33 +73,70 @@ public class CollisionManager {
 		instance.updateSet();
 	}
 	
-	private void handleHeroCollisions(CollidableGameObject hero, CollidableGameObject other)
+	public static void setDirty()
 	{
-		//if other instanceof Debris
-		if(other instanceof Debris){
-			int id = DebrisGenerator.getID((Debris)other);
-			//handleDebrisCollision(id);
-		}
-		//handle enemy(id, type)
-		else if(other instanceof Enemy){
-			String type = other.toString();
-			int id = EnemyManager.getInstance().getId((Enemy) other);
-			//handleEnemyCollision(id, type);
-		}
-		
-		// powerup(id, type)
-		else if(other instanceof PowerUp)
-		{
-			String type = getPowerUpType(other);
-			
-			//handlePowerUpCollision(id, type);
-		}
-		
-		// dyePack(id, color)
-		else if(other instanceof DyePack){
-			
-		}
+		collisionIsDirty = true;
 	}
+	
+	private static void handleCollision(CollidableGameObject first, CollidableGameObject second)
+	{
+		String type1 = "", type2 = "", subtype1 = "", subtype2 = "";
+		
+		type1 = parseType(first);
+		type2 = parseType(second);
+		
+		// get types of Collidable objects
+		
+		api.handleCollisions(type1, subtype1, firstID, type2, subtype2, secondID);
+	}
+	
+	private static String parseType(CollidableGameObject obj)
+	{
+		if(obj instanceof Hero){
+			return "Hero";
+		}
+
+		
+		//default case:
+		return "";
+	}
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+//	private void handleHeroCollisions(CollidableGameObject hero, CollidableGameObject other)
+//	{
+//		//if other instanceof Debris
+//		if(other instanceof Debris){
+//			int id = DebrisGenerator.getID((Debris)other);
+//			//handleDebrisCollision(id);
+//		}
+//		//handle enemy(id, type)
+//		else if(other instanceof Enemy){
+//			String type = other.toString();
+//			int id = EnemyManager.getInstance().getId((Enemy) other);
+//			//handleEnemyCollision(id, type);
+//		}
+//		
+//		// powerup(id, type)
+//		else if(other instanceof PowerUp)
+//		{
+//			String type = getPowerUpType(other);
+//			
+//			//handlePowerUpCollision(id, type);
+//		}
+//		
+//		// dyePack(id, color)
+//		else if(other instanceof DyePack){
+//			
+//		}
+//	}
 	
 	/**
 	 * Get the type of the PowerUp
