@@ -7,6 +7,7 @@ import java.util.Random;
 import Engine.BaseCode;
 import Engine.Vector2;
 import dyehard.Collectibles.*;
+import dyehard.Collision.CollidableGameObject;
 import dyehard.DyeHardGame;
 import dyehard.UpdateManager;
 //import dyehard.Collision.CollisionManager;
@@ -80,7 +81,8 @@ public class DHProceduralAPI extends DyeHardGame{
 		CollisionManager.update();
 		DebrisGenerator.update();
 		DyePackGenerator.update();
-		enemyGenerator.update();
+		if(enemyGenerator != null)
+			enemyGenerator.update();
 		updateGame();
 	}
 	
@@ -122,6 +124,12 @@ public class DHProceduralAPI extends DyeHardGame{
 	{
 		// User overrides this
 	}
+	
+	public String getType(int id){
+		return"";
+	}
+	
+	
 //--------------------------------------------------------------------------------------------	
 //--------------------- SOME POSSIBLE PROCEDURAL FUNCTIONS -----------------------------------
 //--------------------------------------------------------------------------------------------
@@ -301,6 +309,26 @@ public class DHProceduralAPI extends DyeHardGame{
 	
 	// -------------------- Utilities functions ------------------
 	
+	public void doNothing(){
+		CollisionManager.setDirty();
+	}
+	
+	public void destroy(int id)
+	{
+		CollidableGameObject obj = CollisionManager.findByID(id);
+		obj.destroy();
+		CollisionManager.setDirty();
+	}
+	
+	public void move(int id, float x, float y){
+		CollidableGameObject obj = CollisionManager.findByID(id);
+		
+		obj.center = new Vector2(obj.center.getX() + x,obj.center.getY() + y);
+		
+		CollisionManager.setDirty();
+	}
+	
+	
 	/**
 	 * Increases the score according to the argument.
 	 * @param n - the number of score to increase by
@@ -311,6 +339,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	
 	/**
 	 * Sets the number of lives the hero has to the number, n
+	 * and displays to the screen
 	 * @param n the number of lives to set to
 	 */
 	public void setLivesTo(int n){
