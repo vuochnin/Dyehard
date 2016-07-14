@@ -49,7 +49,10 @@ public class NinDemo extends DHProceduralAPI
 			spawnSingleEnemy("charger");			//TEST SpawnSingleEnemy()
 		}
 
-
+		if(isKeyboardButtonTapped(KeysEnum.ESCAPE)){
+			setState(State.PAUSED);
+			showMenu();
+		}
 
 		if(repeatingTimer("powerup", 4))
 		{

@@ -1,5 +1,6 @@
 /resources/
 /Demo1/
+/Demo2/
 /Engine/
 /SammyCode/
 /TutorialFive/
@@ -14,6 +15,8 @@
 /EnemyGenerator.class
 /GameWorld.class
 /Main.class
+/NinDemo.class
+/NinMain.class
 /Platform.class
 /SampleMain.class
 /SampleUserCode$1.class
@@ -23,6 +26,3 @@
 /StudentObj.class
 /UserCode.class
 /UserGameWorld.class
-/NinDemo.class
-/NinMain.class
-/Demo2/

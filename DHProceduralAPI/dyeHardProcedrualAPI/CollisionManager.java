@@ -17,7 +17,6 @@ import dyehard.World.WormHole.*;
 
 public class CollisionManager {
 
-	static int test = 0;
 	
 	private static DHProceduralAPI api;
 	
@@ -43,8 +42,23 @@ public class CollisionManager {
 		return objects[id];
 	}
 	
+	public static int objectCount()
+	{
+		return objects.length;
+	}
+	
+	public static String getType(int i)
+	{
+		return parseType(objects[i]);
+	}
+	
+	public static String getSubtype(int i)
+	{
+		return getSubtype(getType(i), objects[i]);
+	}
 	public static void update(){
 		Set<CollidableGameObject> orig = instance.getCollidables();
+		
 		
 		objects = orig.toArray(new CollidableGameObject[0]);
 				
@@ -81,6 +95,21 @@ public class CollisionManager {
 		}
 		
 		instance.updateSet();
+	}
+	
+	public static boolean isColliding(int id1, int id2){
+		if(id1 < 0 || id1 >= objectCount())
+		{
+			System.err.println("Invalid id for id1: " + id1);
+			return false;
+		}
+		if(id2 < 0 || id2 >= objectCount())
+		{
+			System.err.println("Invalid id for id2: " + id2);
+			return false;
+		}
+		
+		return objects[id1].collided(objects[id2]);
 	}
 	
 	public static void setDirty()
