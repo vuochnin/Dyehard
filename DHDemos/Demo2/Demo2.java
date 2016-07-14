@@ -13,11 +13,14 @@ public class Demo2 extends DHProceduralAPI
 
 	public void buildGame()
 	{
-		// Demonstrate an API function
 		startHero();
-		startDebrisSpawner();
+		
+		 // Start an object spawner with the default setting
+		startDebrisSpawner(0.3f);
+		
+		// Start object spawners with custom settings
 		startDyePackSpawner(3);
-		startEnemySpawner(2);
+		startEnemySpawner(2.5f);
 		
 	}
 	
@@ -27,13 +30,23 @@ public class Demo2 extends DHProceduralAPI
 		
 		if(isMouseLeftClicked())
 			firePaint();
+		
+		for(int i = 0; i < objectCount(); i++)
+		{
+			if(getType(i) == "Debris")
+			{
+				//move(i,0,-0.1f);
+			}
+		}
 	}
 	
-	// Demonstrate custom collision code
+	// Define custom collision code
 	public void handleCollisions(String type1, String subtype1, int id1, String type2, String subtype2, int id2)
 	{
-		if(type1 == "Hero" && type2 == "Debris")
+		// Examine the types of the colliding objects
+		if(type1 == "Debris" && type2 == "Debris")
 		{
+			move(id1,-2,-4);
 			move(id2, 2, 4); // This function overrides default collision code
 		}
 		
@@ -45,7 +58,7 @@ public class Demo2 extends DHProceduralAPI
 		
 		if(type1 == "Hero" && subtype2 == "Shooting")
 		{
-			doNothing(); // prevent default behavior
+			doNothing(); // prevent default collision behavior
 		}
 		
 		// DyePacks will have default behavior on collision

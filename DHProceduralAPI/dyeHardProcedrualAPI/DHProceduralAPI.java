@@ -77,6 +77,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * Must override the update() method from the abstract super class, DyeHardGame
 	 */
 	public void update(){
+		
 		UpdateManager.getInstance().update();
 		CollisionManager.update();
 		DebrisGenerator.update();
@@ -125,10 +126,31 @@ public class DHProceduralAPI extends DyeHardGame{
 		// User overrides this
 	}
 	
-	public String getType(int id){
-		return"";
+	/**
+	 * Reports the number of objects in play
+	 * @return
+	 */
+	public int objectCount()
+	{
+		return CollisionManager.objectCount();
 	}
 	
+	/**
+	 * presents the type of an object
+	 * @param id
+	 * @return
+	 */
+	public String getType(int id){
+		return CollisionManager.getType(id);
+	}
+	/**
+	 * Presents the subtype of an object
+	 * @param id
+	 * @return
+	 */
+	public String getSubtype(int id){
+		return CollisionManager.getSubtype(id);
+	}
 	
 //--------------------------------------------------------------------------------------------	
 //--------------------- SOME POSSIBLE PROCEDURAL FUNCTIONS -----------------------------------
@@ -309,10 +331,18 @@ public class DHProceduralAPI extends DyeHardGame{
 	
 	// -------------------- Utilities functions ------------------
 	
+	/**
+	 * Do nothing.
+	 * Called within handleCollisions to prevent default behavior.
+	 */
 	public void doNothing(){
 		CollisionManager.setDirty();
 	}
 	
+	/**
+	 * Destroys an object
+	 * @param id the id of the object to be destroyed
+	 */
 	public void destroy(int id)
 	{
 		CollidableGameObject obj = CollisionManager.findByID(id);
@@ -320,6 +350,12 @@ public class DHProceduralAPI extends DyeHardGame{
 		CollisionManager.setDirty();
 	}
 	
+	/**
+	 * Moves a game object. Disables default collision behavior if called inside handleCollisions.
+	 * @param id the id of the object to be moved
+	 * @param x horizontal position
+	 * @param y vertical position
+	 */
 	public void move(int id, float x, float y){
 		CollidableGameObject obj = CollisionManager.findByID(id);
 		
