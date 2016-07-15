@@ -1,6 +1,3 @@
-/*
- * 
- */
 package dyehard.Collectibles;
 
 import java.awt.Color;
@@ -13,9 +10,10 @@ import dyehard.Resources.ConfigurationFileParser;
 import dyehard.Util.DyeHardSound;
 import dyehard.Util.Timer;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class PowerUp.
+ * This is the parent class that encompasses all of the Powerups.
  */
 public abstract class PowerUp extends CollidableGameObject implements Cloneable,
         Comparable<PowerUp> {

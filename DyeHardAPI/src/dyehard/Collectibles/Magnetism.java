@@ -1,6 +1,3 @@
-/*
- * 
- */
 package dyehard.Collectibles;
 
 import java.util.Set;
@@ -14,9 +11,11 @@ import dyehard.Player.Hero;
 import dyehard.Player.Hero.CurPowerUp;
 import dyehard.Resources.ConfigurationFileParser;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Magnetism.
+ * The Magnetism Powerup attracts Dyepacks and Powerups towards Dye, as long as
+ * she is within "magnitude" distance from the object. "magnitude" is specified 
+ * by the xml file.
  */
 public class Magnetism extends PowerUp {
 

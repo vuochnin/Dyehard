@@ -9,13 +9,16 @@ import dyehard.Enemies.Enemy;
 import dyehard.Enemies.EnemyManager;
 import dyehard.Player.Hero;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class StudentObjectManager.
+ * 
+ * @purpose	To perform the actual validation of a student's work. If this class
+ * 			is the information validator, then ClassReflector is the information
+ * 			extractor.
  */
 public class StudentObjectManager {
     
-    /** The student hero. */
+    /** The student hero object. */
     public static Object studentHero;
     
     /** The hero. */
@@ -30,20 +33,28 @@ public class StudentObjectManager {
     /** The use student obj. */
     private static boolean useStudentObj = false;
 
+    // This is a Static Initializer Block to initialize static members.
+    // This is used since the initialized members are complex (object, HashMap)
     static {
         studentHero = null;
         enemies = new HashMap<Object, Enemy>();
     }
 
     /**
-     * Validate.
+     * Validate
+     * 
+     * @purpose	Create a ClassReflector from StudentObj
      */
     public static void validate() {
+    	
         studentObjRef = new ClassReflector("StudentObj");
+        
         studentObjRef.reflect();
-        String[] cs = { "public StudentObj()",
+        
+        String[] arrayOfConstructors = { "public StudentObj()",
                 "public StudentObj(Engine.Vector2,float,float)" };
-        String[] ms = {
+        
+        String[] arrayOfMethods = {
                 "public float StudentObj.getWidth()",
                 "public float StudentObj.getHeight()",
                 "public void StudentObj.setWidth(float)",
@@ -52,7 +63,8 @@ public class StudentObjectManager {
                 "public Engine.Vector2 StudentObj.getCenter()",
                 "public void StudentObj.setTexture(java.awt.image.BufferedImage)",
                 "public java.awt.image.BufferedImage StudentObj.getTexture()" };
-        useStudentObj = studentObjRef.validate(cs, ms);
+        
+        useStudentObj = studentObjRef.validate(arrayOfConstructors, arrayOfMethods);
     }
 
     /**
@@ -68,23 +80,29 @@ public class StudentObjectManager {
     /**
      * Register hero.
      *
-     * @param h is the student Hero
+     * @param heroObj is the student Hero
      * @return the hero
      */
-    public static Hero registerHero(Object h) {
-        if ((h == null) || (!useStudentObj)) {
+    public static Hero registerHero(Object heroObj) {
+    	
+    	// Check to see if the passed object or useStudentObj is null
+        if ((heroObj == null) || (!useStudentObj)) {
             return null;
         } else {
-            studentHero = h;
+            studentHero = heroObj;	// Set the studentHero as the passed obj.
         }
 
+        // If there currently is no set hero, create one.
         if (hero == null) {
             hero = new Hero();
         }
-        hero.center = (Vector2) studentObjRef.invokeMethod(h, "getCenter");
-        hero.size.set((float) studentObjRef.invokeMethod(h, "getWidth"),
-                (float) studentObjRef.invokeMethod(h, "getHeight"));
-        hero.texture = (BufferedImage) studentObjRef.invokeMethod(h,
+        
+        // Set the hero's center, size, and texture based on studentObjRef's
+        // methods
+        hero.center = (Vector2) studentObjRef.invokeMethod(heroObj, "getCenter");
+        hero.size.set((float) studentObjRef.invokeMethod(heroObj, "getWidth"),
+                (float) studentObjRef.invokeMethod(heroObj, "getHeight"));
+        hero.texture = (BufferedImage) studentObjRef.invokeMethod(heroObj,
                 "getTexture");
 
         return hero;
@@ -177,5 +195,16 @@ public class StudentObjectManager {
      */
     public static boolean useStudentObj() {
         return useStudentObj;
+    }
+    
+    /**
+     * Check to see if the object being passed in is a certain class/interface
+     * 
+     * @param obj, the object being evaluated
+     * @param classType, the type of class/interface being checked
+     * @return true if object is a classType, false otherwise
+     */
+    public boolean checkClass(Object obj, Class<?> classType) {
+    	return classType.isInstance(obj);
     }
 }

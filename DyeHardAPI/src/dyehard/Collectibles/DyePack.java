@@ -1,10 +1,6 @@
-/*
- * 
- */
 package dyehard.Collectibles;
 
 import java.awt.Color;
-
 import Engine.BaseCode;
 import Engine.Vector2;
 import dyehard.Collision.CollidableGameObject;
@@ -14,9 +10,9 @@ import dyehard.Util.Colors;
 import dyehard.Util.DyeHardSound;
 import dyehard.Util.Timer;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class DyePack.
+ * The Class DyePack. Dye is able to pick up Dyepacks which alter the 
+ * projectile's colors which she shoots. 
  */
 public class DyePack extends CollidableGameObject {
     
@@ -26,7 +22,7 @@ public class DyePack extends CollidableGameObject {
     /** The Constant height of the dyepack. */
     public static final float height = ConfigurationFileParser.getInstance().getDyePackData().getDyePackHeight();
     
-    /** The timer. */
+    /** Timer which is used to rotate the Dyepack. */
     protected Timer timer;
 
     /**
@@ -45,7 +41,7 @@ public class DyePack extends CollidableGameObject {
     /**
      * Initialize the dyepack
      *
-     * @param center is the center of the DyePack
+     * @param center is the center of the DyePack in world space.
      */
     public void initialize(Vector2 center) {
         this.center = center;
@@ -100,7 +96,7 @@ public class DyePack extends CollidableGameObject {
     @Override
     public void update() {
         super.update();
-        rotate += 60f * timer.deltaTime();
+        rotate += 60f * timer.deltaTime();	// rotate 60 units per second
     }
 
     /* (non-Javadoc)
