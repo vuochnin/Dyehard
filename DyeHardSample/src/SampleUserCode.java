@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
+import javax.swing.JOptionPane;
+
 import Engine.BaseCode;
 import Engine.Text;
 import Engine.Vector2;
@@ -33,8 +35,11 @@ import dyehard.Util.Colors;
  */
 public class SampleUserCode extends DyeHardGame {
     
-    /** The h. */
-    private Hero h;
+    /** The hero. */
+    private Hero privateHero;
+    
+    /** The Lab currently being used */
+    private int labNum = -1;
     
     /** The hero. */
     // private ClassReflector cf;
@@ -58,23 +63,54 @@ public class SampleUserCode extends DyeHardGame {
     @Override
     protected void initialize() {
     	//resources.setClassInJar(new JarResource());
-        sample1Ini();
-        sample2Ini();
-        sample3Ini();
+    	String labString = JOptionPane.showInputDialog("Please type in lab number");
+    	System.out.println(labString);
+    	
+    	labNum = Integer.parseInt(labString);
+    	
+    	switch(labNum)
+    	{
+    	case 0:
+    		break;
+    		
+    	case 1:
+    		sample1Ini();
+    		break;
+    		
+    	case 2:
+    		sample2Ini();
+    		break;
+    		
+    	default:
+    		break;
+    			
+    	}
+    	
+        // sample1Ini();
+        // sample2Ini();
+        // sample3Ini();
         // sample4Ini();
     }
 
     /**
      * Sample1 ini.
+     * 
+     * This uses the set of arrays inside StudentObjectManager to reflect and
+     * validate a StudentObj based on its constructors and methods.
      */
     private void sample1Ini() {
         StudentObjectManager.validate();
         hero = new StudentObj();
-        h = StudentObjectManager.registerHero(hero);
+        privateHero = StudentObjectManager.registerHero(hero);
     }
 
     /**
      * Sample2 ini.
+     * 
+     * This simply adds the different types of powerups that can affect the
+     * hero. 
+     * 
+     * TODO: Maybe add tutorial so users can create their own powerup?
      */
     private void sample2Ini() {
         powerupText = new ArrayList<Text>();
@@ -93,6 +129,11 @@ public class SampleUserCode extends DyeHardGame {
 
     /**
      * Sample3 ini.
+     * 
+     * Create a new Hashset of enemies defined by StudentObj.
+     * 
+     * TODO: Maybe add tutorial so students can create their own enemy, then
+     * test it here?
      */
     private void sample3Ini() {
         enemies = new HashSet<StudentObj>();
@@ -101,6 +142,11 @@ public class SampleUserCode extends DyeHardGame {
 
     /**
      * Sample4 ini.
+     * 
+     * Wormhole tutorial. 
+     * 
+     * TODO: Remove since it is too basic. Replace with players creating their
+     * own weapon? Would need to make a template for that.
      */
     private void sample4Ini() {
         // new WormHole(hero, Colors.randomColor(), 30f, 15f, 100f, 20f);
@@ -113,8 +159,8 @@ public class SampleUserCode extends DyeHardGame {
     protected void update() {
 
     	sample1Update();
-        sample2Update();
-        sample3Update();
+        // sample2Update();
+        // sample3Update();
         // sample4Update();
         
     }
@@ -134,7 +180,7 @@ public class SampleUserCode extends DyeHardGame {
 
         if ((keyboard.isButtonDown(KeyEvent.VK_F)) || (mouse.isButtonDown(1))) {
             // cf.invokeMethod(hero, "fire");
-            h.currentWeapon.fire();
+            privateHero.currentWeapon.fire();
         }
     }
 

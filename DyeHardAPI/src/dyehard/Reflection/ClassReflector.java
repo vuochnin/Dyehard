@@ -5,25 +5,42 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ClassReflector.
+ * 
+ * @purpose	This is the primary class that reflects and validates a class given 
+ * 			a set of Constructors and Methods.
+ * 
+ * 			General flow: 
+ * 
+ * 			1. Other class calls ClassReflector's constructor,
+ * 			providing the reflected class' name. 
+ * 
+ * 			2. Then the other class will call ClassReflector's reflect() 
+ * 			to fill in ClassReflector's HashMaps, so ClassReflector will be 
+ * 			populated with the other class's constructors and methods.
+ * 
+ * 			3. Given an array of strings, ClassReflector's validate() can
+ * 			determine how alike ClassReflector's constructors and methods are
+ * 			to the array of strings. 
+ * 
+ * @see		StudentObjectManager.java
  */
 public class ClassReflector {
     
-    /** The constructors. */
+    /** The HashMap of constructors. */
     private final HashMap<String, Constructor<?>> constructors = new HashMap<String, Constructor<?>>();
     
-    /** The methods. */
+    /** The HashMap of methods. */
     private final HashMap<String, Method> methods = new HashMap<String, Method>();
 
     /** The class name. */
     private final String className;
     
-    /** The reflected. */
+    /** The reflected status. */
     private boolean reflected;
     
-    /** The validated. */
+    /** The validated status. */
     private boolean validated;
 
     /**
@@ -38,32 +55,45 @@ public class ClassReflector {
     }
 
     /**
-     * Reflect.
-     *
-     * @return true, if successful
+     * Reflect
+     * 
+     * @purpose	Get the class' constructors, fields, and methods. Store it within
+     * 			ClassReflector's hashmaps
+     * @return 	true, if successful. False if class is invalid/null.
      */
     // Get the class' constructors, fields, and methods, store in hashmaps
     public boolean reflect() {
-        try {
-            Class<?> c = Class.forName(className);
+    	System.out.println("Populating hashmap with constructors and methods");
+        
+    	try {	
+        	// Set the class name
+            Class<?> reflectedClass = Class.forName(className);
+            
             // System.out.format("Class:%n  %s%n%n", c.getCanonicalName());
-
             // Package p = c.getPackage();
             // System.out.format("Package:%n  %s%n%n", (p != null ? p.getName()
             // : "-- No Package --"));
 
             int i = 0;
-            for (Constructor<?> constructor : c.getConstructors()) {
+            
+            // Populate the HashMap with the constructors
+            for (Constructor<?> constructor : reflectedClass.getConstructors()) {
                 String temp = constructor.getName() + Integer.toString(i);
                 constructors.put(temp, constructor);
                 i++;
-                // System.out.println(constructor.getName() + "   " +
-                // constructor);
+                
+                // Print out for debug
+                System.out.println(constructor.getName() + "   " +
+                constructor);
             }
-            for (Method method : c.getMethods()) {
+            
+            // Populate the HashMap with the methods
+            for (Method method : reflectedClass.getMethods()) {
                 methods.put(method.getName(), method);
-                // System.out.println(method.getName() + "   "
-                // + method.toGenericString());
+                
+                // Print out for debug
+                System.out.println(method.getName() + "   "
+                 + method.toGenericString());
             }
 
         } catch (ClassNotFoundException x) {
@@ -71,63 +101,88 @@ public class ClassReflector {
             x.printStackTrace();
             return false;
         }
-        reflected = true;
+        reflected = true;		// set flag to reflected
+        System.out.println("------------ End reflect() ------------");
         return true;
     }
 
-    // Validate the class to see if it has the appropriate constructors, fields,
     /**
-     * Validate.
+     * Validate
+     * @purpose To validate the class. Checks to see if it has the appropriate
+     * 			constructions and fields.
      *
-     * @param c the c
-     * @param m the m
-     * @return true, if successful
+     * @param 	constructsArr the array of constructors passed by StudentObjectManager
+     * @param 	methodsArr the array of methods passed by StudentObjectManager
+     * @return 	true, if the constructors and methods are valid.
      */
-    // and methods
-    public boolean validate(String[] c, String[] m) {
+    public boolean validate(String[] constructsArr, String[] methodsArr) {
         // must reflect first
         if (!reflected) {
+        	System.out.println("Must reflect first");
             return false;
         }
-
-        for (String cs : c) {
-            int test = 0;
-            for (Constructor<?> cs2 : constructors.values()) {
-                if (cs.equals(cs2.toGenericString())) {
-                    test++;
+        
+        int matchingConstructors = 0;
+        
+        // For each string within the given array of constructors
+        for (String constructToTest : constructsArr) {
+            matchingConstructors = 0;
+            
+            // For each constructor within the hashmap
+            for (Constructor<?> hashmapConstructor : constructors.values()) {
+            	
+            	// if the given constructor matches the current hashmap
+            	// constructor, increment matchingConstructors
+                if (constructToTest.equals(hashmapConstructor.toGenericString())) {
+                    matchingConstructors++;
                 }
             }
-            if (test < 1) {
-                // System.out.println(cs);
+            
+            // If there were no matches, return false
+            if (matchingConstructors < 1) {
+            	System.out.println(constructToTest);
                 return false;
             }
         }
-        for (String ms : m) {
-            int test = 0;
-            for (Method ms2 : methods.values()) {
-                if (ms.equals(ms2.toGenericString())) {
-                    // System.out.println(ms);
-                    test++;
+        
+        // For each string methodToTest, within the given array of methods
+        for (String methodToTest : methodsArr) {
+        	
+            int matchingMethods = 0;
+            
+            // For each method within the hashmap
+            for (Method hashmapMethod : methods.values()) {
+            	
+            	// if the given string methodToTest matches the current hashmap
+            	// method, increment matchingMethods
+                if (methodToTest.equals(hashmapMethod.toGenericString())) {
+                    matchingMethods++;
                 }
             }
-            if (test < 1) {
-                // System.out.println(ms);
+            
+            // If there were no matches, return false
+            if (matchingMethods < 1) {
+            	System.out.println(methodToTest);
                 return false;
             }
         }
-        validated = true;
+        validated = true;	// Set flag that the object has been validated
         return true;
     }
 
     /**
-     * Creates the obj.
+     * createObj
      *
-     * @param construc the construc
-     * @param arguments the arguments
-     * @return the object
+     * @purpose	To create and return an object by calling its constructor.
+     * 			The signature must match the Object's constructor signature
+     * 			exactly.
+     * @param 	construc, the name of the object's class
+     * @param 	arguments, the necessary parameters for the constructor
+     * @return 	the newly created object if successful. Else return null.
      */
-    // create and return object by calling constructor by name
     public Object createObj(String construc, Object... arguments) {
+    	// Get the object's constructor, and create a new instance of it with
+    	// the arguments.
         try {
             return constructors.get(construc).newInstance(arguments);
         } catch (InstantiationException | IllegalAccessException
@@ -139,18 +194,22 @@ public class ClassReflector {
     }
 
     /**
-     * Invoke method.
-     *
-     * @param obj the obj
-     * @param method the method
-     * @param params the params
-     * @return the object
+     * invokeMethod
+     * 
+     * @purpose to Invoke method by name and signature.
+     * @param 	obj, the object being used
+     * @param 	method, the method's name from the object
+     * @param 	params, the parameters required for the method
+     * @return 	the object if successful. Else return false.
      */
-    // invoke method by name
     public Object invokeMethod(Object obj, String method, Object... params) {
+    	// Check to see if the method is within the HashMap of methods.
         if (!methods.containsKey(method)) {
             return false;
-        } else {
+        } 
+        
+        // If so, try to invoke the object's methods with the parameters.
+        else {	
             try {
                 return methods.get(method).invoke(obj, params);
             } catch (IllegalAccessException | IllegalArgumentException
@@ -163,26 +222,29 @@ public class ClassReflector {
     }
 
     /**
-     * Checks if is reflected.
-     *
-     * @return true, if is reflected
+     * isReflected
+     * 
+     * @purpose Checks if is reflected.
+     * @return 	true, if is reflected
      */
     public boolean isReflected() {
         return reflected;
     }
 
     /**
-     * Checks if is validated.
-     *
-     * @return true, if is validated
+     * isValidated
+     * 
+     * @purpose	Checks if is validated.
+     * @return 	true, if is validated
      */
     public boolean isValidated() {
         return validated;
     }
 
     /**
-     * Gets the class name.
-     *
+     * getClassName
+     * 
+     * @purpose Gets the class name
      * @return the class name
      */
     public String getClassName() {

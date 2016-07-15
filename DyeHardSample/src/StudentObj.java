@@ -36,11 +36,12 @@ public class StudentObj {
     }
 
     /**
-     * Instantiates a new student obj.
+     * StudentObj
+     * @purpose	Instantiates a new student object.
      *
-     * @param c the center
-     * @param w the width
-     * @param h the height
+     * @param 	c, the center
+     * @param 	w, the width
+     * @param 	h, the height
      */
     public StudentObj(Vector2 c, float w, float h) {
         center = c;
