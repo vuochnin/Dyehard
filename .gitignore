@@ -49,4 +49,3 @@ DyeHardSample/src/SampleUserCode.java
 /.idea/
 *.iml
 DyeHardAPI/bin/dyehard/Player/Hero$CurPowerUp.class
-*.class
