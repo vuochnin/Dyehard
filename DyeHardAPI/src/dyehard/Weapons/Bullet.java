@@ -43,12 +43,13 @@ public class Bullet extends CollidableGameObject {
         setPosition(this);
         shouldTravel = true;
         velocity = new Vector2(3f, 0f);
-
+        
         muzzle = new DyehardRectangle();
         muzzle.size = new Vector2(2.5f, 3.5f);
         muzzle.texture = hero.muzzleTextures.get(dyeColor);
         muzzle.setUsingSpriteSheet(true);
         muzzle.setSpriteSheet(muzzle.texture, 50, 70, 3, 3);
+        muzzle.stopAtEnd = true;
 
         hero.isFiring = true;
     }
@@ -58,17 +59,27 @@ public class Bullet extends CollidableGameObject {
      */
     @Override
     public void update() {
-        setPosition(muzzle);
         if ((muzzle.spriteCycleDone) && (firing)) {
             hero.isFiring = false;
             muzzle.destroy();
             firing = false;
         } else if (!muzzle.spriteCycleDone) {
+            setPosition(muzzle);
             hero.isFiring = true;
         }
         super.update();
     }
-
+    
+	/* (non-Javadoc)
+	* @see Engine.Primitive#destroy()
+	*/
+	@Override
+	public void destroy() 
+	{
+		muzzle.destroy();
+		super.destroy();
+	}
+    
     /**
      * Sets the position.
      *

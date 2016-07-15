@@ -117,7 +117,7 @@ public class UserCode extends DyeHardGame {
         // already in super class
         //resources.setClassInJar(this);
 
-        setState(State.BEGIN);
+        DyeHardGame.setState(State.BEGIN);
         GameState.TargetDistance = ConfigurationFileParser.getInstance().getWorldData().getWorldMapLength();
         world = new UserGameWorld();
 

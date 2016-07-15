@@ -173,7 +173,7 @@ public class DeveloperControls extends UpdateableObject {
         if (sortedPowerups.size() > powerupText.size()) {
             for (int i = powerupText.size(); i < sortedPowerups.size(); ++i) {
                 powerupText
-                        .add(createTextAt(3f, UserGameWorld.TOP_EDGE - 3 - i * 2));
+                        .add(createTextAt(10f, UserGameWorld.TOP_EDGE - 3 - i * 2));
             }
         }
 

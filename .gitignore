@@ -45,3 +45,7 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+DyeHardSample/src/SampleUserCode.java
+/.idea/
+*.iml
+DyeHardAPI/bin/dyehard/Player/Hero$CurPowerUp.class

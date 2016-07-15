@@ -341,6 +341,14 @@ public class Hero extends Actor implements HeroCollision, HeroDamage {
         isRepel = false;
         isFiring = false;
     }
+    
+    /**
+     * Switch the current weapon to the given weapon
+     * @param w the weapon to switch to
+     */
+    public void changeWeapon(Weapon w){
+    	currentWeapon = w;
+    }
 
     /**
      * Update movement.
@@ -374,7 +382,7 @@ public class Hero extends Actor implements HeroCollision, HeroDamage {
         }
         applyPowerups();
 
-        // handleInput();
+        //handleInput();
         // updateDirectionState();
         // updateMovement();
         // selectWeapon();

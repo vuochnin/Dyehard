@@ -63,4 +63,14 @@ public class EnemyManager {
     public List<Enemy> getEnemies() {
         return enemies;
     }
+    
+    /**
+     * Gets the index of the enemy given, which will represent as an ID.
+     * Used in CollisionManager of DHProceduralAPI 
+     * @param item the Enemy to retrieve the type
+     * @return an int represent the ID of the item
+     */
+    public int getId(Enemy item){
+    	return enemies.indexOf(item);
+    }
 }

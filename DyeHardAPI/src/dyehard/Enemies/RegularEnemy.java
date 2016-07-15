@@ -93,6 +93,6 @@ public class RegularEnemy extends Enemy {
      */
     @Override
     public String toString() {
-        return "Shooting";
+        return "Regular";
     }
 }
