@@ -1,4 +1,4 @@
-package dyeHardProcedrualAPI;
+package dyeHardProceduralAPI;
 
 import dyehard.Enums.ManagerStateEnum;
 import dyehard.Obstacles.Debris;

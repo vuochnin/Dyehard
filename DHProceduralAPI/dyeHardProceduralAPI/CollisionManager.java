@@ -1,4 +1,4 @@
-package dyeHardProcedrualAPI;
+package dyeHardProceduralAPI;
 
 
 import java.util.Arrays;

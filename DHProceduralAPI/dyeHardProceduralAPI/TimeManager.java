@@ -1,4 +1,4 @@
-package dyeHardProcedrualAPI;
+package dyeHardProceduralAPI;
 
 import dyehard.Util.Timer;
 import java.util.HashMap;

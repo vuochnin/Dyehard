@@ -1,5 +1,5 @@
-import dyeHardProcedrualAPI.DHProceduralAPI;
-import dyeHardProcedrualAPI.KeysEnum;
+import dyeHardProceduralAPI.DHProceduralAPI;
+import dyeHardProceduralAPI.KeysEnum;
 
 /**
  * NOTE: NO NEED TO PUT ANY CODE IN THIS CLASS YET

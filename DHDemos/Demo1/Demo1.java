@@ -1,6 +1,6 @@
 package Demo1;
-import dyeHardProcedrualAPI.DHProceduralAPI;
-import dyeHardProcedrualAPI.KeysEnum;
+import dyeHardProceduralAPI.DHProceduralAPI;
+import dyeHardProceduralAPI.KeysEnum;
 
 /**
  * 

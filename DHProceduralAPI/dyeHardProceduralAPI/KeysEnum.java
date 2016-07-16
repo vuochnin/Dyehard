@@ -1,4 +1,4 @@
-package dyeHardProcedrualAPI;
+package dyeHardProceduralAPI;
 
 public enum KeysEnum {
 	LEFT, RIGHT, UP, DOWN, SPACE, ENTER, ESCAPE, SHIFT, LESS_THAN, GREATER_THAN,
