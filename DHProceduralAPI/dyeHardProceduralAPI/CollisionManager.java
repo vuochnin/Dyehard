@@ -1,14 +1,12 @@
 package dyeHardProceduralAPI;
 
 
-import java.util.Arrays;
 import java.util.Set;
 
 import dyehard.Collectibles.*;
 import dyehard.Collectibles.PowerUp;
 import dyehard.Collision.CollidableGameObject;
 import dyehard.Enemies.Enemy;
-import dyehard.Enemies.EnemyManager;
 import dyehard.Enums.ManagerStateEnum;
 import dyehard.Obstacles.Debris;
 import dyehard.Player.Hero;
@@ -25,6 +23,7 @@ public class CollisionManager {
 	private static int firstID, secondID;
 	
 	private static dyehard.Collision.CollisionManager instance;
+
 	static
 	{
 		instance = dyehard.Collision.CollisionManager.getInstance();
@@ -37,31 +36,43 @@ public class CollisionManager {
 		api = newApi;
 	}
 	
-	public static CollidableGameObject findByID(int id)
-	{
-		return objects[id];
-	}
-	
 	public static int objectCount()
 	{
 		return objects.length;
 	}
-	
+
+	public static void refreshSet()
+	{
+		instance.updateSet();
+	}
+
+	public static CollidableGameObject[] getObjects()
+	{
+		return objects;
+	}
+
+	private static CollidableGameObject lookup(int id)
+	{
+		return IDManager.get(id);
+	}
+
 	public static String getType(int i)
 	{
-		return parseType(objects[i]);
+		return parseType(lookup(i));
 	}
 	
 	public static String getSubtype(int i)
 	{
-		return getSubtype(getType(i), objects[i]);
+		return getSubtype(getType(i), lookup(i));
 	}
+
 	public static void update(){
+		refreshSet();
+
 		Set<CollidableGameObject> orig = instance.getCollidables();
-		
-		
+
 		objects = orig.toArray(new CollidableGameObject[0]);
-				
+
 		int count = objects.length;
 		
 		// ACTORS: Hero, Enemies
@@ -93,8 +104,6 @@ public class CollisionManager {
 				}
 			}
 		}
-		
-		instance.updateSet();
 	}
 	
 	public static boolean isColliding(int id1, int id2){
@@ -109,7 +118,7 @@ public class CollisionManager {
 			return false;
 		}
 		
-		return objects[id1].collided(objects[id2]);
+		return lookup(id1).collided(lookup(id2));
 	}
 	
 	public static void setDirty()

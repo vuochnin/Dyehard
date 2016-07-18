@@ -2,7 +2,8 @@ package dyeHardProceduralAPI;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.Random;
+import java.util.*;
+import java.util.Map.Entry;
 
 import Engine.BaseCode;
 import Engine.Vector2;
@@ -12,7 +13,6 @@ import dyehard.DyeHardGame;
 import dyehard.UpdateManager;
 //import dyehard.Collision.CollisionManager;
 import dyehard.GameScreens.LogScreen;
-import dyehard.GameScreens.StartScreen;
 import dyehard.Resources.ConfigurationFileParser;
 import dyehard.Ui.DyehardEndMenu;
 import dyehard.Ui.DyehardMenuUI;
@@ -29,9 +29,10 @@ import dyehard.World.WormHole;
  * @author Holden
  */
 public class DHProceduralAPI extends DyeHardGame{
-	
+
+
+
 	private Hero hero;
-	private EnemyGenerator enemyGenerator;
 	private DyehardUI ui;
 	
 	private DyehardMenuUI menu;
@@ -46,8 +47,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	 */
 	public void initialize(){
 		CollisionManager.register(this);
-		
-		
+
 		window.requestFocusInWindow();
 		setGoalDistance();
 		buildGame();
@@ -79,11 +79,15 @@ public class DHProceduralAPI extends DyeHardGame{
 	public void update(){
 		
 		UpdateManager.getInstance().update();
-		CollisionManager.update();
 		DebrisGenerator.update();
 		DyePackGenerator.update();
-		if(enemyGenerator != null)
-			enemyGenerator.update();
+
+		EnemyGenerator.update();
+
+		CollisionManager.update();
+
+		IDManager.cleanup();
+
 		updateGame();
 	}
 	
@@ -132,9 +136,19 @@ public class DHProceduralAPI extends DyeHardGame{
 	 */
 	public int objectCount()
 	{
-		return CollisionManager.objectCount();
+		return IDManager.count();
 	}
-	
+
+	/**
+	 * Retrieves the ID of a registered object. Used in for loops.
+	 * @param index
+	 * @return
+	 */
+	public int getID(int index)
+	{
+		return IDManager.getID(index);
+	}
+
 	/**
 	 * presents the type of an object
 	 * @param id
@@ -143,6 +157,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	public String getType(int id){
 		return CollisionManager.getType(id);
 	}
+
 	/**
 	 * Presents the subtype of an object
 	 * @param id
@@ -151,7 +166,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	public String getSubtype(int id){
 		return CollisionManager.getSubtype(id);
 	}
-	
+
 //--------------------------------------------------------------------------------------------	
 //--------------------- SOME POSSIBLE PROCEDURAL FUNCTIONS -----------------------------------
 //--------------------------------------------------------------------------------------------
@@ -168,9 +183,9 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * Create new Hero object and set it to hero instance and 
 	 * set the cursor to the center of that hero
 	 */
-	public void startHero(){					// Create new Hero
+	public int startHero(){					// Create new Hero
 		hero = new Hero();
-		enemyGenerator = new EnemyGenerator(hero);
+		EnemyGenerator.initialize(hero);
 		// TODO: Look into possibility of separating individual UI elements into functions
 		ui = new DyehardUI(hero);
 		
@@ -185,6 +200,8 @@ public class DHProceduralAPI extends DyeHardGame{
 		} catch(AWTException e){
 			e.printStackTrace();
 		}
+
+		return IDManager.register(hero);
 	}
 	
 	/**
@@ -330,8 +347,29 @@ public class DHProceduralAPI extends DyeHardGame{
 	// ---------------- MOUSE / KEYBOARD end ----------------------------
 	
 	// -------------------- Utilities functions ------------------
-	
+
 	/**
+	 * Prints a message to the console.
+	 * @param message the message to display
+	 */
+	public void echo(String message)
+	{
+		System.out.println(message);
+	}
+
+	/**
+	 * Tests for a collision between two objects
+	 * @param id1 The ID of the first object
+	 * @param id2 The ID of the second object
+	 * @return True if the objects are touching, otherwise, false
+	 */
+	public boolean colliding(int id1, int id2)
+	{
+		return IDManager.get(id1).collided(IDManager.get(id2));
+	}
+
+	/**
+	 * DEPRECATED
 	 * Do nothing.
 	 * Called within handleCollisions to prevent default behavior.
 	 */
@@ -345,7 +383,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	 */
 	public void destroy(int id)
 	{
-		CollidableGameObject obj = CollisionManager.findByID(id);
+		CollidableGameObject obj = IDManager.get(id);
 		obj.destroy();
 		CollisionManager.setDirty();
 	}
@@ -357,7 +395,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * @param y vertical position
 	 */
 	public void move(int id, float x, float y){
-		CollidableGameObject obj = CollisionManager.findByID(id);
+		CollidableGameObject obj = IDManager.get(id);
 		
 		obj.center = new Vector2(obj.center.getX() + x,obj.center.getY() + y);
 		
@@ -531,7 +569,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * game window
 	 */
 	public void spawnSingleEnemy(){
-		enemyGenerator.spawnEnemy();
+		EnemyGenerator.spawnEnemy();
 	}
 	
 	/**
@@ -539,7 +577,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * game window with the given y-coordinate position
 	 */
 	public void spawnSingleEnemy(float height){
-		enemyGenerator.spawnEnemy(height);
+		EnemyGenerator.spawnEnemy(height);
 	}
 
 	/**
@@ -547,7 +585,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * game window
 	 */
 	public void spawnSingleEnemy(String type){
-		enemyGenerator.spawnEnemy(type);
+		EnemyGenerator.spawnEnemy(type);
 	}
 
 
@@ -578,7 +616,7 @@ public class DHProceduralAPI extends DyeHardGame{
 		DyePackGenerator.setActive(false);
 	}
 
-	public void spawnSinglePowerUp(float positionX, float positionY)
+	public int spawnSinglePowerUp(float positionX, float positionY)
 	{
 		PowerUp spawned;
 		switch (randomInt(8))
@@ -612,9 +650,10 @@ public class DHProceduralAPI extends DyeHardGame{
 			spawned = new Invincibility();
 		}
 		spawned.initialize(new Vector2(positionX, positionY));
+		return  IDManager.register(spawned);
 	}
 
-	public void spawnSinglePowerUp(String type, float positionX, float positionY)
+	public int spawnSinglePowerUp(String type, float positionX, float positionY)
 	{
 		PowerUp spawned;
 		switch (type.toLowerCase())
@@ -648,6 +687,7 @@ public class DHProceduralAPI extends DyeHardGame{
 			spawned = new Invincibility();
 		}
 		spawned.initialize(new Vector2(positionX, positionY));
+		return  IDManager.register(spawned);
 	}
 
 	//-------------- COLLECTIBLES end -------------------------------

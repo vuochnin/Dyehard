@@ -47,8 +47,18 @@ public class DyePackGenerator {
 	{
 		generatorPositionX = leftEdge;
 	}
-	
-	public static void generateDyePack()
+
+	private static DyePack spawn(float posX, float posY)
+	{
+		Color randomColor = Colors.randomColor();
+		DyePack dye = new DyePack(randomColor);
+
+		dye.initialize(new Vector2(posX, posY));
+
+		return dye;
+	}
+
+	public static int generateDyePack()
 	{
 		float regionHeight = BaseCode.world.getHeight()
 		                     - BaseCode.world.getWorldPositionY();
@@ -56,19 +66,22 @@ public class DyePackGenerator {
 		float posY = (regionHeight - DyePack.height) * myRandom.nextFloat()
 		      + DyePack.height / 2f;
 
-		generateDyePack(posY);
+		DyePack dye = spawn(generatorPositionX, posY);
+
+		int result =  IDManager.register(dye);
+
+		System.out.println("Spawned DyePack with ID: " + result);
+
+		return  result;
 	}
 
-	public static void generateDyePack(float posY)
+	public static int generateDyePack(float posY)
 	{
-		Color randomColor = Colors.randomColor();
-		DyePack dye = new DyePack(randomColor);
-
-		float posX = generatorPositionX;
-
-		dye.initialize(new Vector2(posX, posY));
+		DyePack dye = spawn(generatorPositionX, posY);
 
 		dyePacks.add(dye);
+
+		return IDManager.register(dye);
 	}
 
 	public static void update()

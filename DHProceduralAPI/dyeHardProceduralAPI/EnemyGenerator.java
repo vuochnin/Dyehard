@@ -14,16 +14,14 @@ public class EnemyGenerator {
     
     private static float        interval;
 	private static boolean      active;
-	private static int 			count;
     
 	static{
 		interval = 3;
 		active = false;
-		count = 0;
 	}
 	
 	
-    public EnemyGenerator(Hero hero) {
+    public static void initialize(Hero hero) {
         EnemyGenerator.hero = hero;
     }
     
@@ -48,97 +46,111 @@ public class EnemyGenerator {
 	 * Generate a random position for the each enemy
 	 * @return the position of the enemy as Vector2
 	 */
-    private Vector2 randomPosition(){
+    private static Vector2 randomPosition(){
     	float randomY = RANDOM.nextInt((int) BaseCode.world.getHeight() - 8) + 5;
         Vector2 position = new Vector2(BaseCode.world.getWidth() + 10, randomY);
         return position;
     }
     
-    public void spawnEnemy(){
-		switch (RANDOM.nextInt(5)) {
-        case 1:
-            //EnemyManager.getInstance().registerEnemy(new PortalEnemy(randomPosition(), hero));
-        	count++;
-            break;
+    public static int spawnEnemy(){
+		if (hero == null)
+		{
+			System.err.println("EnemyGenerator: Hero not initialized!");
+			return -1;
+		}
+	    Enemy result;
+
+		switch (RANDOM.nextInt(5))
+		{
+        //case 1:
+            //result = (new PortalEnemy(randomPosition(), hero));
+            //break;
         case 2:
-        	EnemyManager.getInstance().registerEnemy(new ChargerEnemy(randomPosition(), hero));
-        	count++;
+	        result = (new ChargerEnemy(randomPosition(), hero));
             break;
         case 3:
-        	EnemyManager.getInstance().registerEnemy(new ShootingEnemy(randomPosition(), hero));
-        	count++;
+	        result = (new ShootingEnemy(randomPosition(), hero));
             break;
         case 4:
-        	EnemyManager.getInstance().registerEnemy(new CollectorEnemy(randomPosition(), hero));
-        	count++;
+	        result = (new CollectorEnemy(randomPosition(), hero));
             break;
         default:
-        	EnemyManager.getInstance().registerEnemy(new RegularEnemy(randomPosition(), hero));
-        	count++;
+	        result = (new RegularEnemy(randomPosition(), hero));
             break;
         }
+	    EnemyManager.getInstance().registerEnemy(result);
+	    return IDManager.register(result);
     }
     
-    public void spawnEnemy(String EnemyType){
+    public static int spawnEnemy(String EnemyType){
+	    if (hero == null)
+	    {
+		    System.err.println("EnemyGenerator: Hero not initialized!");
+		    return -1;
+	    }
+
     	String type = EnemyType.toLowerCase();
+
+		Enemy result;
+
     	switch(type){
     	case "portal":
-    		EnemyManager.getInstance().registerEnemy(new PortalEnemy(randomPosition(), hero));
-        	count++;
+    		result = (new PortalEnemy(randomPosition(), hero));
             break;
     	case "charger":
-        	EnemyManager.getInstance().registerEnemy(new ChargerEnemy(randomPosition(), hero));
-        	count++;
+		    result = (new ChargerEnemy(randomPosition(), hero));
             break;
         case "shooting":
-        	EnemyManager.getInstance().registerEnemy(new ShootingEnemy(randomPosition(), hero));
-        	count++;
+	        result = (new ShootingEnemy(randomPosition(), hero));
             break;
         case "collector":
-        	EnemyManager.getInstance().registerEnemy(new CollectorEnemy(randomPosition(), hero));
-        	count++;
-            break;
-        case "regular":
-        	EnemyManager.getInstance().registerEnemy(new RegularEnemy(randomPosition(), hero));
-        	count++;
+	        result = (new CollectorEnemy(randomPosition(), hero));
             break;
         default:
-        	System.out.println("ERROR: The type of enemy you entered is not existed");
-        	break;
+	        result = (new RegularEnemy(randomPosition(), hero));
+            break;
     	}
+	    EnemyManager.getInstance().registerEnemy(result);
+	    return IDManager.register(result);
     }
     
-    public void spawnEnemy(float height){
+    public static int spawnEnemy(float height){
+	    if (hero == null)
+	    {
+		    System.err.println("EnemyGenerator: Hero not initialized!");
+		    return -1;
+	    }
+
         Vector2 position = new Vector2(BaseCode.world.getWidth(), height);
-		switch (RANDOM.nextInt(5)) {
-        case 1:
-            //EnemyManager.getInstance().registerEnemy(new PortalEnemy(position, hero));
-        	count++;
-            break;
-        case 2:
-        	EnemyManager.getInstance().registerEnemy(new ChargerEnemy(position, hero));
-        	count++;
-            break;
-        case 3:
-        	EnemyManager.getInstance().registerEnemy(new ShootingEnemy(position, hero));
-        	count++;
-            break;
-        case 4:
-        	EnemyManager.getInstance().registerEnemy(new CollectorEnemy(position, hero));
-        	count++;
-            break;
-        default:
-        	EnemyManager.getInstance().registerEnemy(new RegularEnemy(position, hero));
-        	count++;
-            break;
-        }
+	    Enemy result;
+
+	    switch (RANDOM.nextInt(5))
+	    {
+	    //case 1:
+	        //result = (new PortalEnemy(position, hero));
+	        //break;
+	    case 2:
+		    result = (new ChargerEnemy(position, hero));
+		    break;
+	    case 3:
+		    result = (new ShootingEnemy(position, hero));
+		    break;
+	    case 4:
+		    result = (new CollectorEnemy(position, hero));
+		    break;
+	    default:
+		    result = (new RegularEnemy(position, hero));
+		    break;
+	    }
+	    EnemyManager.getInstance().registerEnemy(result);
+	    return IDManager.register(result);
     }
 
-    public int enemyCount(){
-    	return count;
+    public static int enemyCount(){
+    	return EnemyManager.getInstance().getEnemies().size();
     }
 
-    public void update() {
+    public static void update() {
         if (active && TimeManager.repeatingTimer("ENEMY_GENERATION", interval)) {
             spawnEnemy();
         }
