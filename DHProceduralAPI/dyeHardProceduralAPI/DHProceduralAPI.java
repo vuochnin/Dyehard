@@ -9,6 +9,7 @@ import Engine.BaseCode;
 import Engine.Vector2;
 import dyehard.Collectibles.*;
 import dyehard.Collision.CollidableGameObject;
+import dyehard.DyeHardGame.State;
 import dyehard.DyeHardGame;
 import dyehard.UpdateManager;
 //import dyehard.Collision.CollisionManager;
@@ -39,8 +40,6 @@ public class DHProceduralAPI extends DyeHardGame{
 	private DyehardEndMenu endMenu;
 	private LogScreen start;			// "Click Anywhere to Start"
 	
-	
-	
 	/**
 	 * @Override 
 	 * Must override the initialize() method from the abstract super class, DyeHardGame
@@ -56,74 +55,112 @@ public class DHProceduralAPI extends DyeHardGame{
 		endMenu = new DyehardEndMenu();
 		start = new LogScreen();
 		
-		
+		DyeHardGame.setState(State.BEGIN);
 	}
 	
-	public void buildGame(){
-//		startHero();
-//		
-//		setLivesTo(6);
-//		displayScore(true);
-//		
-//		startDebrisSpawner(1.5f);
-//		startDyePackSpawner();
-//		startEnemySpawner();
-//
-//		spawnGates();
-	}
+	/**
+	 * A callback function, for user to override.
+	 * (Call Once)
+	 */
+	public void buildGame(){ }
 	
 	/**
 	 * @Override 
 	 * Must override the update() method from the abstract super class, DyeHardGame
 	 */
 	public void update(){
+		//checkControl();
+		//switch (getState()) {
+        //case PLAYING:
+			UpdateManager.getInstance().update();
+			DebrisGenerator.update();
+			DyePackGenerator.update();
+	
+			EnemyGenerator.update();
+	
+			CollisionManager.update();
+	
+			IDManager.cleanup();
+			updateGame();
+			//break;
+        //default:
+        	//break;
+		//}
 		
-		UpdateManager.getInstance().update();
-		DebrisGenerator.update();
-		DyePackGenerator.update();
-
-		EnemyGenerator.update();
-
-		CollisionManager.update();
-
-		IDManager.cleanup();
-
-		updateGame();
+//		if(getState() == State.BEGIN){
+//			if(start.isShown()){
+//				if(isMouseLeftClicked()){
+//					setState(State.PLAYING);
+//					showStartMenu(false);
+//				}
+//			}
+//		}else if(getState() == State.MENU){
+//			showMenu(true);
+//            if (isMouseLeftClicked()) {
+//                menu.select(mouse.getWorldX(), mouse.getWorldY(),
+//                        true);
+//            } else {
+//                menu.select(mouse.getWorldX(), mouse.getWorldY(),
+//                        false);
+//            }
+//		}else if(getState() == State.PAUSED){
+//			
+//		}
+		
 	}
 	
-	public void updateGame()
-	{
-//		heroFollowTheMouse();
-//		
-//		// TEST Change the weapon according to the keyboard inputs
-//		if(isKeyboardLeftPressed()){
-//			activateSpreadFireWeapon();
-//		}
-//		if(isKeyboardRightPressed()){
-//			activateLimitedAmmoWeapon();
-//		}
-//		if(isKeyboardDownPressed()){
-//			defaultWeapon();
-//		}
-//		if(isKeyboardButtonTapped(KeysEnum.p)){
-//			increaseScoreBy(2);
-//		}
-//		if(isKeyboardButtonTapped(KeysEnum.E)){
-//			spawnSingleEnemy("charger");			//TEST SpawnSingleEnemy()
-//		}
-//
-//
-//
-//		if(repeatingTimer("powerup", 4))
-//		{
-//			spawnSinglePowerUp(100, 30);
-//		}
-//
-//		// Fire the paint
-//		if(isMouseLeftClicked() || isKeyboardSpacePressed()){
-//			firePaint();
-//		}
+	private void checkControl(){
+		switch (getState()){
+		case BEGIN:
+			showStartMenu(true);
+			break;
+		case PLAYING:
+			if (isKeyboardButtonTapped(KeysEnum.A)) {
+                setState(State.PAUSED);
+            } else if (isKeyboardButtonTapped(KeysEnum.ESCAPE)) {
+                setState(State.MENU);
+                
+            } else if (gameOver()) {
+                setState(State.GAMEOVER);
+            }
+            break;
+		case MENU:
+			if(isKeyboardButtonTapped(KeysEnum.ESCAPE))
+				setState(State.PLAYING);
+			break;
+		case PAUSED:
+			if (menu.isCredits()) {
+                if (isMouseLeftClicked()
+                        || isKeyboardButtonTapped(KeysEnum.ESCAPE)) {
+                    menu.creditsOff();
+                    setState(State.MENU);
+                }
+            } else {
+                if (isKeyboardButtonTapped(KeysEnum.ESCAPE)) {
+                	setState(State.MENU);
+                }
+            }
+			break;
+		}
 	}
+	
+	public boolean gameOver() {
+        if (hero == null) {
+            return false;
+        }
+
+        if (GameState.DistanceTravelled == GameState.TargetDistance) {
+            return true;
+        }
+
+        return GameState.RemainingLives <= 0;
+    }
+	
+	/**
+	 * A callback function, for user to override.
+	 * (Call many times)
+	 */
+	public void updateGame(){ }
 	
 	public void handleCollisions(String type1, String subtype1, int id1, String type2, String subtype2, int id2)
 	{
@@ -205,12 +242,21 @@ public class DHProceduralAPI extends DyeHardGame{
 	}
 	
 	/**
+	 * Makes the hero follow the mouse movement
+	 */
+	public void heroFollowTheMouse(){
+		moveTo(mousePositionX(), mousePositionY());
+	}
+	
+	/**
 	 * Gets the current color of the DyePack the hero is carrying
 	 * @return the hero's dyepack color
 	 */
 	public Color getHeroColor(){
 		return hero.getColor();
 	}
+	
+	
 	
 	/**
 	 * Moves the hero to a specific position
@@ -219,13 +265,6 @@ public class DHProceduralAPI extends DyeHardGame{
 	 */
 	public void moveTo(float x, float y){
 		hero.moveTo(x, y);
-	}
-	
-	/**
-	 * Makes the hero follow the mouse movement
-	 */
-	public void heroFollowTheMouse(){
-		moveTo(mousePositionX(), mousePositionY());
 	}
 	
 	/**
@@ -368,14 +407,14 @@ public class DHProceduralAPI extends DyeHardGame{
 		return IDManager.get(id1).collided(IDManager.get(id2));
 	}
 
-	/**
-	 * DEPRECATED
-	 * Do nothing.
-	 * Called within handleCollisions to prevent default behavior.
-	 */
-	public void doNothing(){
-		CollisionManager.setDirty();
-	}
+//	/**
+//	 * DEPRECATED
+//	 * Do nothing.
+//	 * Called within handleCollisions to prevent default behavior.
+//	 */
+//	public void doNothing(){
+//		CollisionManager.setDirty();
+//	}
 	
 	/**
 	 * Destroys an object
@@ -548,16 +587,16 @@ public class DHProceduralAPI extends DyeHardGame{
 	//-------------------- ENEMY --------------------------------
 	
 	/**
-	 * Spawn a random enemy at a random position on the right of the 
-	 * game window with the default interval of 3 seconds
+	 * Spawns random enemies at random locations on the right of the 
+	 * game window with the default time interval of 3 seconds
 	 */
 	public void startEnemySpawner(){
 		startEnemySpawner(3);
 	}
 	
 	/**
-	 * Spawn a random enemy at a random position on the right of the 
-	 * game window with the given interval
+	 * Spawns random enemies at random locations on the right of the 
+	 * game window with the given time interval
 	 */
 	public void startEnemySpawner(float interval){
 		EnemyGenerator.enable();
@@ -573,21 +612,35 @@ public class DHProceduralAPI extends DyeHardGame{
 	}
 	
 	/**
-	 * Spawn a single random enemy at a random position on the right of the 
-	 * game window with the given y-coordinate position
+	 * Spawn a single random enemy at a specified position (x,y)
+	 * @param x the x-coordinate position of the enemy
+	 * @param y the y-coordinate position of the enemy
+	 * @return an integer which represents the id of the enemy
 	 */
-	public void spawnSingleEnemy(float height){
-		EnemyGenerator.spawnEnemy(height);
+	public int spawnSingleEnemy(float x, float y){
+		return EnemyGenerator.spawnEnemy(x, y);
 	}
 
 	/**
-	 * Spawn a single enemy of the given type at a random position on the right of the 
-	 * game window
+	 * Spawn a single enemy of the specified type at a random position on 
+	 * the right of the game window
+	 * @param type the type of the enemy (as a string)
+	 * @return an integer which represents the id of the enemy
 	 */
-	public void spawnSingleEnemy(String type){
-		EnemyGenerator.spawnEnemy(type);
+	public int spawnSingleEnemy(String type){
+		return EnemyGenerator.spawnEnemy(type);
 	}
-
+	
+	/**
+	 * Spawn an enemy with the specified type at the specified location (x, y)
+	 * @param type the type of the enemy (as a string)
+	 * @param x the x-coordinate position of the enemy
+	 * @param y the y-coordinate position of the enemy
+	 * @return an integer which represents the id of the enemy
+	 */
+	public int spawnSingleEnemy(String type, float x, float y){
+		return EnemyGenerator.spawnEnemy(type, x, y);
+	}
 
 	/**
 	 * Disable the enemy spawner
@@ -595,10 +648,19 @@ public class DHProceduralAPI extends DyeHardGame{
 	public void stopEnemySpawner(){
 		EnemyGenerator.disable();
 	}
+	
+	/**
+	 * Reports the number of enemies instantiated 
+	 * @return the number of enemies instantiated 
+	 */
+	public int enemyCount(){
+		return EnemyGenerator.enemyCount();
+	}
+	
 	//------------------ ENEMY end --------------------------------
 
 	//-------------- COLLECTIBLES -----------------------------------
-
+	
 	public void startDyePackSpawner()
 	{
 		startDyePackSpawner(2);
@@ -615,7 +677,20 @@ public class DHProceduralAPI extends DyeHardGame{
 	{
 		DyePackGenerator.setActive(false);
 	}
-
+	
+	/**
+	 * Spawns a single DyePack with the specified color (as a String) and location
+	 * @param color [ "red" | "blue" | "green" | "teal" | "yellow" | "pink" ]. 
+	 * Note: if the color specified is not in the list of color, function will pick red as the default
+	 * @param x the x-coordinate position of the DyePack
+	 * @param y the Y-coordinate position of the DyePack
+	 * @return an integer which represents the id of the DyePack
+	 */
+	public int spawnSingleDyePack(String color, float x, float y){
+		return DyePackGenerator.spawnDyePack(color, x, y);
+	}
+	
+	
 	public int spawnSinglePowerUp(float positionX, float positionY)
 	{
 		PowerUp spawned;
@@ -743,31 +818,31 @@ public class DHProceduralAPI extends DyeHardGame{
 	/**
 	 * Displays the Winning menu on the screen
 	 */
-	public void showWinMenu(){
-		endMenu.setMenu(true);
-		endMenu.active(true);
+	public void showWinMenu(boolean yes){
+		endMenu.setMenu(true);	// True for win menu
+		endMenu.active(yes);
 	}
 	
 	/**
 	 * Displays the Losing menu on the screen
 	 */
-	public void showLoseMenu(){
-		endMenu.setMenu(false);
-		endMenu.active(true);
+	public void showLoseMenu(boolean yes){
+		endMenu.setMenu(false);		// False for win menu
+		endMenu.active(yes);
 	}
 	
 	/**
 	 * Displays the Start menu on the screen
 	 */
-	public void showStartMenu(){
-		start.showScreen(true); // "Click Anywhere to Start"
+	public void showStartMenu(boolean yes){
+		start.showScreen(yes); // "Click Anywhere to Start"
 	}
 	
 	/**
 	 * Display the Menu on the screen (Ex: when the game is paused)
 	 */
-	public void showMenu(){
-		menu.active(true);
+	public void showMenu(boolean yes){
+		menu.active(yes);
 	}
 	
 	/**

@@ -11,9 +11,11 @@ import dyeHardProceduralAPI.KeysEnum;
 public class Demo2 extends DHProceduralAPI
 {
 
+	int heroID;
+	
 	public void buildGame()
 	{
-		startHero();
+		heroID = startHero();
 		
 		 // Start an object spawner with the default setting
 		startDebrisSpawner(0.5f);
@@ -42,6 +44,7 @@ public class Demo2 extends DHProceduralAPI
 
 			if(getType(id) == "Debris")
 			{
+				//APIMoveObject
 				move(id,0,-0.1f);
 			}
 
@@ -57,6 +60,7 @@ public class Demo2 extends DHProceduralAPI
 		for(int i = 0; i < objectCount(); i++)
 		{
 			int id1 = getID(i);
+			
 			for (int j = i+1; j < objectCount(); j++)
 			{
 				int id2 = getID(j);

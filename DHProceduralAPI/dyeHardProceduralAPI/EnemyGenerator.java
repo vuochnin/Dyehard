@@ -20,15 +20,24 @@ public class EnemyGenerator {
 		active = false;
 	}
 	
-	
+	/**
+	 * Register the hero with the EnemyGenerator
+	 * @param hero the initialized hero
+	 */
     public static void initialize(Hero hero) {
         EnemyGenerator.hero = hero;
     }
     
+    /**
+     * Enables the EnemyGenerator
+     */
     public static void enable(){
     	active = true;
     }
     
+    /**
+     * Disables the EnemyGenerator
+     */
     public static void disable(){
     	active = false;
     }
@@ -43,7 +52,7 @@ public class EnemyGenerator {
 	}
     
 	/**
-	 * Generate a random position for the each enemy
+	 * Generate a random position on the right edge of the window for the each enemy
 	 * @return the position of the enemy as Vector2
 	 */
     private static Vector2 randomPosition(){
@@ -52,6 +61,11 @@ public class EnemyGenerator {
         return position;
     }
     
+    /**
+     * Generate a random enemy at a random location
+     * on the right edge of the window
+     * @return the id of the enemy as integer
+     */
     public static int spawnEnemy(){
 		if (hero == null)
 		{
@@ -82,6 +96,12 @@ public class EnemyGenerator {
 	    return IDManager.register(result);
     }
     
+    /**
+     * Generate an enemy with the specified type at a random location
+     * on the right edge of the window
+     * @param EnemyType the type of the enemy (as a string)
+     * @return the id of the enemy as integer
+     */
     public static int spawnEnemy(String EnemyType){
 	    if (hero == null)
 	    {
@@ -114,14 +134,60 @@ public class EnemyGenerator {
 	    return IDManager.register(result);
     }
     
-    public static int spawnEnemy(float height){
+    /**
+     * Generates an enemy with the specified type at a specified location
+     * @param EnemyType the type of the enemy (as a string)
+     * @param x the x-coordinate position
+     * @param y the y-coordinate position
+     * @return the id of the enemy as integer
+     */
+    public static int spawnEnemy(String EnemyType, float x, float y){
 	    if (hero == null)
 	    {
 		    System.err.println("EnemyGenerator: Hero not initialized!");
 		    return -1;
 	    }
 
-        Vector2 position = new Vector2(BaseCode.world.getWidth(), height);
+    	String type = EnemyType.toLowerCase();
+    	Vector2 pos = new Vector2(x, y);
+		Enemy result;
+
+    	switch(type){
+    	case "portal":
+    		result = (new PortalEnemy(pos, hero));
+            break;
+    	case "charger":
+		    result = (new ChargerEnemy(pos, hero));
+            break;
+        case "shooting":
+	        result = (new ShootingEnemy(pos, hero));
+            break;
+        case "collector":
+	        result = (new CollectorEnemy(pos, hero));
+            break;
+        default:
+	        result = (new RegularEnemy(pos, hero));
+            break;
+    	}
+	    EnemyManager.getInstance().registerEnemy(result);
+	    return IDManager.register(result);
+    }
+    
+    
+    /**
+     * Generates a random enemy on the right side of the window with the 
+     * specified y-coordinate position 
+     * @param y the y-coordinate position
+     * @return the id of the enemy as integer
+     */
+    public static int spawnEnemy(float x, float y){
+	    if (hero == null)
+	    {
+		    System.err.println("EnemyGenerator: Hero not initialized!");
+		    return -1;
+	    }
+
+        Vector2 position = new Vector2(x, y);
 	    Enemy result;
 
 	    switch (RANDOM.nextInt(5))
@@ -146,16 +212,26 @@ public class EnemyGenerator {
 	    return IDManager.register(result);
     }
 
+    /**
+     * Reports the number of enemies instantiated
+     * @return the number of enemies instantiated
+     */
     public static int enemyCount(){
     	return EnemyManager.getInstance().getEnemies().size();
     }
 
+    /**
+     * Updates the EnemyGenerator
+     */
     public static void update() {
         if (active && TimeManager.repeatingTimer("ENEMY_GENERATION", interval)) {
             spawnEnemy();
         }
     }
     
+    /**
+     * Clear every enemy from the game
+     */
     public void clearEnemy() {
     	EnemyManager.getInstance().clear();
     }

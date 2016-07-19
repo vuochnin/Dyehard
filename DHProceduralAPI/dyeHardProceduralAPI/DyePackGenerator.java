@@ -57,6 +57,42 @@ public class DyePackGenerator {
 
 		return dye;
 	}
+	
+	private static DyePack spawn(String color, float posX, float posY)
+	{
+		Color c = Colors.Red;
+		if(color.equalsIgnoreCase("blue")){
+			c = Colors.Blue;
+		}
+		else if(color.equalsIgnoreCase("teal")){
+			c = Colors.Teal;
+		}
+		else if(color.equalsIgnoreCase("green")){
+			c = Colors.Green;
+		}
+		else if(color.equalsIgnoreCase("pink")){
+			c = Colors.Pink;
+		}
+		else if(color.equalsIgnoreCase("yellow")){
+			c = Colors.Yellow;
+		}
+		DyePack dye = new DyePack(c);
+
+		dye.initialize(new Vector2(posX, posY));
+
+		return dye;
+	}
+	
+	public static int spawnDyePack(String color, float x, float y)
+	{
+		DyePack dye = spawn(color, x, y);
+
+		int result =  IDManager.register(dye);
+
+		System.out.println("Spawned DyePack with ID: " + result);
+
+		return  result;
+	}
 
 	public static int generateDyePack()
 	{
