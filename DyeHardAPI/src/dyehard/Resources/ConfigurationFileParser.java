@@ -48,7 +48,7 @@ public class ConfigurationFileParser {
     private PowerupData powerupData = new PowerupData();        
     
     /** The enemy data. */
-    private EnemyData enemyData = new EnemyData();        
+    //private EnemyData enemyData = new EnemyData();        
     
     /** The hero data. */
     private HeroData heroData = new HeroData();        
@@ -204,6 +204,8 @@ public class ConfigurationFileParser {
 
                 EnemyType type = EnemyType.valueOf(node.getAttributes()
                         .getNamedItem("type").getNodeValue());
+                
+                EnemyData enemyData = new EnemyData();
                 
                 enemyData.setWidth(parseFloat(elem, "width"));
                 enemyData.setHeight(parseFloat(elem, "height"));
@@ -439,14 +441,19 @@ public class ConfigurationFileParser {
     	return worldData;
     }
     
+    /* DEPRICATED
+     * Returns the "enemy data" object, which
+     * can be found in the enemies map object
+     * via key. Use getEnemyData(EnemyTpe type)
+     * instead.
     /**
      * Gets the enemny data.
      *
      * @return the enemny data
-     */
     public EnemyData getEnemyData() {
     	return enemyData;
     }
+    */
     
     /**
      * Gets the powerup data.
