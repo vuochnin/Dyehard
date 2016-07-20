@@ -12,8 +12,10 @@ import dyehard.World.GameState;
  */
 public class NinDemo extends DHProceduralAPI
 {
+	int heroID;
+	
 	public void buildGame(){
-		startHero();
+		heroID = startHero();
 		setLivesTo(2);
 		displayScore(true);
 		setGoalDistance(100);
@@ -34,11 +36,11 @@ public class NinDemo extends DHProceduralAPI
 		// else if(getType(i) == "Debris"
 		// 		move(i, 
 		
-		heroFollowTheMouse();
+		API_ObjectFollowTheMouse(heroID);
 		
 		// Fire the paint
 		if(isMouseLeftClicked() || isKeyboardSpacePressed()){
-			firePaint();
+			APIHerofirePaint();
 		}
 		
 		// TEST Change the weapon according to the keyboard inputs

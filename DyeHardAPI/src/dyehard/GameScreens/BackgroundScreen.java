@@ -12,6 +12,7 @@ import Engine.BaseCode;
 import Engine.Vector2;
 import dyehard.DyeHardGameObject;
 import dyehard.UpdateableObject;
+import dyehard.Enums.ManagerStateEnum;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -19,6 +20,8 @@ import dyehard.UpdateableObject;
  */
 public class BackgroundScreen extends UpdateableObject {
     
+	private ManagerStateEnum updateState = ManagerStateEnum.ACTIVE;
+	
     /** The ship. */
     private final Deque<Tile> ship;    
     
@@ -71,6 +74,19 @@ public class BackgroundScreen extends UpdateableObject {
         ship = createTiles(shipTextures, -0.03125f); // 1/32
     }
 
+    /* (non-Javadoc)
+     * @see dyehard.Updateable#updateState()
+     */
+    @Override
+    public ManagerStateEnum updateState() {
+        return updateState;
+    }
+    
+    public void destroy()
+    {
+    	updateState = ManagerStateEnum.DESTROYED;
+    }
+    
     /* (non-Javadoc)
      * @see dyehard.UpdateableObject#update()
      */

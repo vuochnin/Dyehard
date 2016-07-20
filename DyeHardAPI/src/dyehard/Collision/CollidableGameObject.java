@@ -73,7 +73,8 @@ private static final float OFFSET = 30f;
         // The Collidable is destroyed once it's too far from the map to the
         // left, top, or bottom portion of the map. offset is 30f for now
         if ((o.center.getX() < (BaseCode.world.getPositionX() - OFFSET))
-                || (o.center.getY() < (BaseCode.world.getWorldPositionY()))
+        		//|| (o.center.getX() > (BaseCode.world.getWidth() + OFFSET)) // Breaks wormholes
+                || (o.center.getY() < (BaseCode.world.getWorldPositionY() - OFFSET))
                 || (o.center.getY() > (BaseCode.world.getHeight() + OFFSET))) {
             return false;
         }

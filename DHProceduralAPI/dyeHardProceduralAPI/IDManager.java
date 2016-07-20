@@ -5,6 +5,8 @@ import dyehard.Collision.CollidableGameObject;
 import java.util.*;
 import java.util.Map.Entry;
 
+import org.omg.CORBA.INITIALIZE;
+
 public class IDManager
 {
 	private static boolean dirty;
@@ -17,11 +19,16 @@ public class IDManager
 
 	static
 	{
-		dirty = true;
-		nextID = 0;
-		idMap = new HashMap<>();
+		initialize();
 	}
 
+	private static void initialize()
+	{
+		dirty = true;
+		nextID = 0;
+		idMap = new HashMap<>();		
+	}
+	
 	private IDManager(){}
 
 	public static int count()
@@ -102,6 +109,15 @@ public class IDManager
 		}
 	}
 
+	public static void reset()
+	{
+		for(CollidableGameObject o : idMap.values())
+		{
+			o.destroy();
+		}
+		initialize();
+	}
+	
 	/**
 	 * Retrieve an object by ID
 	 * @param id
@@ -110,5 +126,16 @@ public class IDManager
 	public static CollidableGameObject get(int id)
 	{
 		return idMap.get(id);
+	}
+	
+	public static int reverseLookupID(CollidableGameObject obj)
+	{
+		for(Entry<Integer, CollidableGameObject> e : idMap.entrySet())
+		{
+			if(e.getValue() == obj)
+				return e.getKey();
+		}
+		
+		return -1;
 	}
 }

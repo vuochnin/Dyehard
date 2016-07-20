@@ -12,6 +12,7 @@ import dyehard.Collision.CollidableGameObject;
 import dyehard.DyeHardGame.State;
 import dyehard.DyeHardGame;
 import dyehard.UpdateManager;
+import dyehard.GameScreens.BackgroundScreen;
 //import dyehard.Collision.CollisionManager;
 import dyehard.GameScreens.LogScreen;
 import dyehard.Resources.ConfigurationFileParser;
@@ -31,7 +32,7 @@ import dyehard.World.WormHole;
  */
 public class DHProceduralAPI extends DyeHardGame{
 
-	private boolean menuActive = false;
+	//private boolean menuActive = false;
 	private boolean endMenuActive = false;
 	private static float Speed = 0.3f;
 	private float distance = 0f;
@@ -40,7 +41,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	private Hero hero;
 	private DyehardUI ui;
 	
-	private DyehardMenuUI menu;
+	//private DyehardMenuUI menu;
 	private DyehardEndMenu endMenu;
 	private LogScreen start;			// "Click Anywhere to Start"
 	
@@ -55,7 +56,7 @@ public class DHProceduralAPI extends DyeHardGame{
 		setGoalDistance();
 		buildGame();
 		
-		menu = new DyehardMenuUI();
+		//menu = new DyehardMenuUI();
 		endMenu = new DyehardEndMenu();
 		start = new LogScreen();
 		
@@ -83,7 +84,7 @@ public class DHProceduralAPI extends DyeHardGame{
 			EnemyGenerator.update();
 	
 			CollisionManager.update();
-	
+			
 			IDManager.cleanup();
 			updateGame();
 			break;
@@ -184,7 +185,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	/**
 	 * Fire the current weapon
 	 */
-	public void firePaint(){					// Fire the paint
+	public void APIHerofirePaint(){					// Fire the paint
 		hero.currentWeapon.fire();
 	}
 	
@@ -215,8 +216,8 @@ public class DHProceduralAPI extends DyeHardGame{
 	/**
 	 * Makes the hero follow the mouse movement
 	 */
-	public void heroFollowTheMouse(){
-		moveTo(mousePositionX(), mousePositionY());
+	public void API_ObjectFollowTheMouse(int id){
+		API_MoveObjectTo(id, mousePositionX(), mousePositionY());
 	}
 	
 	/**
@@ -228,66 +229,55 @@ public class DHProceduralAPI extends DyeHardGame{
 	}
 	
 	/**
-	 * Moves the hero to a specific position
+	 * Moves the object to a specific position
 	 * @param x the X-coordinate position
 	 * @param y the Y-coordinate position
 	 */
-	public void moveTo(float x, float y){
-		hero.moveTo(x, y);
+	public void API_MoveObjectTo(int id, float x, float y){
+		if(getType(id) == "Hero")
+			hero.moveTo(x, y);
+		else
+			IDManager.get(id).center = (new Vector2(x,y));
 	}
 	
-	/**
-	 * Moves the hero to the left direction
-	 */
-	public void moveLeft()
-	{
-		Vector2 result = hero.center;
-		result.add( new Vector2(-1,0));
-		moveTo(result.getX(), result.getY());
-	}
 	
-	/**
-	 * Moves the hero to the right direction
-	 */
-	public void moveRight()
-	{
-		Vector2 result = hero.center;
-		result.add( new Vector2(1,0));
-		moveTo(result.getX(), result.getY());
-	}	
-	
-	/**
-	 * Moves the hero to the upward direction
-	 */
-	public void moveUp()
-	{
-		Vector2 result = hero.center;
-		result.add( new Vector2(0,1));
-		moveTo(result.getX(), result.getY());
-	}
-	
-	/**
-	 * Moves the hero to the downward direction
-	 */
-	public void moveDown()
-	{
-		Vector2 result = hero.center;
-		result.add( new Vector2(0,-1));
-		moveTo(result.getX(), result.getY());
-	}
 	
 	// -------------------- Utilities functions ------------------
 
+	public float apiGetWorldWidth(){
+		return world.getWidth();
+	}
+	
+	public float apiGetWorldHeight(){
+		return world.getHeight();
+	}
+	
+	public float apiGetObjectPositionX(int id){
+		return IDManager.get(id).center.getX();
+	}
+	
+	public float apiGetObjectPositionY(int id){
+		return IDManager.get(id).center.getY();
+	}
+	
 	public void restartGame() {
+		background.destroy();
+		background = new BackgroundScreen();
+		endMenu.active(false);
 		setGoalDistance();
     	setLivesTo(lives);
     	setState(State.BEGIN);
-    	EnemyGenerator.clearEnemy();
         System.gc();
         distance = 0;
         GameState.DistanceTravelled = 0;
         GameState.Score = 0;
         hero.center = hero.getStart();
+
+        TimeManager.reset();
+        
+        IDManager.reset();
+        
+        buildGame();
 	}
 	
 	public boolean userLose(){
@@ -320,7 +310,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	 */
 	public boolean colliding(int id1, int id2)
 	{
-		return IDManager.get(id1).collided(IDManager.get(id2));
+		return CollisionManager.rememberCollision(id1, id2) || CollisionManager.rememberCollision(id2, id1);
 	}
 
 //		/**
@@ -344,17 +334,27 @@ public class DHProceduralAPI extends DyeHardGame{
 	}
 	
 	/**
-	 * Moves a game object. Disables default collision behavior if called inside handleCollisions.
+	 * Shifts a game object's position.
 	 * @param id the id of the object to be moved
-	 * @param x horizontal position
-	 * @param y vertical position
+	 * @param deltaX horizontal position
+	 * @param deltaY vertical position
 	 */
-	public void move(int id, float x, float y){
+	public void API_MoveObject(int id, float deltaX, float deltaY){
 		CollidableGameObject obj = IDManager.get(id);
 		
-		obj.center = new Vector2(obj.center.getX() + x,obj.center.getY() + y);
+		obj.center = new Vector2(obj.center.getX() + deltaX,obj.center.getY() + deltaY);
+	}
+	
+	/**
+	 * Sets a game object's velocity.
+	 * @param id the id of the object to be moved
+	 * @param deltaX horizontal position
+	 * @param deltaY vertical position
+	 */
+	public void apiSetObjectVelocity(int id, double x, double y){
+		CollidableGameObject obj = IDManager.get(id);
 		
-		CollisionManager.setDirty();
+		obj.velocity = new Vector2((float)x, (float)y);
 	}
 	
 	
@@ -392,15 +392,43 @@ public class DHProceduralAPI extends DyeHardGame{
 	}
 	
 	/**
-	 * Generate a random number between 0 and n
+	 * Generate a random number between 0 and n-1
 	 * @param n the upper range
-	 * @return a random number between 0 and n
+	 * @return a random number between 0 and n-1
 	 */
 	public int randomInt(int n){
 		Random rand = new Random();
 		return rand.nextInt(n);
 	}
+	
+	/**
+	 * Generate a random number between min and max-1
+	 * @param n the upper range
+	 * @return a random number between min and max-1
+	 */
+	public int randomInt(int min, int max){
+		Random rand = new Random();
+		return rand.nextInt(max - min) + min;
+	}
+	/**
+	 * Generate a random floating point number between 0 (inclusive) and max (exclusive)
+	 * @param n the upper range
+	 * @return a random number between 0 and n
+	 */
+	public float randomFloat(float max){
+		Random rand = new Random();
+		return rand.nextFloat() % max;
+	}
 
+	/**
+	 * Generate a random floating point number between min (inclusive) and max (exclusive)
+	 * @param max the upper range
+	 * @return a random number between min and max
+	 */
+	public float randomFloat(float min, float max){
+		Random rand = new Random();
+		return (rand.nextFloat() % (max - min)) + min;
+	}
 	/**
 	 * Sets a timer associated with an ID.
 	 * <br><br>
@@ -555,17 +583,17 @@ public class DHProceduralAPI extends DyeHardGame{
 	/**
 	 * Spawn a single debris at a random height
 	 */
-	public void spawnSingleDebris()
+	public int spawnSingleDebris()
 	{
-		DebrisGenerator.spawnDebris();
+		return DebrisGenerator.spawnDebris();
 	}
 
 	/**
 	 * Spawn a single debris at a specific height (y-coordinate)
 	 */
-	public void spawnSingleDebris(float height)
+	public int spawnSingleDebris(float height)
 	{
-		DebrisGenerator.spawnDebris(height);
+		return DebrisGenerator.spawnDebris(height);
 	}
 
 	/**
@@ -844,16 +872,16 @@ public class DHProceduralAPI extends DyeHardGame{
 		start.showScreen(yes); // "Click Anywhere to Start"
 	}
 	
-	/**
-	 * Display the Menu on the screen (Ex: when the game is paused)
-	 */
-	public void showMenu(boolean yes){
-		menu.active(yes);
-		if(yes)
-			menuActive = true;
-		else
-			menuActive = false;
-	}
+//	/**
+//	 * Display the Menu on the screen (Ex: when the game is paused)
+//	 */
+//	public void showMenu(boolean yes){
+//		menu.active(yes);
+//		if(yes)
+//			menuActive = true;
+//		else
+//			menuActive = false;
+//	}
 	
 	/**
 	 * Displays the score UI on the game screen. 

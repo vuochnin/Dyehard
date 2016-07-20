@@ -134,4 +134,9 @@ public class TimeManager
 
 		return result;
 	}
+	
+	public static void reset()
+	{
+		timers.clear();
+	}
 }

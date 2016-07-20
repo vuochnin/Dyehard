@@ -19,6 +19,8 @@ public abstract class DyeHardGame extends LibraryCode {
  	/** The state. */
 	 // Game state
     private static State state;
+    
+	public BackgroundScreen background;
 		
 	/**
 	 * The Enum State.
@@ -47,6 +49,7 @@ public abstract class DyeHardGame extends LibraryCode {
 		RESTART
 	}
 
+
     /* (non-Javadoc)
      * @see Engine.BaseCode#initializeWorld()
      */
@@ -74,7 +77,7 @@ public abstract class DyeHardGame extends LibraryCode {
         // preload the gate path images
         dyehard.World.WormHole.setGatePathImages();
 
-        new BackgroundScreen();
+        background = new BackgroundScreen();
 
         initialize(); // call user code Initialize()
     }

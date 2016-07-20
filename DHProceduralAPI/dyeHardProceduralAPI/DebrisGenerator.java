@@ -71,7 +71,7 @@ public class DebrisGenerator
 	{
 		Debris d = new Debris(100,100);// spawns debris at right edge of screen
 		debrisList.add(d);
-
+		
 		return IDManager.register(d);
 	}
 
@@ -79,11 +79,11 @@ public class DebrisGenerator
 	 * Spawns a single debris with a specified height
 	 * @param height The height at which to spawn the debris
 	 */
-	public static void spawnDebris(float height)
+	public static int spawnDebris(float height)
 	{
 		Debris d = new Debris(100,100, height, height);// spawns debris at right edge of screen
 		debrisList.add(d);
-		IDManager.register(d);
+		return IDManager.register(d);
 	}
 
 	/**

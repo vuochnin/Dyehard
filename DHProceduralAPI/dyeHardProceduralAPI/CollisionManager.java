@@ -1,6 +1,7 @@
 package dyeHardProceduralAPI;
 
 
+import java.util.HashMap;
 import java.util.Set;
 
 import dyehard.Collectibles.*;
@@ -15,17 +16,19 @@ import dyehard.World.WormHole.*;
 
 public class CollisionManager {
 
+	private static HashMap<String, Boolean> collisionMemory;
 	
 	private static DHProceduralAPI api;
 	
 	private static boolean collisionIsDirty;
 	
-	private static int firstID, secondID;
+	private static int i, j;
 	
 	private static dyehard.Collision.CollisionManager instance;
 
 	static
 	{
+		collisionMemory = new HashMap<>();
 		instance = dyehard.Collision.CollisionManager.getInstance();
 	}
 	
@@ -66,7 +69,14 @@ public class CollisionManager {
 		return getSubtype(getType(i), lookup(i));
 	}
 
+	public static boolean rememberCollision(int id1, int id2)
+	{
+		return collisionMemory.getOrDefault(id1 + "," + id2, false);
+	}
+	
 	public static void update(){
+		collisionMemory.clear();
+		
 		refreshSet();
 
 		Set<CollidableGameObject> orig = instance.getCollidables();
@@ -77,30 +87,25 @@ public class CollisionManager {
 		
 		// ACTORS: Hero, Enemies
 		// CollidableGameObjects: DyePacks, PowerUps, Bullets, and Debris
-		for(firstID = 0; firstID < count; firstID++)
+		for(i = 0; i < count; i++)
 		{
-			if(objects[firstID].collideState() != ManagerStateEnum.ACTIVE)
-				continue;
+			//if(objects[firstID].collideState() != ManagerStateEnum.ACTIVE)
+				//continue;
 			
-			for(secondID = firstID+1; secondID < count; secondID++)
+			for(j = i+1; j < count; j++)
 			{
-				if(objects[secondID].collideState() != ManagerStateEnum.ACTIVE)
-					continue;
+				//if(objects[secondID].collideState() != ManagerStateEnum.ACTIVE)
+					//continue;
 				
-				if(objects[firstID].collided(objects[secondID]))
+				if(objects[i].collided(objects[j]))
 				{	
-					collisionIsDirty = false;
-
-					handleCollision(objects[firstID], firstID, objects[secondID], secondID);
-					handleCollision(objects[secondID], secondID, objects[firstID], firstID);
+					objects[i].handleCollision(objects[j]);
+					objects[j].handleCollision(objects[i]);
 					
-					// if the user has not executed custom behavior
-					// do default behavior
-					if(!collisionIsDirty) 
-					{
-						objects[firstID].handleCollision(objects[secondID]);
-						objects[secondID].handleCollision(objects[firstID]);
-					}
+					String key = IDManager.reverseLookupID(objects[i])+
+							"," + IDManager.reverseLookupID(objects[j]);
+					
+					collisionMemory.put(key, true);
 				}
 			}
 		}

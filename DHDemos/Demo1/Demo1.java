@@ -12,11 +12,12 @@ import dyeHardProceduralAPI.KeysEnum;
 public class Demo1 extends DHProceduralAPI
 {
 	int controlSelect = 0;
+	int heroID;
 	
 	public void buildGame()
 	{
 		// Demonstrate an API function
-		startHero();
+		heroID = startHero();
 	}
 	
 	public void updateGame()
@@ -32,17 +33,17 @@ public class Demo1 extends DHProceduralAPI
 		switch(controlSelect)
 		{
 		case 0:
-			heroFollowTheMouse();
+			API_ObjectFollowTheMouse(heroID);
 			break;
 		case 1:
 			if(isKeyboardUpPressed())
-				moveUp();
+				API_MoveObject(heroID, 0, 1);
 			if(isKeyboardDownPressed())
-				moveDown();
+				API_MoveObject(heroID, 0, -1);
 			if(isKeyboardLeftPressed())
-				moveLeft();
+				API_MoveObject(heroID, -1, 0);
 			if(isKeyboardRightPressed())
-				moveRight();
+				API_MoveObject(heroID, 1, 0);
 			break;
 		}
 	}
