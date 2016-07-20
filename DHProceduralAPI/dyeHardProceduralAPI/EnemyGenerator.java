@@ -232,7 +232,7 @@ public class EnemyGenerator {
     /**
      * Clear every enemy from the game
      */
-    public void clearEnemy() {
+    public static void clearEnemy() {
     	EnemyManager.getInstance().clear();
     }
 }

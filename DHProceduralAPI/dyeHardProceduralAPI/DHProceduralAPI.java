@@ -23,7 +23,7 @@ import dyehard.World.GameState;
 import dyehard.Player.Hero;
 import dyehard.Weapons.*;
 import dyehard.World.WormHole;
-//import dyehard.Updateable;
+
 
 /**
  * @author vuochnin
@@ -31,8 +31,12 @@ import dyehard.World.WormHole;
  */
 public class DHProceduralAPI extends DyeHardGame{
 
-
-
+	private boolean menuActive = false;
+	private boolean endMenuActive = false;
+	private static float Speed = 0.3f;
+	private float distance = 0f;
+	private static int lives = 5;
+	
 	private Hero hero;
 	private DyehardUI ui;
 	
@@ -58,11 +62,7 @@ public class DHProceduralAPI extends DyeHardGame{
 		DyeHardGame.setState(State.BEGIN);
 	}
 	
-	/**
-	 * A callback function, for user to override.
-	 * (Call Once)
-	 */
-	public void buildGame(){ }
+	
 	
 	/**
 	 * @Override 
@@ -70,97 +70,73 @@ public class DHProceduralAPI extends DyeHardGame{
 	 */
 	public void update(){
 		//checkControl();
-		//switch (getState()) {
-        //case PLAYING:
+		switch (getState()) {
+        case PLAYING:
+        	if(endMenuActive){
+        		endMenu.active(false);
+        	}
 			UpdateManager.getInstance().update();
+			distance += Speed;
+			GameState.DistanceTravelled = (int) distance;
 			DebrisGenerator.update();
 			DyePackGenerator.update();
-	
 			EnemyGenerator.update();
 	
 			CollisionManager.update();
 	
 			IDManager.cleanup();
 			updateGame();
-			//break;
-        //default:
-        	//break;
-		//}
-		
-//		if(getState() == State.BEGIN){
-//			if(start.isShown()){
-//				if(isMouseLeftClicked()){
-//					setState(State.PLAYING);
-//					showStartMenu(false);
-//				}
-//			}
-//		}else if(getState() == State.MENU){
-//			showMenu(true);
-//            if (isMouseLeftClicked()) {
-//                menu.select(mouse.getWorldX(), mouse.getWorldY(),
-//                        true);
-//            } else {
-//                menu.select(mouse.getWorldX(), mouse.getWorldY(),
-//                        false);
-//            }
-//		}else if(getState() == State.PAUSED){
-//			
-//		}
-		
-	}
-	
-	private void checkControl(){
-		switch (getState()){
-		case BEGIN:
-			showStartMenu(true);
 			break;
-		case PLAYING:
-			if (isKeyboardButtonTapped(KeysEnum.A)) {
-                setState(State.PAUSED);
-            } else if (isKeyboardButtonTapped(KeysEnum.ESCAPE)) {
-                setState(State.MENU);
-                
-            } else if (gameOver()) {
-                setState(State.GAMEOVER);
-            }
-            break;
-		case MENU:
-			if(isKeyboardButtonTapped(KeysEnum.ESCAPE))
-				setState(State.PLAYING);
-			break;
-		case PAUSED:
-			if (menu.isCredits()) {
-                if (isMouseLeftClicked()
-                        || isKeyboardButtonTapped(KeysEnum.ESCAPE)) {
-                    menu.creditsOff();
-                    setState(State.MENU);
-                }
-            } else {
-                if (isKeyboardButtonTapped(KeysEnum.ESCAPE)) {
-                	setState(State.MENU);
-                }
-            }
-			break;
+        case QUIT:
+        	window.close();
+        	break;
+        case RESTART:
+        	restartGame();
+        	break;
+        default:
+        	break;
 		}
+		
+		if(getState() == State.BEGIN){
+			showStartMenu(true);
+			if(start.isShown()){
+				if(isMouseLeftClicked()){
+					hero.currentWeapon.resetTimer();
+					setState(State.PLAYING);
+					showStartMenu(false);
+				}
+			}
+		}else if(getState() == State.GAMEOVER){
+			if(isMouseLeftClicked()){
+				endMenu.select(mouse.getWorldX(), mouse.getWorldY(), true);
+			}else
+				endMenu.select(mouse.getWorldX(), mouse.getWorldY(), false);
+		}
+		
 	}
+
 	
-	public boolean gameOver() {
-        if (hero == null) {
-            return false;
-        }
+	
+	
+	
+	//--------------------------------------------------------------------------------------------	
+	//--------------------- SOME POSSIBLE PROCEDURAL FUNCTIONS -----------------------------------
+	//--------------------------------------------------------------------------------------------
+	
 
-        if (GameState.DistanceTravelled == GameState.TargetDistance) {
-            return true;
-        }
-
-        return GameState.RemainingLives <= 0;
-    }
+	/**
+	 * A callback function, for user to override.
+	 * (Call Once)
+	 */
+	public void buildGame(){ }
 	
 	/**
 	 * A callback function, for user to override.
 	 * (Call many times)
 	 */
 	public void updateGame(){ }
+	
+	
 	
 	public void handleCollisions(String type1, String subtype1, int id1, String type2, String subtype2, int id2)
 	{
@@ -203,10 +179,6 @@ public class DHProceduralAPI extends DyeHardGame{
 	public String getSubtype(int id){
 		return CollisionManager.getSubtype(id);
 	}
-
-//--------------------------------------------------------------------------------------------	
-//--------------------- SOME POSSIBLE PROCEDURAL FUNCTIONS -----------------------------------
-//--------------------------------------------------------------------------------------------
 	
 	
 	/**
@@ -225,7 +197,6 @@ public class DHProceduralAPI extends DyeHardGame{
 		EnemyGenerator.initialize(hero);
 		// TODO: Look into possibility of separating individual UI elements into functions
 		ui = new DyehardUI(hero);
-		
 		// Move cursor to the center of the hero
 		try{
 			Robot robot = new Robot();
@@ -255,8 +226,6 @@ public class DHProceduralAPI extends DyeHardGame{
 	public Color getHeroColor(){
 		return hero.getColor();
 	}
-	
-	
 	
 	/**
 	 * Moves the hero to a specific position
@@ -306,6 +275,171 @@ public class DHProceduralAPI extends DyeHardGame{
 		result.add( new Vector2(0,-1));
 		moveTo(result.getX(), result.getY());
 	}
+	
+	// -------------------- Utilities functions ------------------
+
+	public void restartGame() {
+		setGoalDistance();
+    	setLivesTo(lives);
+    	setState(State.BEGIN);
+    	EnemyGenerator.clearEnemy();
+        System.gc();
+        distance = 0;
+        GameState.DistanceTravelled = 0;
+        GameState.Score = 0;
+        hero.center = hero.getStart();
+	}
+	
+	public boolean userLose(){
+		return (GameState.RemainingLives <= 0);
+	}
+	
+	public boolean userWon(){
+		return GameState.DistanceTravelled == GameState.TargetDistance;
+	}
+	
+	public void quitGame(){
+		//window.close();
+		System.exit(0);
+	}
+	
+	/**
+	 * Prints a message to the console.
+	 * @param message the message to display
+	 */
+	public void echo(String message)
+	{
+		System.out.println(message);
+	}
+
+	/**
+	 * Tests for a collision between two objects
+	 * @param id1 The ID of the first object
+	 * @param id2 The ID of the second object
+	 * @return True if the objects are touching, otherwise, false
+	 */
+	public boolean colliding(int id1, int id2)
+	{
+		return IDManager.get(id1).collided(IDManager.get(id2));
+	}
+
+//		/**
+//		 * DEPRECATED
+//		 * Do nothing.
+//		 * Called within handleCollisions to prevent default behavior.
+//		 */
+//		public void doNothing(){
+//			CollisionManager.setDirty();
+//		}
+	
+	/**
+	 * Destroys an object
+	 * @param id the id of the object to be destroyed
+	 */
+	public void destroy(int id)
+	{
+		CollidableGameObject obj = IDManager.get(id);
+		obj.destroy();
+		CollisionManager.setDirty();
+	}
+	
+	/**
+	 * Moves a game object. Disables default collision behavior if called inside handleCollisions.
+	 * @param id the id of the object to be moved
+	 * @param x horizontal position
+	 * @param y vertical position
+	 */
+	public void move(int id, float x, float y){
+		CollidableGameObject obj = IDManager.get(id);
+		
+		obj.center = new Vector2(obj.center.getX() + x,obj.center.getY() + y);
+		
+		CollisionManager.setDirty();
+	}
+	
+	
+	/**
+	 * Increases the score according to the argument.
+	 * @param n - the number of score to increase by
+	 */
+	public void increaseScoreBy(int n){
+		GameState.Score += n;
+	}
+	
+	/**
+	 * Sets the number of lives the hero has to the number, n
+	 * and displays to the screen
+	 * @param n the number of lives to set to
+	 */
+	public void setLivesTo(int n){
+		lives = n;
+		ui.setRemainingLives(n);
+	}
+	
+	/**
+	 * Sets the distance the player must travel to beat the game to a default value
+	 */
+	public void setGoalDistance(){
+		GameState.TargetDistance = ConfigurationFileParser.getInstance().getWorldData().getWorldMapLength();
+	}
+	
+	/**
+	 * Sets the distance the player must travel to beat the game 
+	 * @param distance The new distance required to beat the game
+	 */
+	public void setGoalDistance(int distance){
+		GameState.TargetDistance = distance;
+	}
+	
+	/**
+	 * Generate a random number between 0 and n
+	 * @param n the upper range
+	 * @return a random number between 0 and n
+	 */
+	public int randomInt(int n){
+		Random rand = new Random();
+		return rand.nextInt(n);
+	}
+
+	/**
+	 * Sets a timer associated with an ID.
+	 * <br><br>
+	 * If there is already a timer associated with the ID,<br>
+	 * * Resets the timer.
+	 *
+	 * @param id The string ID
+	 * @param seconds The length of the timer in seconds
+	 */
+	public void setSingleTimer(String id, float seconds)
+	{
+		TimeManager.setTimer(id, seconds);
+	}
+
+	/**
+	 * Reports whether a timer associated with an ID has finished
+	 *
+	 * @param id The ID of the timer to check
+	 */
+	public static boolean isTimerFinished(String id)
+	{
+		return TimeManager.isTimerFinished(id);
+	}
+
+	/**
+	 * Handles a repeating timer.
+	 * <br><br>
+	 * Returns true every time the timer elapses, false otherwise.
+	 *
+	 * @param id
+	 * @param seconds
+	 */
+	public static boolean repeatingTimer(String id, float seconds)
+	{
+		return TimeManager.repeatingTimer(id, seconds);
+	}
+	// ---------- Utilities functions end ------------
+	
+	
 	
 	// ---------------- MOUSE / KEYBOARD ----------------------------
 	
@@ -384,144 +518,6 @@ public class DHProceduralAPI extends DyeHardGame{
 		return keyboard.isButtonDown(KeyEvent.VK_SPACE);
 	}
 	// ---------------- MOUSE / KEYBOARD end ----------------------------
-	
-	// -------------------- Utilities functions ------------------
-
-	/**
-	 * Prints a message to the console.
-	 * @param message the message to display
-	 */
-	public void echo(String message)
-	{
-		System.out.println(message);
-	}
-
-	/**
-	 * Tests for a collision between two objects
-	 * @param id1 The ID of the first object
-	 * @param id2 The ID of the second object
-	 * @return True if the objects are touching, otherwise, false
-	 */
-	public boolean colliding(int id1, int id2)
-	{
-		return IDManager.get(id1).collided(IDManager.get(id2));
-	}
-
-//	/**
-//	 * DEPRECATED
-//	 * Do nothing.
-//	 * Called within handleCollisions to prevent default behavior.
-//	 */
-//	public void doNothing(){
-//		CollisionManager.setDirty();
-//	}
-	
-	/**
-	 * Destroys an object
-	 * @param id the id of the object to be destroyed
-	 */
-	public void destroy(int id)
-	{
-		CollidableGameObject obj = IDManager.get(id);
-		obj.destroy();
-		CollisionManager.setDirty();
-	}
-	
-	/**
-	 * Moves a game object. Disables default collision behavior if called inside handleCollisions.
-	 * @param id the id of the object to be moved
-	 * @param x horizontal position
-	 * @param y vertical position
-	 */
-	public void move(int id, float x, float y){
-		CollidableGameObject obj = IDManager.get(id);
-		
-		obj.center = new Vector2(obj.center.getX() + x,obj.center.getY() + y);
-		
-		CollisionManager.setDirty();
-	}
-	
-	
-	/**
-	 * Increases the score according to the argument.
-	 * @param n - the number of score to increase by
-	 */
-	public void increaseScoreBy(int n){
-		GameState.Score += n;
-	}
-	
-	/**
-	 * Sets the number of lives the hero has to the number, n
-	 * and displays to the screen
-	 * @param n the number of lives to set to
-	 */
-	public void setLivesTo(int n){
-		ui.setRemainingLives(n);
-	}
-	
-	/**
-	 * Sets the distance the player must travel to beat the game to a default value
-	 */
-	public void setGoalDistance(){
-		GameState.TargetDistance = ConfigurationFileParser.getInstance().getWorldData().getWorldMapLength();
-	}
-	
-	/**
-	 * Sets the distance the player must travel to beat the game 
-	 * @param distance The new distance required to beat the game
-	 */
-	public void setGoalDistance(int distance){
-		GameState.TargetDistance = distance;
-	}
-	
-	/**
-	 * Generate a random number between 0 and n
-	 * @param n the upper range
-	 * @return a random number between 0 and n
-	 */
-	public int randomInt(int n){
-		Random rand = new Random();
-		return rand.nextInt(n);
-	}
-
-	/**
-	 * Sets a timer associated with an ID.
-	 * <br><br>
-	 * If there is already a timer associated with the ID,<br>
-	 * * Resets the timer.
-	 *
-	 * @param id The string ID
-	 * @param seconds The length of the timer in seconds
-	 */
-	public void setSingleTimer(String id, float seconds)
-	{
-		TimeManager.setTimer(id, seconds);
-	}
-
-	/**
-	 * Reports whether a timer associated with an ID has finished
-	 *
-	 * @param id The ID of the timer to check
-	 */
-	public static boolean isTimerFinished(String id)
-	{
-		return TimeManager.isTimerFinished(id);
-	}
-
-	/**
-	 * Handles a repeating timer.
-	 * <br><br>
-	 * Returns true every time the timer elapses, false otherwise.
-	 *
-	 * @param id
-	 * @param seconds
-	 */
-	public static boolean repeatingTimer(String id, float seconds)
-	{
-		return TimeManager.repeatingTimer(id, seconds);
-	}
-	// ---------- Utilities functions end ------------
-	
 	
 	
 	//-------------- DEBRIS ------------------------------------
@@ -819,16 +815,26 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * Displays the Winning menu on the screen
 	 */
 	public void showWinMenu(boolean yes){
+		setState(State.GAMEOVER);
 		endMenu.setMenu(true);	// True for win menu
 		endMenu.active(yes);
+		if(yes)
+			endMenuActive = true;
+		else
+			endMenuActive = false;
 	}
 	
 	/**
 	 * Displays the Losing menu on the screen
 	 */
 	public void showLoseMenu(boolean yes){
+		setState(State.GAMEOVER);
 		endMenu.setMenu(false);		// False for win menu
 		endMenu.active(yes);
+		if(yes)
+			endMenuActive = true;
+		else
+			endMenuActive = false;
 	}
 	
 	/**
@@ -843,6 +849,10 @@ public class DHProceduralAPI extends DyeHardGame{
 	 */
 	public void showMenu(boolean yes){
 		menu.active(yes);
+		if(yes)
+			menuActive = true;
+		else
+			menuActive = false;
 	}
 	
 	/**
