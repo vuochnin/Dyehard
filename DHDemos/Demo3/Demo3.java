@@ -1,6 +1,4 @@
 package Demo3;
-
-
 import dyeHardProceduralAPI.DHProceduralAPI;
 import dyeHardProceduralAPI.KeysEnum;
 
@@ -9,7 +7,8 @@ import dyeHardProceduralAPI.KeysEnum;
  * @author vuochnin
  *
  *
- *	Demonstrates
+ *	Demonstrates interacting with objects by their IDs, spawn single 
+ *	debris object, and the repeatingTimer()
  */
 public class Demo3 extends DHProceduralAPI
 {
@@ -17,59 +16,34 @@ public class Demo3 extends DHProceduralAPI
 	
 	public void buildGame()
 	{
-		
-		heroID = startHero();
-		echo("Hero started with ID: " + heroID);
-		
-		startEnemySpawner(1);
+
+		heroID = apiStartHero();
+		apiEcho("Hero started with ID: " + heroID);
 	}
 	
 	public void updateGame()
 	{
-		API_ObjectFollowTheMouse(heroID);
-		
-		if(repeatingTimer("reverse debris", 0.6f))
+		if(apiRepeatingTimer("debris", apiRandomFloat(0.5f, 3)))
 		{
-			int debrisID = spawnSingleDebris();
-			
-			float y = apiGetObjectPositionY(debrisID);
-			
-			API_MoveObjectTo(debrisID, 0, y);
-			apiSetObjectVelocity(debrisID, 0.5, 0);
+			int spawnedID = apiSpawnSingleDebris(10);
+			apiEcho("Spawned debris with ID: " + spawnedID);
 		}
-
 		
-		// Collison loop
-		for(int i = 0; i < objectCount(); i++)
+		for(int i = 0; i < apiObjectCount(); i++)
 		{
-			int id1 = getID(i);
-			for(int j = 1; j < objectCount(); j++)
+			int id = apiGetID(i);
+			if(apiGetType(id) == "Debris")
 			{
-				if(j == i) continue;
-				
-				int id2 = getID(j);
-				if(colliding(id1, id2))
+				if(apiGetObjectPositionY(id) > 20)
 				{
-					if((getType(id1) == "Debris" &&
-							getType(id2) == "Enemy"))
-					{
-
-						echo("1");
-						destroy(id2);
-					}
-					else if(getType(id2) == "Debris" &&
-							getType(id1) == "Enemy")
-					{
-						echo("2");
-						destroy(id1);
-					}
-
+					float x = apiGetObjectPositionX(id);
+					apiMoveObjectTo(id, x, 10);
 				}
-					
+				
+				apiMoveObject(id, 0, 0.3f);
 			}
+			
 		}
-		
-		//echo("Objects in play: " + objectCount());
 		
 	}
 }

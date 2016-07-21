@@ -15,17 +15,17 @@ public class NinDemo extends DHProceduralAPI
 	int heroID;
 	
 	public void buildGame(){
-		heroID = startHero();
-		setLivesTo(2);
-		displayScore(true);
-		setGoalDistance(100);
-		startDebrisSpawner(1.5f);
-		startDyePackSpawner();
+		heroID = apiStartHero();
+		apiSetLivesTo(2);
+		apiDisplayScore(true);
+		apiSetGoalDistance(100);
+		apiStartDebrisSpawner(1.5f);
+		apiStartDyePackSpawner();
 		//startEnemySpawner();
-		echo("worldWidth " + world.getWidth());
-		echo("worldHeight " + world.getHeight());
-		echo("worldPositionX " + world.getPositionX());
-		echo("worldPositionY " + world.getWorldPositionY());
+		apiEcho("worldWidth " + world.getWidth());
+		apiEcho("worldHeight " + world.getHeight());
+		apiEcho("worldPositionX " + world.getPositionX());
+		apiEcho("worldPositionY " + world.getWorldPositionY());
 		//spawnGates();
 	}
 	
@@ -36,57 +36,56 @@ public class NinDemo extends DHProceduralAPI
 		// else if(getType(i) == "Debris"
 		// 		move(i, 
 		
-		API_ObjectFollowTheMouse(heroID);
+		apiObjectFollowTheMouse(heroID);
 		
 		// Fire the paint
-		if(isMouseLeftClicked() || isKeyboardSpacePressed()){
-			APIHerofirePaint();
+		if(apiIsMouseLeftClicked() || apiIsKeyboardSpacePressed()){
+			apiHerofirePaint();
 		}
 		
 		// TEST Change the weapon according to the keyboard inputs
-		if(isKeyboardLeftPressed()){
-			activateSpreadFireWeapon();
+		if(apiIsKeyboardLeftPressed()){
+			apiActivateSpreadFireWeapon();
 		}
 		
-		if(isKeyboardDownPressed()){
-			defaultWeapon();
+		if(apiIsKeyboardDownPressed()){
+			apiDefaultWeapon();
 		}
-		if(isKeyboardButtonTapped(KeysEnum.S)){
-			increaseScoreBy(2);
+		if(apiIsKeyboardButtonTapped(KeysEnum.S)){
+			apiIncreaseScoreBy(2);
 		}
-		if(isKeyboardButtonTapped(KeysEnum.E)){
-			spawnSingleEnemy("charger");			//TEST SpawnSingleEnemy()
+		if(apiIsKeyboardButtonTapped(KeysEnum.E)){
+			apiSpawnSingleEnemy("charger");			//TEST SpawnSingleEnemy()
 		}
-		if(isKeyboardButtonTapped(KeysEnum.D))
-			spawnSingleDyePack("blue", 50, 20); 		// TEST spawnSingleDyePack(color, x, y)
+		if(apiIsKeyboardButtonTapped(KeysEnum.D))
+			apiSpawnSingleDyePack("blue", 50, 20); 		// TEST spawnSingleDyePack(color, x, y)
 
-		if(isKeyboardButtonTapped(KeysEnum.ESCAPE)){
+		if(apiIsKeyboardButtonTapped(KeysEnum.ESCAPE)){
 			DyeHardGame.setState(State.PAUSED);
 		}
 		
-		if(repeatingTimer("powerup", 4))
+		if(apiRepeatingTimer("powerup", 4))
 		{
 			//spawnSinglePowerUp(100, 30);
 		}
 		
-		if(isKeyboardButtonTapped(KeysEnum.X))
-			quitGame();
+		if(apiIsKeyboardButtonTapped(KeysEnum.X))
+			apiQuitGame();
 		
-		if(userLose()){
-			showLoseMenu(true);
+		if(apiUserLose()){
+			apiShowLoseMenu(true);
 		}
-		if(userWon()){
-			showWinMenu(true);
+		if(apiUserWon()){
+			apiShowWinMenu(true);
 		}
 		
-		if(isKeyboardRightPressed()){
+		if(apiIsKeyboardRightPressed()){
 			UpdateManager.getInstance().setSpeedUp(true);
 		}else{
 			UpdateManager.getInstance().setSpeedUp(false);
 		}
-		
-		if(isKeyboardButtonTapped(KeysEnum.b))
-			echo("DistanceTravelled = " + GameState.DistanceTravelled);
+		if(apiIsKeyboardButtonTapped(KeysEnum.b))
+			apiEcho("DistanceTravelled = " + GameState.DistanceTravelled);
 	}
 	
 	

@@ -17,33 +17,33 @@ public class Demo1 extends DHProceduralAPI
 	public void buildGame()
 	{
 		// Demonstrate an API function
-		heroID = startHero();
+		heroID = apiStartHero();
 	}
 	
 	public void updateGame()
 	{
-		if(isKeyboardButtonTapped(KeysEnum.ONE))
+		if(apiIsKeyboardButtonTapped(KeysEnum.ONE))
 		{
 			controlSelect = 0;
 		}
-		if(isKeyboardButtonTapped(KeysEnum.TWO))
+		if(apiIsKeyboardButtonTapped(KeysEnum.TWO))
 		{
 			controlSelect = 1;
 		}
 		switch(controlSelect)
 		{
 		case 0:
-			API_ObjectFollowTheMouse(heroID);
+			apiObjectFollowTheMouse(heroID);
 			break;
 		case 1:
-			if(isKeyboardUpPressed())
-				API_MoveObject(heroID, 0, 1);
-			if(isKeyboardDownPressed())
-				API_MoveObject(heroID, 0, -1);
-			if(isKeyboardLeftPressed())
-				API_MoveObject(heroID, -1, 0);
-			if(isKeyboardRightPressed())
-				API_MoveObject(heroID, 1, 0);
+			if(apiIsKeyboardUpPressed())
+				apiMoveObject(heroID, 0, 1);
+			if(apiIsKeyboardDownPressed())
+				apiMoveObject(heroID, 0, -1);
+			if(apiIsKeyboardLeftPressed())
+				apiMoveObject(heroID, -1, 0);
+			if(apiIsKeyboardRightPressed())
+				apiMoveObject(heroID, 1, 0);
 			break;
 		}
 	}
