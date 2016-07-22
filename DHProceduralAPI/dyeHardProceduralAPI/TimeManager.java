@@ -1,4 +1,4 @@
-package dyeHardProcedrualAPI;
+package dyeHardProceduralAPI;
 
 import dyehard.Util.Timer;
 import java.util.HashMap;
@@ -133,5 +133,10 @@ public class TimeManager
 		}
 
 		return result;
+	}
+	
+	public static void reset()
+	{
+		timers.clear();
 	}
 }

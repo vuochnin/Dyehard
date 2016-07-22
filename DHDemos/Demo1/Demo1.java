@@ -1,6 +1,6 @@
 package Demo1;
-import dyeHardProcedrualAPI.DHProceduralAPI;
-import dyeHardProcedrualAPI.KeysEnum;
+import dyeHardProceduralAPI.DHProceduralAPI;
+import dyeHardProceduralAPI.KeysEnum;
 
 /**
  * 
@@ -12,37 +12,38 @@ import dyeHardProcedrualAPI.KeysEnum;
 public class Demo1 extends DHProceduralAPI
 {
 	int controlSelect = 0;
+	int heroID;
 	
 	public void buildGame()
 	{
 		// Demonstrate an API function
-		startHero();
+		heroID = apiStartHero();
 	}
 	
 	public void updateGame()
 	{
-		if(isKeyboardButtonTapped(KeysEnum.ONE))
+		if(apiIsKeyboardButtonTapped(KeysEnum.ONE))
 		{
 			controlSelect = 0;
 		}
-		if(isKeyboardButtonTapped(KeysEnum.TWO))
+		if(apiIsKeyboardButtonTapped(KeysEnum.TWO))
 		{
 			controlSelect = 1;
 		}
 		switch(controlSelect)
 		{
 		case 0:
-			heroFollowTheMouse();
+			apiObjectFollowTheMouse(heroID);
 			break;
 		case 1:
-			if(isKeyboardUpPressed())
-				moveUp();
-			if(isKeyboardDownPressed())
-				moveDown();
-			if(isKeyboardLeftPressed())
-				moveLeft();
-			if(isKeyboardRightPressed())
-				moveRight();
+			if(apiIsKeyboardUpPressed())
+				apiMoveObject(heroID, 0, 1);
+			if(apiIsKeyboardDownPressed())
+				apiMoveObject(heroID, 0, -1);
+			if(apiIsKeyboardLeftPressed())
+				apiMoveObject(heroID, -1, 0);
+			if(apiIsKeyboardRightPressed())
+				apiMoveObject(heroID, 1, 0);
 			break;
 		}
 	}

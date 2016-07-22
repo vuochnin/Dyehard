@@ -1,9 +1,11 @@
-package dyeHardProcedrualAPI;
+package dyeHardProceduralAPI;
 
+import dyehard.Collision.CollidableGameObject;
 import dyehard.Enums.ManagerStateEnum;
 import dyehard.Obstacles.Debris;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,6 +17,7 @@ public class DebrisGenerator
 	private static float        interval;
 	private static boolean      active;
 	private static List<Debris> debrisList;
+
 
 	static
 	{
@@ -60,29 +63,27 @@ public class DebrisGenerator
 	{
 		return debrisList.size();
 	}
-
-	public static int getID(Debris item)
-	{
-		return debrisList.indexOf(item);
-	}
 	
 	/**
 	 * Spawns a single debris
 	 */
-	public static void spawnDebris()
+	public static int spawnDebris()
 	{
 		Debris d = new Debris(100,100);// spawns debris at right edge of screen
 		debrisList.add(d);
+		
+		return IDManager.register(d);
 	}
 
 	/**
 	 * Spawns a single debris with a specified height
 	 * @param height The height at which to spawn the debris
 	 */
-	public static void spawnDebris(float height)
+	public static int spawnDebris(float height)
 	{
 		Debris d = new Debris(100,100, height, height);// spawns debris at right edge of screen
 		debrisList.add(d);
+		return IDManager.register(d);
 	}
 
 	/**

@@ -1,14 +1,13 @@
-package dyeHardProcedrualAPI;
+package dyeHardProceduralAPI;
 
 
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Set;
 
 import dyehard.Collectibles.*;
 import dyehard.Collectibles.PowerUp;
 import dyehard.Collision.CollidableGameObject;
 import dyehard.Enemies.Enemy;
-import dyehard.Enemies.EnemyManager;
 import dyehard.Enums.ManagerStateEnum;
 import dyehard.Obstacles.Debris;
 import dyehard.Player.Hero;
@@ -17,16 +16,19 @@ import dyehard.World.WormHole.*;
 
 public class CollisionManager {
 
+	private static HashMap<String, Boolean> collisionMemory;
 	
 	private static DHProceduralAPI api;
 	
 	private static boolean collisionIsDirty;
 	
-	private static int firstID, secondID;
+	private static int i, j;
 	
 	private static dyehard.Collision.CollisionManager instance;
+
 	static
 	{
+		collisionMemory = new HashMap<>();
 		instance = dyehard.Collision.CollisionManager.getInstance();
 	}
 	
@@ -37,64 +39,76 @@ public class CollisionManager {
 		api = newApi;
 	}
 	
-	public static CollidableGameObject findByID(int id)
-	{
-		return objects[id];
-	}
-	
 	public static int objectCount()
 	{
 		return objects.length;
 	}
-	
+
+	public static void refreshSet()
+	{
+		instance.updateSet();
+	}
+
+	public static CollidableGameObject[] getObjects()
+	{
+		return objects;
+	}
+
+	private static CollidableGameObject lookup(int id)
+	{
+		return IDManager.get(id);
+	}
+
 	public static String getType(int i)
 	{
-		return parseType(objects[i]);
+		return parseType(lookup(i));
 	}
 	
 	public static String getSubtype(int i)
 	{
-		return getSubtype(getType(i), objects[i]);
+		return getSubtype(getType(i), lookup(i));
 	}
+
+	public static boolean rememberCollision(int id1, int id2)
+	{
+		return collisionMemory.getOrDefault(id1 + "," + id2, false);
+	}
+	
 	public static void update(){
+		collisionMemory.clear();
+		
+		refreshSet();
+
 		Set<CollidableGameObject> orig = instance.getCollidables();
-		
-		
+
 		objects = orig.toArray(new CollidableGameObject[0]);
-				
+
 		int count = objects.length;
 		
 		// ACTORS: Hero, Enemies
 		// CollidableGameObjects: DyePacks, PowerUps, Bullets, and Debris
-		for(firstID = 0; firstID < count; firstID++)
+		for(i = 0; i < count; i++)
 		{
-			if(objects[firstID].collideState() != ManagerStateEnum.ACTIVE)
-				continue;
+			//if(objects[firstID].collideState() != ManagerStateEnum.ACTIVE)
+				//continue;
 			
-			for(secondID = firstID+1; secondID < count; secondID++)
+			for(j = i+1; j < count; j++)
 			{
-				if(objects[secondID].collideState() != ManagerStateEnum.ACTIVE)
-					continue;
+				//if(objects[secondID].collideState() != ManagerStateEnum.ACTIVE)
+					//continue;
 				
-				if(objects[firstID].collided(objects[secondID]))
+				if(objects[i].collided(objects[j]))
 				{	
-					collisionIsDirty = false;
-
-					handleCollision(objects[firstID], firstID, objects[secondID], secondID);
-					handleCollision(objects[secondID], secondID, objects[firstID], firstID);
+					objects[i].handleCollision(objects[j]);
+					objects[j].handleCollision(objects[i]);
 					
-					// if the user has not executed custom behavior
-					// do default behavior
-					if(!collisionIsDirty) 
-					{
-						objects[firstID].handleCollision(objects[secondID]);
-						objects[secondID].handleCollision(objects[firstID]);
-					}
+					String key = IDManager.reverseLookupID(objects[i])+
+							"," + IDManager.reverseLookupID(objects[j]);
+					
+					collisionMemory.put(key, true);
 				}
 			}
 		}
-		
-		instance.updateSet();
 	}
 	
 	public static boolean isColliding(int id1, int id2){
@@ -109,7 +123,7 @@ public class CollisionManager {
 			return false;
 		}
 		
-		return objects[id1].collided(objects[id2]);
+		return lookup(id1).collided(lookup(id2));
 	}
 	
 	public static void setDirty()

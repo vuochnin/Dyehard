@@ -1,4 +1,4 @@
-package dyeHardProcedrualAPI;
+package dyeHardProceduralAPI;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -47,8 +47,54 @@ public class DyePackGenerator {
 	{
 		generatorPositionX = leftEdge;
 	}
+
+	private static DyePack spawn(float posX, float posY)
+	{
+		Color randomColor = Colors.randomColor();
+		DyePack dye = new DyePack(randomColor);
+
+		dye.initialize(new Vector2(posX, posY));
+
+		return dye;
+	}
 	
-	public static void generateDyePack()
+	private static DyePack spawn(String color, float posX, float posY)
+	{
+		Color c = Colors.Red;
+		if(color.equalsIgnoreCase("blue")){
+			c = Colors.Blue;
+		}
+		else if(color.equalsIgnoreCase("teal")){
+			c = Colors.Teal;
+		}
+		else if(color.equalsIgnoreCase("green")){
+			c = Colors.Green;
+		}
+		else if(color.equalsIgnoreCase("pink")){
+			c = Colors.Pink;
+		}
+		else if(color.equalsIgnoreCase("yellow")){
+			c = Colors.Yellow;
+		}
+		DyePack dye = new DyePack(c);
+
+		dye.initialize(new Vector2(posX, posY));
+
+		return dye;
+	}
+	
+	public static int spawnDyePack(String color, float x, float y)
+	{
+		DyePack dye = spawn(color, x, y);
+
+		int result =  IDManager.register(dye);
+
+		System.out.println("Spawned DyePack with ID: " + result);
+
+		return  result;
+	}
+
+	public static int generateDyePack()
 	{
 		float regionHeight = BaseCode.world.getHeight()
 		                     - BaseCode.world.getWorldPositionY();
@@ -56,19 +102,22 @@ public class DyePackGenerator {
 		float posY = (regionHeight - DyePack.height) * myRandom.nextFloat()
 		      + DyePack.height / 2f;
 
-		generateDyePack(posY);
+		DyePack dye = spawn(generatorPositionX, posY);
+
+		int result =  IDManager.register(dye);
+
+		System.out.println("Spawned DyePack with ID: " + result);
+
+		return  result;
 	}
 
-	public static void generateDyePack(float posY)
+	public static int generateDyePack(float posY)
 	{
-		Color randomColor = Colors.randomColor();
-		DyePack dye = new DyePack(randomColor);
-
-		float posX = generatorPositionX;
-
-		dye.initialize(new Vector2(posX, posY));
+		DyePack dye = spawn(generatorPositionX, posY);
 
 		dyePacks.add(dye);
+
+		return IDManager.register(dye);
 	}
 
 	public static void update()
