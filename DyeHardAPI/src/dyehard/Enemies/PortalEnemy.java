@@ -34,9 +34,20 @@ public class PortalEnemy extends Enemy {
         setSpriteSheet(texture, 140, 140, 12, 2);
 
         //investigate
-        portalSpawnInterval = Float.parseFloat(parseNodeList(
+        try
+        {
+        	portalSpawnInterval = Float.parseFloat(parseNodeList(
                 EnemyType.PORTAL_ENEMY, "portalSpawnInterval")) * 1000;
-
+        }
+        catch(NumberFormatException nfe)
+        {
+        	portalSpawnInterval = 2000f;
+        }
+        catch(NullPointerException npe)
+        {
+        	portalSpawnInterval = 2000f;
+        }
+        
         timer = new Timer(portalSpawnInterval);
 
         width = ConfigurationFileParser.getInstance().getEnemyData(EnemyType.PORTAL_ENEMY).getWidth();
