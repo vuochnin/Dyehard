@@ -1,6 +1,7 @@
 package dyehard.Reflection;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -33,6 +34,9 @@ public class ClassReflector {
     
     /** The HashMap of methods. */
     private final HashMap<String, Method> methods = new HashMap<String, Method>();
+    
+    /** The HashMap of fields. */
+    private final HashMap<String, Field> fields = new HashMap<String, Field>();
 
     /** The class name. */
     private final String className;
@@ -44,9 +48,8 @@ public class ClassReflector {
     private boolean validated;
 
     /**
-     * Instantiates a new class reflector.
-     *
-     * @param target the target
+     * @purpose	Instantiates a new class reflector.
+     * @param 	target the target
      */
     public ClassReflector(String target) {
         reflected = false;
@@ -55,17 +58,13 @@ public class ClassReflector {
     }
 
     /**
-     * Reflect
-     * 
      * @purpose	Get the class' constructors, fields, and methods. Store it within
      * 			ClassReflector's hashmaps
      * @return 	true, if successful. False if class is invalid/null.
      */
-    // Get the class' constructors, fields, and methods, store in hashmaps
     public boolean reflect() {
-    	System.out.println("Populating hashmap with constructors and methods");
-        
     	try {	
+    		System.out.println("Populating hashmap with constructors and methods");
         	// Set the class name
             Class<?> reflectedClass = Class.forName(className);
             
@@ -76,24 +75,28 @@ public class ClassReflector {
 
             int i = 0;
             
+            for (Field field : reflectedClass.getDeclaredFields()){
+            	fields.put(field.getName(), field);
+            }
+            
             // Populate the HashMap with the constructors
-            for (Constructor<?> constructor : reflectedClass.getConstructors()) {
+            for (Constructor<?> constructor : reflectedClass.getDeclaredConstructors()) {
                 String temp = constructor.getName() + Integer.toString(i);
                 constructors.put(temp, constructor);
                 i++;
                 
                 // Print out for debug
-                System.out.println(constructor.getName() + "   " +
-                constructor);
+                // System.out.println(constructor.getName() + "   " +
+                // constructor);
             }
             
             // Populate the HashMap with the methods
-            for (Method method : reflectedClass.getMethods()) {
+            for (Method method : reflectedClass.getDeclaredMethods()) {
                 methods.put(method.getName(), method);
                 
                 // Print out for debug
-                System.out.println(method.getName() + "   "
-                 + method.toGenericString());
+                //System.out.println(method.getName() + "   "
+                //  + method.toGenericString());
             }
 
         } catch (ClassNotFoundException x) {
@@ -107,7 +110,6 @@ public class ClassReflector {
     }
 
     /**
-     * Validate
      * @purpose To validate the class. Checks to see if it has the appropriate
      * 			constructions and fields.
      *
@@ -171,8 +173,6 @@ public class ClassReflector {
     }
 
     /**
-     * createObj
-     *
      * @purpose	To create and return an object by calling its constructor.
      * 			The signature must match the Object's constructor signature
      * 			exactly.
@@ -194,8 +194,6 @@ public class ClassReflector {
     }
 
     /**
-     * invokeMethod
-     * 
      * @purpose to Invoke method by name and signature.
      * @param 	obj, the object being used
      * @param 	method, the method's name from the object
@@ -205,6 +203,7 @@ public class ClassReflector {
     public Object invokeMethod(Object obj, String method, Object... params) {
     	// Check to see if the method is within the HashMap of methods.
         if (!methods.containsKey(method)) {
+        	System.out.println("not a method");
             return false;
         } 
         
@@ -216,14 +215,13 @@ public class ClassReflector {
                     | InvocationTargetException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                System.out.println("not a method");
                 return false;
             }
         }
     }
 
     /**
-     * isReflected
-     * 
      * @purpose Checks if is reflected.
      * @return 	true, if is reflected
      */
@@ -232,8 +230,6 @@ public class ClassReflector {
     }
 
     /**
-     * isValidated
-     * 
      * @purpose	Checks if is validated.
      * @return 	true, if is validated
      */
@@ -242,12 +238,68 @@ public class ClassReflector {
     }
 
     /**
-     * getClassName
-     * 
      * @purpose Gets the class name
      * @return the class name
      */
     public String getClassName() {
         return className;
+    }
+    
+    public boolean hasMethod(String methodToCheck){
+    	return false;
+    }
+    
+    public void getFields(String className){
+    	try {
+    	    Class<?> classType = Class.forName(className);
+    	    Field[] fieldsArr = classType.getDeclaredFields();
+
+    	} catch (ClassNotFoundException x) {
+    	    x.printStackTrace();
+    	}
+    }
+    
+    /**
+     * Verify the contents of fields with a provided "correct fields" array.
+     * @param arrOfFields, the correct array of Field members
+     */
+    public void verifyFields(Field[] arrOfFields){
+    	// currentField	=	From the Student Obj. Hashmap of Fields
+    	// toCheck 		=	From the array. This array has the correct parameters
+    	Field currentField = null;
+    	
+    	for (Field toCheck : arrOfFields){
+    		
+    		// First check -- see if the name matches 
+    		if (fields.containsKey(toCheck.getName())){
+    			
+    			// If there's a match, set currentField to it
+    			currentField = fields.get(toCheck.getName());
+    			
+    			// Second check -- see if they share the same type
+    			if (currentField.getGenericType() == toCheck.getGenericType()){
+    				
+    				// Third check -- see if they share the same modifiers
+    				// (public, static, private, etc.)
+    				if (currentField.getModifiers() == toCheck.getModifiers()){
+    					System.out.println("Found " + toCheck.getName());
+    				}
+    				// They don't share the same modifiers.
+    				else{
+    					System.out.println("Found " + toCheck.getName() 
+    					+ " but the modifier/accessbility flag(s) are incorrect");
+    				}
+    			}
+    			// They don't share the same type.
+    			else{
+    				System.out.println("Found " + toCheck.getName() + " but the type is " 
+    			+ currentField.getType() + " instead of " + toCheck.getType());
+    			}
+    		}
+    		// Unable to find field.
+    		else{
+    			System.out.println("Cannot find field by name: " + toCheck.getName());
+    		}
+        }
     }
 }

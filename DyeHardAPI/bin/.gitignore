@@ -1,3 +1,5 @@
+/Demo1/
+/Demo2/
 /DeveloperControls$1.class
 /DeveloperControls.class
 /EnemyGenerator.class
@@ -5,7 +7,10 @@
 /GameWorld.class
 /InheritanceTutorial/
 /Main.class
+/NinDemo.class
+/NinMain.class
 /Platform.class
+/ReflectionWindow.class
 /SammyCode/
 /SampleMain.class
 /SampleUserCode$1.class
@@ -20,4 +25,6 @@
 /TutorialTwo/
 /UserCode.class
 /UserGameWorld.class
+/dyeHardProcedrualAPI/
 /dyehard/
+/SampleUserCode$1tempClass.class

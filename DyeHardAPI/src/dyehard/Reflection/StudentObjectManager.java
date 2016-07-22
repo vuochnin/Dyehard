@@ -2,7 +2,10 @@ package dyehard.Reflection;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+
+import javax.swing.JOptionPane;
 
 import Engine.Vector2;
 import dyehard.Enemies.Enemy;
@@ -67,6 +70,26 @@ public class StudentObjectManager {
         useStudentObj = studentObjRef.validate(arrayOfConstructors, arrayOfMethods);
     }
 
+    /**
+     * Validate
+     * 
+     * @purpose	Create a ClassReflector from given class
+     */
+    public static boolean validate(String className, String[] conArr, String[] methodArr) {
+    	
+    	// Create class
+        studentObjRef = new ClassReflector(className);
+        
+        // Reflect to populate the hashmap of methods and constructors
+        studentObjRef.reflect();
+
+        // Validate it using the given constructors and methods
+        useStudentObj = studentObjRef.validate(conArr, methodArr);
+        
+        return useStudentObj;
+    }
+    
+    
     /**
      * Update.
      */
@@ -204,7 +227,59 @@ public class StudentObjectManager {
      * @param classType, the type of class/interface being checked
      * @return true if object is a classType, false otherwise
      */
-    public boolean checkClass(Object obj, Class<?> classType) {
+    public static boolean checkClass(Class<?> obj, Class<?> classType) {
     	return classType.isInstance(obj);
+    }
+    
+    /**
+     * Create a new instance of the provided class.
+     * 
+     * @param	className, the name of the class to instantiate.
+     * 
+     */
+    public static Object createObj(Class<?> className){
+    	// The object to return
+    	Object toReturn = new Object();
+    	
+    	// Try-catch to instantiate the class and set as toReturn
+    	try {
+			className.getConstructor().setAccessible(true);
+			toReturn = className.getConstructor().newInstance();
+			
+		} catch (InstantiationException | IllegalAccessException 
+				| IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			toReturn = null;
+		}
+    	
+    	return toReturn;
+    }
+    
+    public static Class<?> getClassFromInput(){
+  
+    	// Ask user for class name
+    	Class<?> toReturn = null;
+    	String className = JOptionPane.showInputDialog("Please type in your class name");
+    	
+    	// Assign toReturn to the provided class name
+		try {
+			toReturn = Class.forName(className);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			System.out.println("Class Retrieval Failed");
+		}
+		
+		// Return the class
+		return toReturn;
+    }
+    
+    public boolean checkForField(String fieldToCheck){
+    	
+        studentObjRef = new ClassReflector("StudentObj");
+        studentObjRef.reflect();
+
+    	return true;
     }
 }
