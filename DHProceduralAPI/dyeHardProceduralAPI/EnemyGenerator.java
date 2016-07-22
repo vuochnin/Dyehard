@@ -57,7 +57,7 @@ public class EnemyGenerator {
 	 */
     private static Vector2 randomPosition(){
     	float randomY = RANDOM.nextInt((int) BaseCode.world.getHeight() - 8) + 5;
-        Vector2 position = new Vector2(BaseCode.world.getWidth() + 10, randomY);
+        Vector2 position = new Vector2(BaseCode.world.getWidth() + 5, randomY);
         return position;
     }
     
@@ -74,18 +74,15 @@ public class EnemyGenerator {
 		}
 	    Enemy result;
 
-		switch (RANDOM.nextInt(5))
+		switch (RANDOM.nextInt(4))
 		{
-        //case 1:
-            //result = (new PortalEnemy(randomPosition(), hero));
-            //break;
+        case 1:
+            result = (new PortalEnemy(randomPosition(), hero));
+            break;
         case 2:
 	        result = (new ChargerEnemy(randomPosition(), hero));
             break;
         case 3:
-	        result = (new ShootingEnemy(randomPosition(), hero));
-            break;
-        case 4:
 	        result = (new CollectorEnemy(randomPosition(), hero));
             break;
         default:
@@ -119,9 +116,6 @@ public class EnemyGenerator {
             break;
     	case "charger":
 		    result = (new ChargerEnemy(randomPosition(), hero));
-            break;
-        case "shooting":
-	        result = (new ShootingEnemy(randomPosition(), hero));
             break;
         case "collector":
 	        result = (new CollectorEnemy(randomPosition(), hero));
@@ -159,9 +153,6 @@ public class EnemyGenerator {
     	case "charger":
 		    result = (new ChargerEnemy(pos, hero));
             break;
-        case "shooting":
-	        result = (new ShootingEnemy(pos, hero));
-            break;
         case "collector":
 	        result = (new CollectorEnemy(pos, hero));
             break;
@@ -190,18 +181,15 @@ public class EnemyGenerator {
         Vector2 position = new Vector2(x, y);
 	    Enemy result;
 
-	    switch (RANDOM.nextInt(5))
+	    switch (RANDOM.nextInt(4))
 	    {
-	    //case 1:
-	        //result = (new PortalEnemy(position, hero));
-	        //break;
+	    case 1:
+	        result = (new PortalEnemy(position, hero));
+	        break;
 	    case 2:
 		    result = (new ChargerEnemy(position, hero));
 		    break;
 	    case 3:
-		    result = (new ShootingEnemy(position, hero));
-		    break;
-	    case 4:
 		    result = (new CollectorEnemy(position, hero));
 		    break;
 	    default:

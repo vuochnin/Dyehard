@@ -3,13 +3,11 @@ package dyeHardProceduralAPI;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.*;
-import java.util.Map.Entry;
 
 import Engine.BaseCode;
 import Engine.Vector2;
 import dyehard.Collectibles.*;
 import dyehard.Collision.CollidableGameObject;
-import dyehard.DyeHardGame.State;
 import dyehard.DyeHardGame;
 import dyehard.UpdateManager;
 import dyehard.GameScreens.BackgroundScreen;
@@ -17,7 +15,6 @@ import dyehard.GameScreens.BackgroundScreen;
 import dyehard.GameScreens.LogScreen;
 import dyehard.Resources.ConfigurationFileParser;
 import dyehard.Ui.DyehardEndMenu;
-import dyehard.Ui.DyehardMenuUI;
 import dyehard.Ui.DyehardUI;
 import dyehard.Util.Colors;
 import dyehard.World.GameState;
@@ -32,16 +29,15 @@ import dyehard.World.WormHole;
  */
 public class DHProceduralAPI extends DyeHardGame{
 
-	//private boolean menuActive = false;
 	private boolean endMenuActive = false;
+	private boolean showStartMenu = false;
 	private static float Speed = 0.3f;
 	private float distance = 0f;
-	private static int lives = 5;
+	private static int winningScore = -1;
 	
 	private Hero hero;
 	private DyehardUI ui;
 	
-	//private DyehardMenuUI menu;
 	private DyehardEndMenu endMenu;
 	private LogScreen start;			// "Click Anywhere to Start"
 	
@@ -54,15 +50,15 @@ public class DHProceduralAPI extends DyeHardGame{
 
 		window.requestFocusInWindow();
 		apiSetGoalDistance();
-		buildGame();
-		
-		//menu = new DyehardMenuUI();
 		endMenu = new DyehardEndMenu();
 		start = new LogScreen();
-		
-		DyeHardGame.setState(State.BEGIN);
+		buildGame();
+		apiShowStartScreen();
+		if(showStartMenu)
+			DyeHardGame.setState(State.BEGIN);
+		else
+			DyeHardGame.setState(State.PLAYING);
 	}
-	
 	
 	
 	/**
@@ -88,6 +84,22 @@ public class DHProceduralAPI extends DyeHardGame{
 			IDManager.cleanup();
 			updateGame();
 			break;
+        case BEGIN:
+        	start.showScreen(true);
+			if(start.isShown()){
+				if(apiIsMouseLeftClicked()){
+					hero.currentWeapon.resetTimer();
+					setState(State.PLAYING);
+					start.showScreen(false);
+				}
+			}
+        	break;
+        case GAMEOVER:
+        	if(apiIsMouseLeftClicked()){
+				endMenu.select(mouse.getWorldX(), mouse.getWorldY(), true);
+			}else
+				endMenu.select(mouse.getWorldX(), mouse.getWorldY(), false);
+        	break;
         case QUIT:
         	window.close();
         	break;
@@ -97,28 +109,7 @@ public class DHProceduralAPI extends DyeHardGame{
         default:
         	break;
 		}
-		
-		if(getState() == State.BEGIN){
-			apiShowStartMenu(true);
-			if(start.isShown()){
-				if(apiIsMouseLeftClicked()){
-					hero.currentWeapon.resetTimer();
-					setState(State.PLAYING);
-					apiShowStartMenu(false);
-				}
-			}
-		}else if(getState() == State.GAMEOVER){
-			if(apiIsMouseLeftClicked()){
-				endMenu.select(mouse.getWorldX(), mouse.getWorldY(), true);
-			}else
-				endMenu.select(mouse.getWorldX(), mouse.getWorldY(), false);
-		}
-		
 	}
-
-	
-	
-	
 	
 	//--------------------------------------------------------------------------------------------	
 	//--------------------- SOME POSSIBLE PROCEDURAL FUNCTIONS -----------------------------------
@@ -146,7 +137,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	
 	/**
 	 * Reports the number of objects in play
-	 * @return
+	 * @return the number of objects in play
 	 */
 	public int apiObjectCount()
 	{
@@ -261,13 +252,10 @@ public class DHProceduralAPI extends DyeHardGame{
 	}
 	
 	public void apiRestartGame() {
-		background.destroy();
-		background = new BackgroundScreen();
 		endMenu.active(false);
-		apiSetGoalDistance();
-    	apiSetLivesTo(lives);
-    	setState(State.BEGIN);
-        System.gc();
+    	setState(State.PLAYING);
+    	background.destroy();
+		background = new BackgroundScreen();
         distance = 0;
         GameState.DistanceTravelled = 0;
         GameState.Score = 0;
@@ -276,7 +264,7 @@ public class DHProceduralAPI extends DyeHardGame{
         TimeManager.reset();
         
         IDManager.reset();
-        
+        System.gc();
         buildGame();
 	}
 	
@@ -285,7 +273,13 @@ public class DHProceduralAPI extends DyeHardGame{
 	}
 	
 	public boolean apiUserWon(){
-		return GameState.DistanceTravelled == GameState.TargetDistance;
+		if(GameState.DistanceTravelled >= GameState.TargetDistance)
+			return true;
+		else{
+			if(winningScore > 0)
+				return GameState.Score >= winningScore;
+			return false;
+		}	
 	}
 	
 	public void apiQuitGame(){
@@ -374,13 +368,23 @@ public class DHProceduralAPI extends DyeHardGame{
 		GameState.Score -= n;
 	}
 	
+	public void apiSetwinningScore(int winScore){
+		winningScore = winScore;
+	}
+	
+	public void apiSpeedUp(boolean up){
+		UpdateManager.getInstance().setSpeedUp(up);
+		if(up)
+			distance += (Speed * 3f); 	// Each time the method triggered, the distance increase by 3 times the speed
+			GameState.DistanceTravelled = (int) distance;
+	}
+	
 	/**
 	 * Sets the number of lives the hero has to the number, n
 	 * and displays to the screen
 	 * @param n the number of lives to set to
 	 */
 	public void apiSetLivesTo(int n){
-		lives = n;
 		ui.setRemainingLives(n);
 	}
 	
@@ -728,31 +732,16 @@ public class DHProceduralAPI extends DyeHardGame{
 	public int apiSpawnSinglePowerUp(float positionX, float positionY)
 	{
 		PowerUp spawned;
-		switch (apiRandomInt(8))
+		switch (apiRandomInt(3))
 		{
 		case 0:
-			spawned = new Unarmed();
-			break;
-		case 1:
 			spawned = new SpeedUp();
 			break;
-		case 2:
+		case 1:
 			spawned = new SlowDown();
 			break;
-		case 3:
-			spawned = new Overload();
-			break;
-		case 4:
-			spawned = new Gravity();
-			break;
-		case 5:
-			spawned = new Magnetism();
-			break;
-		case 6:
+		case 2:
 			spawned = new Ghost();
-			break;
-		case 7:
-			spawned = new Repel();
 			break;
 		default:
 			// Defaults to invincibility
@@ -767,29 +756,14 @@ public class DHProceduralAPI extends DyeHardGame{
 		PowerUp spawned;
 		switch (type.toLowerCase())
 		{
-		case "unarmed":
-			spawned = new Unarmed();
-			break;
 		case "speedup":
 			spawned = new SpeedUp();
 			break;
 		case "slowdown":
 			spawned = new SlowDown();
 			break;
-		case "overload":
-			spawned = new Overload();
-			break;
-		case "gravity":
-			spawned = new Gravity();
-			break;
-		case "magnet":
-			spawned = new Magnetism();
-			break;
 		case "ghost":
 			spawned = new Ghost();
-			break;
-		case "repel":
-			spawned = new Repel();
 			break;
 		default:
 			// Defaults to invincibility
@@ -847,7 +821,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	//-------------- WEAPONS end-----------------------------------
 	
 	
-	//------------------ MENU (not functioning yet)/ UI-------------------
+	//------------------ MENU / UI-------------------
 	
 	/**
 	 * Displays the Winning menu on the screen
@@ -876,22 +850,11 @@ public class DHProceduralAPI extends DyeHardGame{
 	}
 	
 	/**
-	 * Displays the Start menu on the screen
+	 * Displays the Start menu on the screen ("Click Anywhere to Start")
 	 */
-	public void apiShowStartMenu(boolean yes){
-		start.showScreen(yes); // "Click Anywhere to Start"
+	public void apiShowStartScreen(){
+		showStartMenu = true;
 	}
-	
-//	/**
-//	 * Display the Menu on the screen (Ex: when the game is paused)
-//	 */
-//	public void showMenu(boolean yes){
-//		menu.active(yes);
-//		if(yes)
-//			menuActive = true;
-//		else
-//			menuActive = false;
-//	}
 	
 	/**
 	 * Displays the score UI on the game screen. 

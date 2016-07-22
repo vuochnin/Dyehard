@@ -18,15 +18,19 @@ public class NinDemo extends DHProceduralAPI
 		heroID = apiStartHero();
 		apiSetLivesTo(2);
 		apiDisplayScore(true);
-		apiSetGoalDistance(100);
+		apiSetGoalDistance();
+		apiSetwinningScore(15);
 		apiStartDebrisSpawner(1.5f);
 		apiStartDyePackSpawner();
-		//startEnemySpawner();
+		apiStartEnemySpawner();
 		apiEcho("worldWidth " + world.getWidth());
 		apiEcho("worldHeight " + world.getHeight());
 		apiEcho("worldPositionX " + world.getPositionX());
 		apiEcho("worldPositionY " + world.getWorldPositionY());
 		//spawnGates();
+		
+		
+		
 	}
 	
 	public void updateGame(){
@@ -35,6 +39,10 @@ public class NinDemo extends DHProceduralAPI
 		//		move(i, 0, 1);
 		// else if(getType(i) == "Debris"
 		// 		move(i, 
+		
+		if(apiRepeatingTimer("powerup", 5)){
+			apiSpawnSinglePowerUp(apiGetWorldWidth() - 10f, apiRandomInt((int)apiGetWorldHeight() - 10));
+		}
 		
 		apiObjectFollowTheMouse(heroID);
 		
@@ -47,26 +55,23 @@ public class NinDemo extends DHProceduralAPI
 		if(apiIsKeyboardLeftPressed()){
 			apiActivateSpreadFireWeapon();
 		}
-		
 		if(apiIsKeyboardDownPressed()){
 			apiDefaultWeapon();
 		}
 		if(apiIsKeyboardButtonTapped(KeysEnum.S)){
 			apiIncreaseScoreBy(2);
 		}
+		if(apiIsKeyboardButtonTapped(KeysEnum.A)){
+			apiDecreaseScoreBy(2);
+		}
 		if(apiIsKeyboardButtonTapped(KeysEnum.E)){
-			apiSpawnSingleEnemy("charger");			//TEST SpawnSingleEnemy()
+			apiSpawnSingleEnemy("Portal", 50, 20);			//TEST SpawnSingleEnemy()
 		}
 		if(apiIsKeyboardButtonTapped(KeysEnum.D))
 			apiSpawnSingleDyePack("blue", 50, 20); 		// TEST spawnSingleDyePack(color, x, y)
 
 		if(apiIsKeyboardButtonTapped(KeysEnum.ESCAPE)){
 			DyeHardGame.setState(State.PAUSED);
-		}
-		
-		if(apiRepeatingTimer("powerup", 4))
-		{
-			//spawnSinglePowerUp(100, 30);
 		}
 		
 		if(apiIsKeyboardButtonTapped(KeysEnum.X))
@@ -80,10 +85,13 @@ public class NinDemo extends DHProceduralAPI
 		}
 		
 		if(apiIsKeyboardRightPressed()){
-			UpdateManager.getInstance().setSpeedUp(true);
+			apiSpeedUp(true);
 		}else{
-			UpdateManager.getInstance().setSpeedUp(false);
+			apiSpeedUp(false);
 		}
+		if(apiIsKeyboardButtonTapped(KeysEnum.G))
+			apiSpawnSinglePowerUp("SlowDown", 90, 30);
+		
 		if(apiIsKeyboardButtonTapped(KeysEnum.b))
 			apiEcho("DistanceTravelled = " + GameState.DistanceTravelled);
 	}
