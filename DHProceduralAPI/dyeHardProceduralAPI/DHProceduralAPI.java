@@ -235,6 +235,14 @@ public class DHProceduralAPI extends DyeHardGame{
 	
 	// -------------------- Utilities functions ------------------
 
+	/**
+	 * Gets a random DyeHard color (blue, red, yellow, teal, pink, green) 
+	 * @return a random DyeHard color
+	 */
+	public Color apiGetRandomColor(){
+		return Colors.randomColor();
+	}
+	
 	public float apiGetWorldWidth(){
 		return world.getWidth();
 	}
@@ -432,7 +440,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	 */
 	public float apiRandomFloat(float max){
 		Random rand = new Random();
-		return rand.nextFloat() % max;
+		return rand.nextFloat() * max; //% max;
 	}
 
 	/**

@@ -8,12 +8,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author Holden
  */
 public class DebrisGenerator
 {
+	private static Random RANDOM = new Random();
 	private static float        interval;
 	private static boolean      active;
 	private static List<Debris> debrisList;
@@ -69,7 +71,7 @@ public class DebrisGenerator
 	 */
 	public static int spawnDebris()
 	{
-		Debris d = new Debris(100,100);// spawns debris at right edge of screen
+		Debris d = new APIDebris(RANDOM.nextInt(3),100,100);// spawns debris at right edge of screen
 		debrisList.add(d);
 		
 		return IDManager.register(d);
@@ -81,7 +83,7 @@ public class DebrisGenerator
 	 */
 	public static int spawnDebris(float height)
 	{
-		Debris d = new Debris(100,100, height, height);// spawns debris at right edge of screen
+		Debris d = new APIDebris(RANDOM.nextInt(3), 100, 100, height, height);// spawns debris at right edge of screen
 		debrisList.add(d);
 		return IDManager.register(d);
 	}

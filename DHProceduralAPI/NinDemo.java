@@ -51,6 +51,11 @@ public class NinDemo extends DHProceduralAPI
 			apiHerofirePaint();
 		}
 		
+		if(apiIsKeyboardButtonTapped(KeysEnum.y)){			// CHECK debris subtype
+			int deId = apiSpawnSingleDebris();
+			apiEcho("The subtype of this debris is " + apiGetSubtype(deId));
+		}
+		
 		// TEST Change the weapon according to the keyboard inputs
 		if(apiIsKeyboardLeftPressed()){
 			apiActivateSpreadFireWeapon();
@@ -94,6 +99,7 @@ public class NinDemo extends DHProceduralAPI
 		
 		if(apiIsKeyboardButtonTapped(KeysEnum.b))
 			apiEcho("DistanceTravelled = " + GameState.DistanceTravelled);
+		
 	}
 	
 	

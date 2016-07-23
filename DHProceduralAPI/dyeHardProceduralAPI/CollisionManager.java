@@ -223,7 +223,11 @@ public class CollisionManager {
 		else if(type == "PowerUp")
 		{
 			return getPowerUpType(obj);
-		}else if(type == "DyePack")
+		}
+		else if(type == "Debris"){
+			return obj.toString();
+		}
+		else if(type == "DyePack")
 		{
 			// return color of dyepack
 		}
