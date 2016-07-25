@@ -1,9 +1,9 @@
-/resources/
 /Demo1/
 /Demo2/
 /Demo3/
 /Demo4/
 /DemoA/
+/DemoForMenu/
 /Engine/
 /InheritanceTutorial/
 /SammyCode/
@@ -14,13 +14,12 @@
 /TutorialTwo/
 /dyeHardProceduralAPI/
 /dyehard/
+/resources/
 /DeveloperControls$1.class
 /DeveloperControls.class
 /EnemyGenerator.class
 /GameWorld.class
 /Main.class
-/NinDemo.class
-/NinMain.class
 /Platform.class
 /ReflectionWindow.class
 /SampleMain.class
@@ -32,4 +31,5 @@
 /StudentObj.class
 /UserCode.class
 /UserGameWorld.class
-/DemoForMenu/
+/NinDemo.class
+/NinMain.class
