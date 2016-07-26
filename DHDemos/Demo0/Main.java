@@ -1,4 +1,4 @@
-package DemoForMenu;
+package Demo0;
 
 import Engine.GameWindow;
 
@@ -9,7 +9,7 @@ import Engine.GameWindow;
 public class Main extends GameWindow{
 	
 	public Main(){
-		setRunner(new Demo());
+		setRunner(new Demo0());
 	}
 	
 	/**

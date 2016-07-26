@@ -20,6 +20,8 @@
 /EnemyGenerator.class
 /GameWorld.class
 /Main.class
+/NinDemo.class
+/NinMain.class
 /Platform.class
 /ReflectionWindow.class
 /SampleMain.class
@@ -31,5 +33,4 @@
 /StudentObj.class
 /UserCode.class
 /UserGameWorld.class
-/NinDemo.class
-/NinMain.class
+/Demo0/

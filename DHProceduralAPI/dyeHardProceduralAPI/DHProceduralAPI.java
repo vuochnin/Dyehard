@@ -17,6 +17,7 @@ import dyehard.Resources.ConfigurationFileParser;
 import dyehard.Ui.DyehardEndMenu;
 import dyehard.Ui.DyehardUI;
 import dyehard.Util.Colors;
+import dyehard.Util.DyeHardSound;
 import dyehard.World.GameState;
 import dyehard.Player.Hero;
 import dyehard.Weapons.*;
@@ -189,6 +190,7 @@ public class DHProceduralAPI extends DyeHardGame{
 		EnemyGenerator.initialize(hero);
 		// TODO: Look into possibility of separating individual UI elements into functions
 		ui = new DyehardUI(hero);
+		
 		// Move cursor to the center of the hero
 		try{
 			Robot robot = new Robot();
@@ -378,6 +380,10 @@ public class DHProceduralAPI extends DyeHardGame{
 	
 	public void apiSetwinningScore(int winScore){
 		winningScore = winScore;
+	}
+	
+	public void apiLoseALife(){
+		GameState.RemainingLives--;
 	}
 	
 	public void apiSpeedUp(boolean up){
@@ -834,11 +840,12 @@ public class DHProceduralAPI extends DyeHardGame{
 	/**
 	 * Displays the Winning menu on the screen
 	 */
-	public void apiShowWinMenu(boolean yes){
+	public void apiShowWinMenu(boolean show){
+		DyeHardSound.play(DyeHardSound.winSound);
 		setState(State.GAMEOVER);
 		endMenu.setMenu(true);	// True for win menu
-		endMenu.active(yes);
-		if(yes)
+		endMenu.active(show);
+		if(show)
 			endMenuActive = true;
 		else
 			endMenuActive = false;
@@ -847,11 +854,12 @@ public class DHProceduralAPI extends DyeHardGame{
 	/**
 	 * Displays the Losing menu on the screen
 	 */
-	public void apiShowLoseMenu(boolean yes){
+	public void apiShowLoseMenu(boolean show){
+		DyeHardSound.play(DyeHardSound.loseSound);
 		setState(State.GAMEOVER);
 		endMenu.setMenu(false);		// False for win menu
-		endMenu.active(yes);
-		if(yes)
+		endMenu.active(show);
+		if(show)
 			endMenuActive = true;
 		else
 			endMenuActive = false;
@@ -868,8 +876,12 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * Displays the score UI on the game screen. 
 	 * @param display true to display, false otherwise
 	 */
-	public void apiDisplayScore(boolean display){
+	public void apiShowScore(boolean display){
 		ui.displayScore(display);
+	}
+	
+	public void apiShowDistanceMeter(boolean show){
+		ui.displayDistanceMeter(show, GameState.TargetDistance);
 	}
 	//------------------ MENU / UI end -----------------------------------
 	

@@ -3,48 +3,80 @@ import dyeHardProceduralAPI.DHProceduralAPI;
 import dyeHardProceduralAPI.KeysEnum;
 
 /**
- * 
- * @author vuochnin
+ *	Demonstrates DyeHard UI, menus, random object spawning, and other basic utilities 
+ *	Functions used:
+ *		apiStartHero()
+ *		apiSetLivesTo()
+ *		apiSetGoalDistance()
+ *		apiShowDistanceMeter()
+ *		apiStartDebrisSpawner()
+ *		apiStartDyePackSpawner()
+ *		apiStartEnemySpawner()
+ *		apiObjectFollowTheMouse()
+ *		apiIsMouseLeftClicked()
+ *		apiHerofirePaint()
+ *		apiRepeatingTimer()
+ *		apiGetWorldWidth()
+ *		apiGetWorldHeight()
+ *		apiRandomFloat()
+ *		apiSpawnSinglePowerUp(x, y)
+ *		apiUserWon()
+ *		apiShowWinMenu(true)
+ *		apiUserLose()
+ *		apiShowLoseMenu(true)
+ *		apiIsKeyboardButtonTapped(KeysEnum)
+ *		apiQuitGame()
+ *		apiRestartGame()
  *
- *
- *	Demonstrates basic Hero functionality and Input functionality
+ *@author vuochnin
  */
-public class Demo1 extends DHProceduralAPI
-{
-	int controlSelect = 0;
+public class Demo1 extends DHProceduralAPI {
 	int heroID;
 	
-	public void buildGame()
-	{
-		// Demonstrate an API function
+	public void buildGame(){
 		heroID = apiStartHero();
+		
+		// UI
+		apiSetLivesTo(3); 		// Sets hero health to 5 and display on the screen 
+		apiShowScore(true);		// Shows the current score on the screen (Not updating in this demo)
+		apiSetGoalDistance(500); 		// Set the goal
+		apiShowDistanceMeter(true); 	// Displays the distance meter
+		
+		// START OBJECT SPAWNERS WITH DEFAULT SETTING
+		apiStartDebrisSpawner();	// Spawns Debris randomly
+		apiStartDyePackSpawner();	// Spawns DyePack randomly
+		apiStartEnemySpawner();		// Spawns Enemy randomly
 	}
 	
 	public void updateGame()
 	{
-		if(apiIsKeyboardButtonTapped(KeysEnum.ONE))
-		{
-			controlSelect = 0;
+		apiObjectFollowTheMouse(heroID);	// Moves Dye (Hero) using the mouse
+		
+		// Fire the paint every time the left button of the mouse clicked
+		if(apiIsMouseLeftClicked()){
+			apiHerofirePaint();
 		}
-		if(apiIsKeyboardButtonTapped(KeysEnum.TWO))
-		{
-			controlSelect = 1;
+		
+		// POWER UP. Spawn power up objects randomly every 5 seconds
+		if(apiRepeatingTimer("PowerUp Spawner", 5)){
+			float posX = apiGetWorldWidth();
+			float posY = apiGetWorldHeight();
+			apiSpawnSinglePowerUp(posX, apiRandomFloat(posY));
 		}
-		switch(controlSelect)
-		{
-		case 0:
-			apiObjectFollowTheMouse(heroID);
-			break;
-		case 1:
-			if(apiIsKeyboardUpPressed())
-				apiMoveObject(heroID, 0, 1);
-			if(apiIsKeyboardDownPressed())
-				apiMoveObject(heroID, 0, -1);
-			if(apiIsKeyboardLeftPressed())
-				apiMoveObject(heroID, -1, 0);
-			if(apiIsKeyboardRightPressed())
-				apiMoveObject(heroID, 1, 0);
-			break;
+		
+		// MENUs
+		if(apiUserWon()){			// Check if the user win
+			apiShowWinMenu(true);
+		}
+		if(apiUserLose()){			// Check if the user lose
+			apiShowLoseMenu(true);
+		}
+		
+		if(apiIsKeyboardButtonTapped(KeysEnum.Q)){
+			apiQuitGame();
+		}
+		if(apiIsKeyboardButtonTapped(KeysEnum.R)){
+			apiRestartGame();
 		}
 	}
 }

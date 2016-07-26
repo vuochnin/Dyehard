@@ -25,6 +25,8 @@ public class DyehardUI extends UpdateableObject {
 	
 	private boolean livesIsSet = false;
 	private boolean displayScore = false;
+	private boolean displayDistanceMeter = false;
+	private boolean uiDefaultSetting = false;
     
     /** The hero. */
     protected Hero hero;
@@ -50,11 +52,12 @@ public class DyehardUI extends UpdateableObject {
         this.hero = hero;
         new DyeMeter(hero);
 
-        hud = DyeHardResources.getInstance().getScaledRectangle(ImageID.UI_HUD);
-        hud.center.setX(BaseCode.world.getWidth() / 2);
-        hud.center.setY(fromTop(hud, 0f));
-        hud.alwaysOnTop = true;
-        //setRemainingLives(10);
+//        hud = DyeHardResources.getInstance().getScaledRectangle(ImageID.UI_HUD);
+//        hud.center.setX(BaseCode.world.getWidth() / 2);
+//        hud.center.setY(fromTop(hud, 0f));
+//        hud.alwaysOnTop = true;
+        
+        
 //        Rectangle baseHeart = DyeHardResources.getInstance().getScaledRectangle(ImageID.UI_HEART);
 //        baseHeart.alwaysOnTop = true;
 //        hearts = new ArrayList<Rectangle>();
@@ -69,8 +72,7 @@ public class DyehardUI extends UpdateableObject {
 //        }
 //
 //        baseHeart.visible = false;
-
-        distanceMeter = new DyehardDistanceMeter(GameState.TargetDistance);
+        //distanceMeter = new DyehardDistanceMeter(GameState.TargetDistance);
 
         // TODO magic numbers
         scoreText = new Text("", 4f, BaseCode.world.getHeight() - 3.25f);
@@ -80,8 +82,39 @@ public class DyehardUI extends UpdateableObject {
         scoreText.setFontName("Arial");
     }
     
+    public void useUIdefaultSetting(){
+      uiDefaultSetting = true;
+	  hud = DyeHardResources.getInstance().getScaledRectangle(ImageID.UI_HUD);
+	  hud.center.setX(BaseCode.world.getWidth() / 2);
+	  hud.center.setY(fromTop(hud, 0f));
+	  hud.alwaysOnTop = true;
+	  
+	  Rectangle baseHeart = DyeHardResources.getInstance().getScaledRectangle(ImageID.UI_HEART);
+	  baseHeart.alwaysOnTop = true;
+	  hearts = new ArrayList<Rectangle>();
+	  for (int i = 0; i < 4; ++i) {
+	      Rectangle heart = new Rectangle(baseHeart);
+	      float width = heart.size.getX();
+	
+	      // TODO magic numbers
+	      heart.center = new Vector2(BaseCode.world.getWidth() - i * 1.62f
+	              * width - 4f, BaseCode.world.getHeight() - width / 2 - 1.4f);
+	      hearts.add(heart);
+	  }
+	
+	  baseHeart.visible = false;
+	  distanceMeter = new DyehardDistanceMeter(GameState.TargetDistance);
+    }
+    
+    
     public void displayScore(boolean display){
     	displayScore = display;
+    }
+    
+    public void displayDistanceMeter(boolean display, int tartgetDistance){
+    	displayDistanceMeter = display;
+    	if(display)
+    		distanceMeter = new DyehardDistanceMeter(tartgetDistance, 55f);
     }
     
     public void setRemainingLives(int lives){
@@ -130,49 +163,52 @@ public class DyehardUI extends UpdateableObject {
         for (Rectangle r : hearts) {
             r.visible = false;
         }
-        if(livesIsSet){
+        if(livesIsSet || uiDefaultSetting){
 	        int numHearts = hearts.size() - 1;
 	        for (int i = 0; i < GameState.RemainingLives; ++i) {
 	        	hearts.get(numHearts - i).visible = true;
 	        }
         }
-        if(displayScore){
+        if(displayScore || uiDefaultSetting){
         	scoreText.setText(Integer.toString(GameState.Score));
         }
-        distanceMeter.setValue(GameState.DistanceTravelled);
-
-        // controls texture of the progress marker in UI Bar
-        switch (hero.curPowerUp) {
-        case GHOST:
-            distanceMeter.setProgTexture("UI/UI_Ghost");
-            break;
-        case INVIN:
-            distanceMeter.setProgTexture("UI/UI_Invincibility");
-            break;
-        case MAGNET:
-            distanceMeter.setProgTexture("UI/UI_Magnetism");
-            break;
-        case OVERLOAD:
-            distanceMeter.setProgTexture("UI/UI_Overload");
-            break;
-        case SLOW:
-            distanceMeter.setProgTexture("UI/UI_SlowDown");
-            break;
-        case SPEED:
-            distanceMeter.setProgTexture("UI/UI_SpeedUp");
-            break;
-        case UNARMED:
-            distanceMeter.setProgTexture("UI/UI_Unarmed");
-            break;
-        case REPEL:
-            distanceMeter.setProgTexture("UI/UI_Repel");
-            break;
-        case GRAVITY:
-            distanceMeter.setProgTexture("UI/Dyehard_UI_Progress_marker_empty");
-            break;
-        case NONE:
-            distanceMeter.setProgTexture("UI/Dyehard_UI_Progress_marker_empty");
-            break;
+        
+        if(displayDistanceMeter || uiDefaultSetting){
+	        distanceMeter.setValue(GameState.DistanceTravelled);
+	
+	        // controls texture of the progress marker in UI Bar
+	        switch (hero.curPowerUp) {
+	        case GHOST:
+	            distanceMeter.setProgTexture("UI/UI_Ghost");
+	            break;
+	        case INVIN:
+	            distanceMeter.setProgTexture("UI/UI_Invincibility");
+	            break;
+	        case MAGNET:
+	            distanceMeter.setProgTexture("UI/UI_Magnetism");
+	            break;
+	        case OVERLOAD:
+	            distanceMeter.setProgTexture("UI/UI_Overload");
+	            break;
+	        case SLOW:
+	            distanceMeter.setProgTexture("UI/UI_SlowDown");
+	            break;
+	        case SPEED:
+	            distanceMeter.setProgTexture("UI/UI_SpeedUp");
+	            break;
+	        case UNARMED:
+	            distanceMeter.setProgTexture("UI/UI_Unarmed");
+	            break;
+	        case REPEL:
+	            distanceMeter.setProgTexture("UI/UI_Repel");
+	            break;
+	        case GRAVITY:
+	            distanceMeter.setProgTexture("UI/Dyehard_UI_Progress_marker_empty");
+	            break;
+	        default:
+	            distanceMeter.setProgTexture("UI/Dyehard_UI_Progress_marker_empty");
+	            break;
+	        }
         }
     }
 
@@ -185,7 +221,9 @@ public class DyehardUI extends UpdateableObject {
         for (Rectangle h : hearts) {
             BaseCode.resources.moveToFrontOfDrawSet(h);
         }
-        BaseCode.resources.moveToFrontOfDrawSet(hud);
+        if(uiDefaultSetting){
+        	BaseCode.resources.moveToFrontOfDrawSet(hud);
+        }
     }
 
     /* (non-Javadoc)

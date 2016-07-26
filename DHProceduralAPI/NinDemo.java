@@ -16,29 +16,20 @@ public class NinDemo extends DHProceduralAPI
 	
 	public void buildGame(){
 		heroID = apiStartHero();
-		apiSetLivesTo(2);
-		apiDisplayScore(true);
-		apiSetGoalDistance();
+		apiSetLivesTo(8);
+		apiShowScore(true);
+		apiSetGoalDistance(300);
+		apiShowDistanceMeter(true);
 		apiSetwinningScore(15);
 		apiStartDebrisSpawner(1.5f);
 		apiStartDyePackSpawner();
 		apiStartEnemySpawner();
-		apiEcho("worldWidth " + world.getWidth());
-		apiEcho("worldHeight " + world.getHeight());
-		apiEcho("worldPositionX " + world.getPositionX());
-		apiEcho("worldPositionY " + world.getWorldPositionY());
 		//spawnGates();
-		
-		
 		
 	}
 	
 	public void updateGame(){
-		//for(int i = 0; i < objectCount(); i++)
-		// if(getType(i) == "Hero")
-		//		move(i, 0, 1);
-		// else if(getType(i) == "Debris"
-		// 		move(i, 
+		
 		
 		if(apiRepeatingTimer("powerup", 5)){
 			apiSpawnSinglePowerUp(apiGetWorldWidth() - 10f, apiRandomInt((int)apiGetWorldHeight() - 10));
@@ -76,7 +67,10 @@ public class NinDemo extends DHProceduralAPI
 			apiSpawnSingleDyePack("blue", 50, 20); 		// TEST spawnSingleDyePack(color, x, y)
 
 		if(apiIsKeyboardButtonTapped(KeysEnum.ESCAPE)){
-			DyeHardGame.setState(State.PAUSED);
+			if(getState() == State.PLAYING)
+				DyeHardGame.setState(State.PAUSED);
+			else
+				DyeHardGame.setState(State.PLAYING);
 		}
 		
 		if(apiIsKeyboardButtonTapped(KeysEnum.X))
