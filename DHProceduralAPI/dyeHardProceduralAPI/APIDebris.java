@@ -7,7 +7,7 @@ import dyehard.Obstacles.Debris;
 
 public class APIDebris extends Debris {
 	int type;
-	public static String typeName;
+	public String typeName;
 	private static Random RANDOM = new Random();
 	
 	public APIDebris(int type, float minX, float maxX){

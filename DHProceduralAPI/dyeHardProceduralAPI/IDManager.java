@@ -26,7 +26,7 @@ public class IDManager
 	{
 		dirty = true;
 		nextID = 0;
-		idMap = new HashMap<>();		
+		idMap = new HashMap<>();
 	}
 	
 	private IDManager(){}
@@ -105,6 +105,28 @@ public class IDManager
 			{
 				dirty = true;
 				idMap.remove(e.getKey());
+			}
+		}
+	}
+
+	/**
+	 * Search the collision manager for unaccounted objects.
+	 */
+	public static void collectStrayObjects()
+	{
+		List<CollidableGameObject> currentSet
+			= Arrays.asList(CollisionManager.getObjects());
+
+		List<CollidableGameObject> entries = new ArrayList<>();
+
+		entries.addAll(idMap.values());
+
+		for(CollidableGameObject cgo : currentSet)
+		{
+			if (!entries.contains(cgo))
+			{
+				dirty = true;
+				register(cgo);
 			}
 		}
 	}

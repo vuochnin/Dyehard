@@ -91,7 +91,28 @@ public class CollisionManager {
 		{
 			//if(objects[firstID].collideState() != ManagerStateEnum.ACTIVE)
 				//continue;
-			
+
+			// Clear objects that are far out of bounds to the right
+			//
+			// Special behavior is required for this, since the engine's out-of-bounds code
+			// does not handle the right side of the boundary, because it would mess up the
+			// behaviour of wormholes.
+			if(objects[i].center.getX() > 200)
+			{
+				switch(parseType(objects[i]))
+				{
+				case "Debris":
+				case "Bullet":
+				case "Enemy":
+				case "DyePack":
+				case "PowerUp":
+					objects[i].destroy();
+					continue; // Object is being destroyed, no need to check collision.
+				default:
+					// Continue with collision check
+				}
+			}
+
 			for(j = i+1; j < count; j++)
 			{
 				//if(objects[secondID].collideState() != ManagerStateEnum.ACTIVE)
@@ -178,14 +199,6 @@ public class CollisionManager {
 	}
 	
 
-	
-	
-	
-	
-	
-	
-	
-	
 //	private void handleHeroCollisions(CollidableGameObject hero, CollidableGameObject other)
 //	{
 //		//if other instanceof Debris

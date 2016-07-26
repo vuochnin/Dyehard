@@ -83,6 +83,8 @@ public class DHProceduralAPI extends DyeHardGame{
 			CollisionManager.update();
 			
 			IDManager.cleanup();
+	        IDManager.collectStrayObjects();
+
 			updateGame();
 			break;
         case BEGIN:
@@ -226,11 +228,11 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * @param x the X-coordinate position
 	 * @param y the Y-coordinate position
 	 */
-	public void apiMoveObjectTo(int id, float x, float y){
+	public void apiMoveObjectTo(int id, double x, double y){
 		if(apiGetType(id) == "Hero")
-			hero.moveTo(x, y);
+			hero.moveTo((float)x, (float)y);
 		else
-			IDManager.get(id).center = (new Vector2(x,y));
+			IDManager.get(id).center = (new Vector2((float)x,(float)y));
 	}
 	
 	
@@ -343,17 +345,17 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * @param deltaX horizontal position
 	 * @param deltaY vertical position
 	 */
-	public void apiMoveObject(int id, float deltaX, float deltaY){
+	public void apiMoveObject(int id, double deltaX, double deltaY){
 		CollidableGameObject obj = IDManager.get(id);
 		
-		obj.center = new Vector2(obj.center.getX() + deltaX,obj.center.getY() + deltaY);
+		obj.center = new Vector2(obj.center.getX() + (float) deltaX,obj.center.getY() + (float) deltaY);
 	}
 	
 	/**
 	 * Sets a game object's velocity.
 	 * @param id the id of the object to be moved
-	 * @param deltaX horizontal position
-	 * @param deltaY vertical position
+	 * @param x horizontal velocity
+	 * @param y vertical velocity
 	 */
 	public void apiSetObjectVelocity(int id, double x, double y){
 		CollidableGameObject obj = IDManager.get(id);
@@ -378,7 +380,7 @@ public class DHProceduralAPI extends DyeHardGame{
 		GameState.Score -= n;
 	}
 	
-	public void apiSetwinningScore(int winScore){
+	public void apiSetWinningScore(int winScore){
 		winningScore = winScore;
 	}
 	
@@ -441,12 +443,12 @@ public class DHProceduralAPI extends DyeHardGame{
 	}
 	/**
 	 * Generate a random floating point number between 0 (inclusive) and max (exclusive)
-	 * @param n the upper range
+	 * @param max the upper range
 	 * @return a random number between 0 and n
 	 */
-	public float apiRandomFloat(float max){
+	public float apiRandomFloat(double max){
 		Random rand = new Random();
-		return rand.nextFloat() * max; //% max;
+		return rand.nextFloat() * (float)max; //% max;
 	}
 
 	/**
@@ -454,9 +456,9 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * @param max the upper range
 	 * @return a random number between min and max
 	 */
-	public float apiRandomFloat(float min, float max){
+	public float apiRandomFloat(double min, double max){
 		Random rand = new Random();
-		return (rand.nextFloat() % (max - min)) + min;
+		return (float)(rand.nextFloat() % (max - min)) + (float)min;
 	}
 	/**
 	 * Sets a timer associated with an ID.
@@ -467,9 +469,9 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * @param id The string ID
 	 * @param seconds The length of the timer in seconds
 	 */
-	public void apiSetSingleTimer(String id, float seconds)
+	public void apiSetSingleTimer(String id, double seconds)
 	{
-		TimeManager.setTimer(id, seconds);
+		TimeManager.setTimer(id, (float)seconds);
 	}
 
 	/**
@@ -490,9 +492,9 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * @param id
 	 * @param seconds
 	 */
-	public static boolean apiRepeatingTimer(String id, float seconds)
+	public static boolean apiRepeatingTimer(String id, double seconds)
 	{
-		return TimeManager.repeatingTimer(id, seconds);
+		return TimeManager.repeatingTimer(id, (float)seconds);
 	}
 	// ---------- Utilities functions end ------------
 	
@@ -595,10 +597,10 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * Debris spawn at random locations along the right edge.
 	 * @param interval The interval to spawn debris.
 	 */
-	public void apiStartDebrisSpawner(float interval)
+	public void apiStartDebrisSpawner(double interval)
 	{
 		DebrisGenerator.enable();
-		DebrisGenerator.setInterval(interval);
+		DebrisGenerator.setInterval((float)interval);
 	}
 
 	/**
@@ -620,9 +622,9 @@ public class DHProceduralAPI extends DyeHardGame{
 	/**
 	 * Spawn a single debris at a specific height (y-coordinate)
 	 */
-	public int apiSpawnSingleDebris(float height)
+	public int apiSpawnSingleDebris(double height)
 	{
-		return DebrisGenerator.spawnDebris(height);
+		return DebrisGenerator.spawnDebris((float)height);
 	}
 
 	/**
@@ -651,9 +653,9 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * Spawns random enemies at random locations on the right of the 
 	 * game window with the given time interval
 	 */
-	public void apiStartEnemySpawner(float interval){
+	public void apiStartEnemySpawner(double interval){
 		EnemyGenerator.enable();
-		EnemyGenerator.setInterval(interval);
+		EnemyGenerator.setInterval((float)interval);
 	}
 	
 	/**
@@ -670,8 +672,8 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * @param y the y-coordinate position of the enemy
 	 * @return an integer which represents the id of the enemy
 	 */
-	public int apiSpawnSingleEnemy(float x, float y){
-		return EnemyGenerator.spawnEnemy(x, y);
+	public int apiSpawnSingleEnemy(double x, double y){
+		return EnemyGenerator.spawnEnemy((float)x, (float)y);
 	}
 
 	/**
@@ -691,8 +693,8 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * @param y the y-coordinate position of the enemy
 	 * @return an integer which represents the id of the enemy
 	 */
-	public int apiSpawnSingleEnemy(String type, float x, float y){
-		return EnemyGenerator.spawnEnemy(type, x, y);
+	public int apiSpawnSingleEnemy(String type, double x, double y){
+		return EnemyGenerator.spawnEnemy(type, (float)x, (float)y);
 	}
 
 	/**
@@ -739,11 +741,11 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * @param y the Y-coordinate position of the DyePack
 	 * @return an integer which represents the id of the DyePack
 	 */
-	public int apiSpawnSingleDyePack(String color, float x, float y){
-		return DyePackGenerator.spawnDyePack(color, x, y);
+	public int apiSpawnSingleDyePack(String color, double x, double y){
+		return DyePackGenerator.spawnDyePack(color, (float)x, (float)y);
 	}
 	
-	public int apiSpawnSinglePowerUp(float positionX, float positionY)
+	public int apiSpawnSinglePowerUp(double positionX, double positionY)
 	{
 		PowerUp spawned;
 		switch (apiRandomInt(3))
@@ -761,11 +763,11 @@ public class DHProceduralAPI extends DyeHardGame{
 			// Defaults to invincibility
 			spawned = new Invincibility();
 		}
-		spawned.initialize(new Vector2(positionX, positionY));
+		spawned.initialize(new Vector2((float)positionX, (float)positionY));
 		return  IDManager.register(spawned);
 	}
 
-	public int apiSpawnSinglePowerUp(String type, float positionX, float positionY)
+	public int apiSpawnSinglePowerUp(String type, double positionX, double positionY)
 	{
 		PowerUp spawned;
 		switch (type.toLowerCase())
@@ -783,7 +785,7 @@ public class DHProceduralAPI extends DyeHardGame{
 			// Defaults to invincibility
 			spawned = new Invincibility();
 		}
-		spawned.initialize(new Vector2(positionX, positionY));
+		spawned.initialize(new Vector2((float)positionX, (float)positionY));
 		return  IDManager.register(spawned);
 	}
 
@@ -793,14 +795,13 @@ public class DHProceduralAPI extends DyeHardGame{
 
 	public void apiSpawnGates()
 	{
-//		new WormHole(hero, Colors.randomColor(), 40f, 15f, 120f, 5f);
-//		new WormHole(hero, getHeroColor(), 40f, 15f, 120f, 20f);
-//		new WormHole(hero, Colors.randomColor(), 40f, 15f, 120f, 35f);
-//		new WormHole(hero, Colors.randomColor(), 40f, 15f, 120f, 50f);
-		apiAddOneWormHole(Colors.randomColor(), 40f, 15f, 120f, 5f);
-		apiAddOneWormHole(apiGetHeroColor(), 40f, 15f, 120f, 20f);
-		apiAddOneWormHole(Colors.randomColor(), 40f, 15f, 120f, 35f);
-		apiAddOneWormHole(Colors.randomColor(), 40f, 15f, 120f, 50f);
+		int safePortal = apiRandomInt(3);
+
+		for (int i = 0; i < 4; i++)
+		{
+			Color c = i == safePortal ? apiGetHeroColor() : Colors.randomColor();
+			apiAddOneWormHole(c, 40f, 15f, 120f, 5f + (i * 15));
+		}
 	}
 	
 	/**
@@ -811,8 +812,8 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * @param x the X-coordinate position of the WormHole
 	 * @param y the Y-coordinate position of the WormHole
 	 */
-	public void apiAddOneWormHole(Color color, float width, float height, float x, float y){
-		new WormHole(hero, color, width, height, x, y);
+	public void apiAddOneWormHole(Color color, double width, double height, double x, double y){
+		new WormHole(hero, color, (float)width, (float)height, (float)x, (float)y);
 	}
 
 	// -------------- WORMHOLES end ---------------------------------

@@ -1,7 +1,6 @@
 import dyeHardProceduralAPI.DHProceduralAPI;
 import dyeHardProceduralAPI.KeysEnum;
 import dyehard.DyeHardGame;
-import dyehard.UpdateManager;
 import dyehard.World.GameState;
 
 /**
@@ -20,7 +19,7 @@ public class NinDemo extends DHProceduralAPI
 		apiShowScore(true);
 		apiSetGoalDistance(300);
 		apiShowDistanceMeter(true);
-		apiSetwinningScore(15);
+		apiSetWinningScore(15);
 		apiStartDebrisSpawner(1.5f);
 		apiStartDyePackSpawner();
 		apiStartEnemySpawner();
