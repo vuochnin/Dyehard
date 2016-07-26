@@ -12,7 +12,7 @@ import dyehard.Enums.PowerupID;
 public class PowerupParser implements CsvParser {
 	
 	/** The powerup data. */
-	private PowerupData powerupData = new PowerupData();	
+	//private PowerupData powerupData = new PowerupData();	
     
     /** The powerups. */
     private Map<PowerupID, PowerupData> powerups = new HashMap<PowerupID, PowerupData>();
@@ -28,7 +28,7 @@ public class PowerupParser implements CsvParser {
          float magnitude = Float.valueOf(data[1]);
          float duration = Float.valueOf(data[2]);
 
-         //PowerupData value = new PowerupData();
+         PowerupData powerupData = new PowerupData();
          powerupData.setMagnitude(magnitude);
          powerupData.setDuration(duration);
          powerups.put(powerupId, powerupData);
@@ -36,11 +36,12 @@ public class PowerupParser implements CsvParser {
 	 
 	 /**
  	 * Adds the powerup data.
- 	 */
+ 	 
  	public void addPowerupData() {
 		 
 	 }
-	 
+	 */
+ 	
 	 /**
  	 * Gets the powerup data.
  	 *
