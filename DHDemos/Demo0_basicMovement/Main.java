@@ -1,4 +1,4 @@
-package Demo1;
+package Demo0_basicMovement;
 
 import Engine.GameWindow;
 
@@ -9,7 +9,7 @@ import Engine.GameWindow;
 public class Main extends GameWindow{
 	
 	public Main(){
-		setRunner(new Demo1());
+		setRunner(new Demo0());
 	}
 	
 	/**

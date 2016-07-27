@@ -1,4 +1,4 @@
-package Demo0;
+package Demo1_timer;
 
 import Engine.GameWindow;
 
@@ -9,7 +9,7 @@ import Engine.GameWindow;
 public class Main extends GameWindow{
 	
 	public Main(){
-		setRunner(new Demo0());
+		setRunner(new Demo1());
 	}
 	
 	/**

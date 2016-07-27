@@ -1,4 +1,4 @@
-package Demo2;
+package Demo1_timer;
 import dyeHardProceduralAPI.DHProceduralAPI;
 
 /**
@@ -6,9 +6,9 @@ import dyeHardProceduralAPI.DHProceduralAPI;
  * @author vuochnin
  *
  *
- *	Demonstrates
+ *	Demonstrates timer functions, spawning single object using timer
  */
-public class Demo2 extends DHProceduralAPI
+public class Demo1 extends DHProceduralAPI
 {
 	int heroID;
 	

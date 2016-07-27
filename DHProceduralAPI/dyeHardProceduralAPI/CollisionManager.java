@@ -11,6 +11,7 @@ import dyehard.Enemies.Enemy;
 import dyehard.Enums.ManagerStateEnum;
 import dyehard.Obstacles.Debris;
 import dyehard.Player.Hero;
+import dyehard.Util.Colors;
 import dyehard.Weapons.Bullet;
 import dyehard.World.WormHole.*;
 
@@ -18,9 +19,6 @@ public class CollisionManager {
 
 	private static HashMap<String, Boolean> collisionMemory;
 	
-	private static DHProceduralAPI api;
-	
-	private static boolean collisionIsDirty;
 	
 	private static int i, j;
 	
@@ -33,11 +31,6 @@ public class CollisionManager {
 	}
 	
 	private static CollidableGameObject[] objects;
-	
-	public static void register(DHProceduralAPI newApi)
-	{
-		api = newApi;
-	}
 	
 	public static int objectCount()
 	{
@@ -132,40 +125,7 @@ public class CollisionManager {
 		}
 	}
 	
-	public static boolean isColliding(int id1, int id2){
-		if(id1 < 0 || id1 >= objectCount())
-		{
-			System.err.println("Invalid id for id1: " + id1);
-			return false;
-		}
-		if(id2 < 0 || id2 >= objectCount())
-		{
-			System.err.println("Invalid id for id2: " + id2);
-			return false;
-		}
-		
-		return lookup(id1).collided(lookup(id2));
-	}
 	
-	public static void setDirty()
-	{
-		collisionIsDirty = true;
-	}
-	
-	private static void handleCollision(CollidableGameObject first, int id1, CollidableGameObject second, int id2)
-	{
-		String type1 = "", type2 = "", subtype1 = "", subtype2 = "";
-		
-		type1 = parseType(first);
-		type2 = parseType(second);
-
-		subtype1 = getSubtype(type1, first);
-		subtype2 = getSubtype(type2, second);
-		
-		// get types of Collidable objects
-		if(type1 != "" && type2 != "")
-			api.handleCollisions(type1, subtype1, id1, type2, subtype2, id2);
-	}
 	
 	private static String parseType(CollidableGameObject obj)
 	{
@@ -198,34 +158,6 @@ public class CollisionManager {
 		return "";
 	}
 	
-
-//	private void handleHeroCollisions(CollidableGameObject hero, CollidableGameObject other)
-//	{
-//		//if other instanceof Debris
-//		if(other instanceof Debris){
-//			int id = DebrisGenerator.getID((Debris)other);
-//			//handleDebrisCollision(id);
-//		}
-//		//handle enemy(id, type)
-//		else if(other instanceof Enemy){
-//			String type = other.toString();
-//			int id = EnemyManager.getInstance().getId((Enemy) other);
-//			//handleEnemyCollision(id, type);
-//		}
-//		
-//		// powerup(id, type)
-//		else if(other instanceof PowerUp)
-//		{
-//			String type = getPowerUpType(other);
-//			
-//			//handlePowerUpCollision(id, type);
-//		}
-//		
-//		// dyePack(id, color)
-//		else if(other instanceof DyePack){
-//			
-//		}
-//	}
 	
 	private static String getSubtype(String type, CollidableGameObject obj)
 	{
@@ -240,9 +172,14 @@ public class CollisionManager {
 		else if(type == "Debris"){
 			return obj.toString();
 		}
-		else if(type == "DyePack")
+		else if(type == "DyePack" || type == "Bullet")
 		{
-			// return color of dyepack
+			return obj.color == Colors.Blue ? "Blue" :
+				obj.color == Colors.Green ? "Green":
+				obj.color == Colors.Pink ? "Pink" :
+				obj.color == Colors.Red ? "Red":
+				obj.color == Colors.Teal ? "Teal" :
+				"Yellow";
 		}
 		return "";
 	}

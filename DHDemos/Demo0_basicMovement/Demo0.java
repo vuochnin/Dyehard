@@ -1,4 +1,4 @@
-package Demo0;
+package Demo0_basicMovement;
 import dyeHardProceduralAPI.DHProceduralAPI;
 import dyeHardProceduralAPI.KeysEnum;
 
@@ -7,7 +7,7 @@ import dyeHardProceduralAPI.KeysEnum;
  * @author vuochnin
  *
  *
- *	Demonstrates basic Hero functionality and Input functionality
+ *	Demonstrates basic object movement and Input functionality
  */
 public class Demo0 extends DHProceduralAPI
 {

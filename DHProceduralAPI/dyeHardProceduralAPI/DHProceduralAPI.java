@@ -47,7 +47,6 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * Must override the initialize() method from the abstract super class, DyeHardGame
 	 */
 	public void initialize(){
-		CollisionManager.register(this);
 
 		window.requestFocusInWindow();
 		apiSetGoalDistance();
@@ -132,12 +131,6 @@ public class DHProceduralAPI extends DyeHardGame{
 	public void updateGame(){ }
 	
 	
-	
-	public void handleCollisions(String type1, String subtype1, int id1, String type2, String subtype2, int id2)
-	{
-		// User overrides this
-	}
-	
 	/**
 	 * Reports the number of objects in play
 	 * @return the number of objects in play
@@ -149,8 +142,8 @@ public class DHProceduralAPI extends DyeHardGame{
 
 	/**
 	 * Retrieves the ID of a registered object. Used in for loops.
-	 * @param index
-	 * @return
+	 * @param index 
+	 * @return an Integer which represents the ID of the object
 	 */
 	public int apiGetID(int index)
 	{
@@ -159,8 +152,8 @@ public class DHProceduralAPI extends DyeHardGame{
 
 	/**
 	 * presents the type of an object
-	 * @param id
-	 * @return
+	 * @param id the id of an object
+	 * @return the type of the object as a String
 	 */
 	public String apiGetType(int id){
 		return CollisionManager.getType(id);
@@ -168,13 +161,12 @@ public class DHProceduralAPI extends DyeHardGame{
 
 	/**
 	 * Presents the subtype of an object
-	 * @param id
-	 * @return
+	 * @param id the id of an object
+	 * @return the subtype of the object as a String
 	 */
 	public String apiGetSubtype(int id){
 		return CollisionManager.getSubtype(id);
 	}
-	
 	
 	/**
 	 * Fire the current weapon
@@ -335,8 +327,14 @@ public class DHProceduralAPI extends DyeHardGame{
 	public void apiDestroy(int id)
 	{
 		CollidableGameObject obj = IDManager.get(id);
-		obj.destroy();
-		CollisionManager.setDirty();
+		if(obj instanceof Hero)
+		{
+			((Hero)obj).damageHero(hero, null);
+		}
+		else
+		{
+			obj.destroy();
+		}
 	}
 	
 	/**
@@ -382,10 +380,6 @@ public class DHProceduralAPI extends DyeHardGame{
 	
 	public void apiSetWinningScore(int winScore){
 		winningScore = winScore;
-	}
-	
-	public void apiLoseALife(){
-		GameState.RemainingLives--;
 	}
 	
 	public void apiSpeedUp(boolean up){
@@ -627,15 +621,6 @@ public class DHProceduralAPI extends DyeHardGame{
 		return DebrisGenerator.spawnDebris((float)height);
 	}
 
-	/**
-	 * Reports the number of debris in play
-	 * @return The number of debris
-	 */
-	public int apiDebrisCount()
-	{
-		return DebrisGenerator.debrisCount();
-	}
-
 	//-------------- DEBRIS end --------------------------------
 	
 	
@@ -702,14 +687,6 @@ public class DHProceduralAPI extends DyeHardGame{
 	 */
 	public void apiStopEnemySpawner(){
 		EnemyGenerator.disable();
-	}
-	
-	/**
-	 * Reports the number of enemies instantiated 
-	 * @return the number of enemies instantiated 
-	 */
-	public int apiEnemyCount(){
-		return EnemyGenerator.enemyCount();
 	}
 	
 	//------------------ ENEMY end --------------------------------
@@ -800,7 +777,7 @@ public class DHProceduralAPI extends DyeHardGame{
 		for (int i = 0; i < 4; i++)
 		{
 			Color c = i == safePortal ? apiGetHeroColor() : Colors.randomColor();
-			apiAddOneWormHole(c, 40f, 15f, 120f, 5f + (i * 15));
+			apiAddOneWormHole(c, 40f, 13, 200f, 8 + (i * 15));
 		}
 	}
 	

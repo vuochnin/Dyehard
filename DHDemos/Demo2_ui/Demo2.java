@@ -1,4 +1,4 @@
-package Demo1;
+package Demo2_ui;
 import dyeHardProceduralAPI.DHProceduralAPI;
 import dyeHardProceduralAPI.KeysEnum;
 
@@ -30,7 +30,7 @@ import dyeHardProceduralAPI.KeysEnum;
  *
  *@author vuochnin
  */
-public class Demo1 extends DHProceduralAPI {
+public class Demo2 extends DHProceduralAPI {
 	int heroID;
 	
 	public void buildGame(){

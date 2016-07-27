@@ -1,4 +1,4 @@
-package DemoA;
+package Demo5;
 
 import Engine.GameWindow;
 
@@ -9,7 +9,7 @@ import Engine.GameWindow;
 public class Main extends GameWindow{
 	
 	public Main(){
-		setRunner(new Demo4());
+		setRunner(new Demo5());
 	}
 	
 	/**

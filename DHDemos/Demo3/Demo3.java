@@ -7,8 +7,14 @@ import dyeHardProceduralAPI.KeysEnum;
  * @author vuochnin
  *
  *
- *	Demonstrates interacting with objects by their IDs, spawn single 
- *	debris object, and the repeatingTimer()
+ *	Demonstrates interacting with objects by their IDs
+ *
+ *  Functions used:
+ *  	apiStartHero()
+ *  	apiEcho()
+ *  	apiRepeatingTimer()
+ *  	apiRandomFloat(min, max)
+ *  	
  */
 public class Demo3 extends DHProceduralAPI
 {
@@ -21,14 +27,41 @@ public class Demo3 extends DHProceduralAPI
 		apiEcho("Hero started with ID: " + heroID);
 	}
 	
+	int weaponselect = 0;
+	
 	public void updateGame()
 	{
+		apiObjectFollowTheMouse(heroID);
+		
+		if(apiIsMouseLeftClicked())
+			apiHerofirePaint();
+		
+		// Switching the weapon
+		if(apiIsKeyboardButtonTapped(KeysEnum.w)){
+			weaponselect = (weaponselect + 1) % 3;
+			
+			switch(weaponselect)
+			{
+			case 0:
+				apiDefaultWeapon();
+				break;
+			case 1:
+				apiActivateLimitedAmmoWeapon();
+				break;
+			case 2:
+				apiActivateSpreadFireWeapon();
+				break;
+			}
+		}
+		
+		// Spawn single debris in random interval
 		if(apiRepeatingTimer("debris", apiRandomFloat(0.5f, 3)))
 		{
 			int spawnedID = apiSpawnSingleDebris(10);
 			apiEcho("Spawned debris with ID: " + spawnedID);
 		}
 		
+		// Interacting with debris
 		for(int i = 0; i < apiObjectCount(); i++)
 		{
 			int id = apiGetID(i);
