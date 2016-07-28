@@ -8,12 +8,6 @@ import dyeHardProceduralAPI.KeysEnum;
  *
  *
  *	Demonstrates interacting with objects by their IDs
- *
- *  Functions used:
- *  	apiStartHero()
- *  	apiEcho()
- *  	apiRepeatingTimer()
- *  	apiRandomFloat(min, max)
  *  	
  */
 public class Demo3 extends DHProceduralAPI

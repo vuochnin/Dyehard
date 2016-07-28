@@ -6,6 +6,7 @@ import dyeHardProceduralAPI.KeysEnum;
  *	Demonstrates DyeHard UI, menus, random object spawning, and other basic utilities 
  *	Functions used:
  *		apiStartHero()
+ *		apiShowStartScreen()
  *		apiSetLivesTo()
  *		apiSetGoalDistance()
  *		apiShowDistanceMeter()
@@ -37,10 +38,11 @@ public class Demo2 extends DHProceduralAPI {
 		heroID = apiStartHero();
 		
 		// UI
+		apiShowStartScreen();
 		apiSetLivesTo(3); 		// Sets hero health to 5 and display on the screen 
 		apiShowScore(true);		// Shows the current score on the screen (Not updating in this demo)
 		apiSetGoalDistance(500); 		// Set the goal
-		apiShowDistanceMeter(true); 	// Displays the distance meter
+		apiShowDistanceMeter(); 	// Displays the distance meter
 		
 		// START OBJECT SPAWNERS WITH DEFAULT SETTING
 		apiStartDebrisSpawner();	// Spawns Debris randomly

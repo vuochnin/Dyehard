@@ -20,12 +20,17 @@ import dyehard.World.GameState;
 // TODO: Auto-generated Javadoc
 /**
  * The Class DyehardUI.
+ * 
+ * @author Modified by: Nin
  */
 public class DyehardUI extends UpdateableObject {
-	
+	// ProAPI: To check if the custom number of lives has set to display and update based on that
 	private boolean livesIsSet = false;
+	// ProAPI: To check if the user asked to display the score, then update based on that
 	private boolean displayScore = false;
+	// ProAPI: To check if the user asked to display the distance meter UI, then update based on that
 	private boolean displayDistanceMeter = false;
+	// ProAPI: To check if the default setting is being used
 	private boolean uiDefaultSetting = false;
     
     /** The hero. */
@@ -52,28 +57,6 @@ public class DyehardUI extends UpdateableObject {
         this.hero = hero;
         new DyeMeter(hero);
 
-//        hud = DyeHardResources.getInstance().getScaledRectangle(ImageID.UI_HUD);
-//        hud.center.setX(BaseCode.world.getWidth() / 2);
-//        hud.center.setY(fromTop(hud, 0f));
-//        hud.alwaysOnTop = true;
-        
-        
-//        Rectangle baseHeart = DyeHardResources.getInstance().getScaledRectangle(ImageID.UI_HEART);
-//        baseHeart.alwaysOnTop = true;
-//        hearts = new ArrayList<Rectangle>();
-//        for (int i = 0; i < 10; ++i) {
-//            Rectangle heart = new Rectangle(baseHeart);
-//            float width = heart.size.getX();
-//
-//            // TODO magic numbers
-//            heart.center = new Vector2(BaseCode.world.getWidth() - i * 1.62f
-//                    * width - 4f, BaseCode.world.getHeight() - width / 2 - 1.4f);
-//            hearts.add(heart);
-//        }
-//
-//        baseHeart.visible = false;
-        //distanceMeter = new DyehardDistanceMeter(GameState.TargetDistance);
-
         // TODO magic numbers
         scoreText = new Text("", 4f, BaseCode.world.getHeight() - 3.25f);
         scoreText.setFrontColor(Color.white);
@@ -82,6 +65,12 @@ public class DyehardUI extends UpdateableObject {
         scoreText.setFontName("Arial");
     }
     
+    /**
+     * Sets DyehardUI to default setting, default UI layout
+     * Note: This method is added by Nin, for the purpose of making the Score, 
+     * Heart bar, and Distance meter UI to be customizable or accessible separately 
+     * in the Procedural API
+     */
     public void useUIdefaultSetting(){
       uiDefaultSetting = true;
 	  hud = DyeHardResources.getInstance().getScaledRectangle(ImageID.UI_HUD);
@@ -106,17 +95,28 @@ public class DyehardUI extends UpdateableObject {
 	  distanceMeter = new DyehardDistanceMeter(GameState.TargetDistance);
     }
     
-    
+    /**
+     * Displays the score on the game window (For Procedural API)
+     * @param display true/false
+     */
     public void displayScore(boolean display){
     	displayScore = display;
     }
     
-    public void displayDistanceMeter(boolean display, int tartgetDistance){
-    	displayDistanceMeter = display;
-    	if(display)
-    		distanceMeter = new DyehardDistanceMeter(tartgetDistance, 55f);
+    /**
+     * Displays the distance meter on the game window (For Procedural API)
+     * @param tartgetDistance the length of the total distance that 
+     * 	the user set for the game
+     */
+    public void displayDistanceMeter(int tartgetDistance){
+    	displayDistanceMeter = true;
+    	distanceMeter = new DyehardDistanceMeter(tartgetDistance, 55f);
     }
     
+    /**
+     * Sets the number of lives the game initially have (For Procedural API)
+     * @param lives the number of lives
+     */
     public void setRemainingLives(int lives){
     	livesIsSet = true;
         Rectangle baseHeart = DyeHardResources.getInstance().getScaledRectangle(ImageID.UI_HEART);
@@ -159,7 +159,7 @@ public class DyehardUI extends UpdateableObject {
      * @see dyehard.UpdateableObject#update()
      */
     @Override
-    public void update() {
+    public void update() {					// Modified for Procedural API (also work as default)
         for (Rectangle r : hearts) {
             r.visible = false;
         }

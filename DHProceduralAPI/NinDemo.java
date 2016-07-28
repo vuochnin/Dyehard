@@ -18,7 +18,7 @@ public class NinDemo extends DHProceduralAPI
 		apiSetLivesTo(8);
 		apiShowScore(true);
 		apiSetGoalDistance(300);
-		apiShowDistanceMeter(true);
+		apiShowDistanceMeter();
 		apiSetWinningScore(15);
 		apiStartDebrisSpawner(1.5f);
 		apiStartDyePackSpawner();
