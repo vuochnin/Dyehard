@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 import org.omg.CORBA.INITIALIZE;
 
-public class IDManager
+public class ApiIDManager
 {
 	private static boolean dirty;
 	private static int nextID;
@@ -29,7 +29,7 @@ public class IDManager
 		idMap = new HashMap<>();
 	}
 	
-	private IDManager(){}
+	private ApiIDManager(){}
 
 	public static int count()
 	{
@@ -93,7 +93,7 @@ public class IDManager
 	public static void cleanup()
 	{
 		List<CollidableGameObject> currentSet
-			= Arrays.asList(CollisionManager.getObjects());
+			= Arrays.asList(ApiCollisionManager.getObjects());
 
 		List<Entry<Integer, CollidableGameObject>> entries = new ArrayList<>();
 
@@ -115,7 +115,7 @@ public class IDManager
 	public static void collectStrayObjects()
 	{
 		List<CollidableGameObject> currentSet
-			= Arrays.asList(CollisionManager.getObjects());
+			= Arrays.asList(ApiCollisionManager.getObjects());
 
 		List<CollidableGameObject> entries = new ArrayList<>();
 

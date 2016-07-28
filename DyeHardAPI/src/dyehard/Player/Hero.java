@@ -38,6 +38,8 @@ import dyehard.World.WormHole.StargatePathFront;
 // TODO: Auto-generated Javadoc
 /**
  * The Class Hero.
+ * 
+ * Modified by Nin
  */
 public class Hero extends Actor implements HeroCollision, HeroDamage {
 	
@@ -343,7 +345,8 @@ public class Hero extends Actor implements HeroCollision, HeroDamage {
     }
     
     /**
-     * Switch the current weapon to the given weapon
+     * (Added for ProAPI)
+     * Switch the current weapon to the given weapon 
      * @param w the weapon to switch to
      */
     public void changeWeapon(Weapon w){

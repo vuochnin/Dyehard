@@ -3,11 +3,25 @@ import dyeHardProceduralAPI.DHProceduralAPI;
 import dyeHardProceduralAPI.KeysEnum;
 
 /**
- * 
- * @author vuochnin
+ *	Demonstrates weapons switching and interacting with objects by their IDs
  *
+ *	Functions introduced:
+ *		apiEcho(String)
+ *		apiDefaultWeapon()
+ *		apiActivateLimitedAmmoWeapon()
+ *		apiActivateSpreadFireWeapon()
+ *		apiRandomFloat(double)
+ *		apiSpawnSingleDebris(double)
+ *		apiObjectCount()
+ *		apiGetID(int)
+ *		apiGetType(int)
+ *		apiGetObjectPositionX(int)
+ *		apiGetObjectPositionY(int)
+ *		apiMoveObjectTo(int, double, double)
+ *		apiMoveObject(int, double, double)
  *
- *	Demonstrates interacting with objects by their IDs
+ *	@author Holden
+ *	@author Nin
  *  	
  */
 public class Demo3 extends DHProceduralAPI
@@ -49,7 +63,7 @@ public class Demo3 extends DHProceduralAPI
 		}
 		
 		// Spawn single debris in random interval
-		if(apiRepeatingTimer("debris", apiRandomFloat(0.5f, 3)))
+		if(apiRepeatingTimer("debris", apiRandomFloat(3)))
 		{
 			int spawnedID = apiSpawnSingleDebris(10);
 			apiEcho("Spawned debris with ID: " + spawnedID);

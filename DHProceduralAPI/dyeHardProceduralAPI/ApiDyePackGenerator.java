@@ -14,7 +14,7 @@ import dyehard.Util.Colors;
 /**
  * @author Holden
  */
-public class DyePackGenerator {
+public class ApiDyePackGenerator {
 
 	private static Random   myRandom;
 	private static float    dyeFrequency;
@@ -31,7 +31,7 @@ public class DyePackGenerator {
 		dyePacks = new ArrayList<>();
 	}
 
-	private DyePackGenerator(){}
+	private ApiDyePackGenerator(){}
 
 	public static void setActive(boolean val)
 	{
@@ -87,7 +87,7 @@ public class DyePackGenerator {
 	{
 		DyePack dye = spawn(color, x, y);
 
-		int result =  IDManager.register(dye);
+		int result =  ApiIDManager.register(dye);
 
 		System.out.println("Spawned DyePack with ID: " + result);
 
@@ -104,7 +104,7 @@ public class DyePackGenerator {
 
 		DyePack dye = spawn(generatorPositionX, posY);
 
-		int result =  IDManager.register(dye);
+		int result =  ApiIDManager.register(dye);
 
 		System.out.println("Spawned DyePack with ID: " + result);
 
@@ -117,13 +117,13 @@ public class DyePackGenerator {
 
 		dyePacks.add(dye);
 
-		return IDManager.register(dye);
+		return ApiIDManager.register(dye);
 	}
 
 	public static void update()
 	{
 		if(active &&
-		   TimeManager.repeatingTimer("DYEPACK_GENERATION", dyeFrequency))
+		   ApiTimeManager.repeatingTimer("DYEPACK_GENERATION", dyeFrequency))
 		{
 			generateDyePack();
 			cleanup();

@@ -4,32 +4,26 @@ import dyeHardProceduralAPI.KeysEnum;
 
 /**
  *	Demonstrates DyeHard UI, menus, random object spawning, and other basic utilities 
- *	Functions used:
- *		apiStartHero()
+ *	Functions introduced:
  *		apiShowStartScreen()
- *		apiSetLivesTo()
- *		apiSetGoalDistance()
+ *		apiSetLivesTo(int)
+ *		apiSetGoalDistance(int)
  *		apiShowDistanceMeter()
  *		apiStartDebrisSpawner()
- *		apiStartDyePackSpawner()
  *		apiStartEnemySpawner()
- *		apiObjectFollowTheMouse()
- *		apiIsMouseLeftClicked()
- *		apiHerofirePaint()
- *		apiRepeatingTimer()
  *		apiGetWorldWidth()
  *		apiGetWorldHeight()
- *		apiRandomFloat()
- *		apiSpawnSinglePowerUp(x, y)
+ *		apiRandomFloat(double)
+ *		apiSpawnSinglePowerUp(double, double)
  *		apiUserWon()
- *		apiShowWinMenu(true)
+ *		apiShowWinMenu(boolean)
  *		apiUserLose()
- *		apiShowLoseMenu(true)
- *		apiIsKeyboardButtonTapped(KeysEnum)
+ *		apiShowLoseMenu(boolean)
  *		apiQuitGame()
  *		apiRestartGame()
- *
- *@author vuochnin
+ *		
+ *	@author Holden
+ *	@author Nin
  */
 public class Demo2 extends DHProceduralAPI {
 	int heroID;

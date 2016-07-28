@@ -12,6 +12,8 @@ import dyehard.Resources.ImageDataParser.ImageID;
 // TODO: Auto-generated Javadoc
 /**
  * The Class DyehardDistanceMeter.
+ * 
+ * Modified by Nin
  */
 public class DyehardDistanceMeter {
     
@@ -73,6 +75,14 @@ public class DyehardDistanceMeter {
         setValue(currentValue);
     }
     
+    /**
+     * (Added for ProAPI)
+     * Instantiates a new dyehard distance meter with yPadding
+     * This additional constructor is for the purpose of adjusting the
+     * location (yPadding) of the distance meter UI.
+     * @param maxValue the maximum distance (target distance)
+     * @param yPadding the horizontal padding of the UI
+     */
     public DyehardDistanceMeter(int maxValue, float yPadding) {
         this.maxValue = maxValue;
         currentValue = 0;

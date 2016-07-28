@@ -4,10 +4,20 @@ import dyeHardProceduralAPI.KeysEnum;
 
 /**
  * 
- * @author vuochnin
- *
- *
  *	Demonstrates basic object movement and Input functionality
+ *	
+ *	Functions introduced:
+ *		apiStartHero()
+ *		apiIsKeyboardButtonTapped(KeysEnum)
+ *		apiObjectFollowTheMouse(int)
+ *		apiIsKeyboardUpPressed()
+ *		apiIsKeyboardDownPressed()
+ *		apiIsKeyboardLeftPressed()
+ *		apiIsKeyboardRightPressed()
+ *		apiMoveObject(int, double, double)
+ *
+ *	@author Holden
+ *	@author Nin
  */
 public class Demo0 extends DHProceduralAPI
 {

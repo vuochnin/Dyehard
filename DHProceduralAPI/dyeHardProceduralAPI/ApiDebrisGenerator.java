@@ -1,11 +1,8 @@
 package dyeHardProceduralAPI;
 
-import dyehard.Collision.CollidableGameObject;
-import dyehard.Enums.ManagerStateEnum;
 import dyehard.Obstacles.Debris;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -13,7 +10,7 @@ import java.util.Random;
 /**
  * @author Holden
  */
-public class DebrisGenerator
+public class ApiDebrisGenerator
 {
 	private static Random RANDOM = new Random();
 	private static float        interval;
@@ -31,7 +28,7 @@ public class DebrisGenerator
 	/**
 	 * 	Hide the constructor to simulate a static class. Because Java doesn't have static classes.
 	 */
-	private DebrisGenerator(){}
+	private ApiDebrisGenerator(){}
 
 	/**
 	 * Starts the debris generator
@@ -74,7 +71,7 @@ public class DebrisGenerator
 		Debris d = new APIDebris(RANDOM.nextInt(3),100,100);// spawns debris at right edge of screen
 		debrisList.add(d);
 		
-		return IDManager.register(d);
+		return ApiIDManager.register(d);
 	}
 
 	/**
@@ -85,7 +82,7 @@ public class DebrisGenerator
 	{
 		Debris d = new APIDebris(RANDOM.nextInt(3), 100, 100, height, height);// spawns debris at right edge of screen
 		debrisList.add(d);
-		return IDManager.register(d);
+		return ApiIDManager.register(d);
 	}
 
 	/**
@@ -94,7 +91,7 @@ public class DebrisGenerator
 	public static void update()
 	{
 		if(active &&
-		   TimeManager.repeatingTimer("DEBRIS_GENERATION", interval))
+		   ApiTimeManager.repeatingTimer("DEBRIS_GENERATION", interval))
 		{
 			spawnDebris();
 			cleanup();

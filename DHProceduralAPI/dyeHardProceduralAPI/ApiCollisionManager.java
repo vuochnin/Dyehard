@@ -8,14 +8,13 @@ import dyehard.Collectibles.*;
 import dyehard.Collectibles.PowerUp;
 import dyehard.Collision.CollidableGameObject;
 import dyehard.Enemies.Enemy;
-import dyehard.Enums.ManagerStateEnum;
 import dyehard.Obstacles.Debris;
 import dyehard.Player.Hero;
 import dyehard.Util.Colors;
 import dyehard.Weapons.Bullet;
 import dyehard.World.WormHole.*;
 
-public class CollisionManager {
+public class ApiCollisionManager {
 
 	private static HashMap<String, Boolean> collisionMemory;
 	
@@ -49,7 +48,7 @@ public class CollisionManager {
 
 	private static CollidableGameObject lookup(int id)
 	{
-		return IDManager.get(id);
+		return ApiIDManager.get(id);
 	}
 
 	public static String getType(int i)
@@ -116,8 +115,8 @@ public class CollisionManager {
 					objects[i].handleCollision(objects[j]);
 					objects[j].handleCollision(objects[i]);
 					
-					String key = IDManager.reverseLookupID(objects[i])+
-							"," + IDManager.reverseLookupID(objects[j]);
+					String key = ApiIDManager.reverseLookupID(objects[i])+
+							"," + ApiIDManager.reverseLookupID(objects[j]);
 					
 					collisionMemory.put(key, true);
 				}

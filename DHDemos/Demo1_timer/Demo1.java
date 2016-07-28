@@ -7,6 +7,20 @@ import dyeHardProceduralAPI.DHProceduralAPI;
  *
  *
  *	Demonstrates timer functions, spawning single object using timer
+ *
+ *	Functions introduced:
+ *		apiStartDebrisSpawner(double)
+ *		apiSetSingleTimer(String, double)
+ *		apiIsTimerFinished(String)
+ *		apiSpawnSinglePowerUp(String, double, double)
+ *		apiRepeatingTimer(String, double)
+ *		apiStartDyePackSpawner()
+ *		apiStopDyePackSpawner()
+ *		apiIsMouseLeftClicked()
+ *		apiHerofirePaint()
+ *
+ *	@author Holden
+ *	@author Nin
  */
 public class Demo1 extends DHProceduralAPI
 {
@@ -39,6 +53,11 @@ public class Demo1 extends DHProceduralAPI
 		{
 			apiStopDyePackSpawner();
 			apiSetSingleTimer("dyepack", 5);
+		}
+		
+		// POWER UP. Spawn a SlowDown power up objects every 10 seconds
+		if(apiRepeatingTimer("PowerUp Spawner", 10)){
+			apiSpawnSinglePowerUp("SlowDown", 90, 30);
 		}
 	 
 		apiObjectFollowTheMouse(heroID);

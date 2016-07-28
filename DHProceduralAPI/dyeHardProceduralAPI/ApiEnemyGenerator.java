@@ -7,8 +7,15 @@ import Engine.Vector2;
 import dyehard.Enemies.*;
 import dyehard.Player.Hero;
 
-
-public class EnemyGenerator {
+/**
+ * ApiEnemyGenerator is a supporting class for DyeHard Procedural API,
+ * which is responsible for generating enemies in game.
+ * 
+ * @author Holden
+ * @author Nin
+ *
+ */
+public class ApiEnemyGenerator {
     private static Random RANDOM = new Random();
     private static Hero hero;
     
@@ -21,22 +28,22 @@ public class EnemyGenerator {
 	}
 	
 	/**
-	 * Register the hero with the EnemyGenerator
+	 * Register the hero with the ApiEnemyGenerator
 	 * @param hero the initialized hero
 	 */
     public static void initialize(Hero hero) {
-        EnemyGenerator.hero = hero;
+        ApiEnemyGenerator.hero = hero;
     }
     
     /**
-     * Enables the EnemyGenerator
+     * Enables the ApiEnemyGenerator
      */
     public static void enable(){
     	active = true;
     }
     
     /**
-     * Disables the EnemyGenerator
+     * Disables the ApiEnemyGenerator
      */
     public static void disable(){
     	active = false;
@@ -90,7 +97,7 @@ public class EnemyGenerator {
             break;
         }
 	    EnemyManager.getInstance().registerEnemy(result);
-	    return IDManager.register(result);
+	    return ApiIDManager.register(result);
     }
     
     /**
@@ -125,7 +132,7 @@ public class EnemyGenerator {
             break;
     	}
 	    EnemyManager.getInstance().registerEnemy(result);
-	    return IDManager.register(result);
+	    return ApiIDManager.register(result);
     }
     
     /**
@@ -161,7 +168,7 @@ public class EnemyGenerator {
             break;
     	}
 	    EnemyManager.getInstance().registerEnemy(result);
-	    return IDManager.register(result);
+	    return ApiIDManager.register(result);
     }
     
     
@@ -197,7 +204,7 @@ public class EnemyGenerator {
 		    break;
 	    }
 	    EnemyManager.getInstance().registerEnemy(result);
-	    return IDManager.register(result);
+	    return ApiIDManager.register(result);
     }
 
     /**
@@ -209,10 +216,10 @@ public class EnemyGenerator {
     }
 
     /**
-     * Updates the EnemyGenerator
+     * Updates the ApiEnemyGenerator
      */
     public static void update() {
-        if (active && TimeManager.repeatingTimer("ENEMY_GENERATION", interval)) {
+        if (active && ApiTimeManager.repeatingTimer("ENEMY_GENERATION", interval)) {
             spawnEnemy();
         }
     }

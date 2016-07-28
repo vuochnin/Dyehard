@@ -4,11 +4,21 @@ package Demo4;
 import dyeHardProceduralAPI.DHProceduralAPI;
 
 /**
- * 
- * @author vuochnin
- *
- *
  *	Demonstrates collision behavior in order to customize behavior for collisions
+ *	
+ *	Functions introduced:
+ *		apiStartEnemySpawner(double)
+ *		apiSpawnSingleDebris()
+ *		apiRandomFloat(double, double)
+ *		apiSetObjectVelocity(int, double, double)
+ *		apiColliding(int, int)
+ *		apiGetSubtype(int)
+ *		apiDestroy(int)
+ *		apiIncreaseScoreBy(int)
+ *		apiDecreaseScoreBy(int)
+ *	
+ *	@author Holden
+ *	@author Nin
  */
 public class Demo4 extends DHProceduralAPI
 {
@@ -18,7 +28,6 @@ public class Demo4 extends DHProceduralAPI
 	{
 		
 		heroID = apiStartHero();
-		apiEcho("Hero started with ID: " + heroID);
 		apiShowScore(true);
 		apiSetLivesTo(3);
 		apiStartEnemySpawner(1);

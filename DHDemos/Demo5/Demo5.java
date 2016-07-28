@@ -6,10 +6,18 @@ import java.awt.Color;
 import dyeHardProceduralAPI.DHProceduralAPI;
 
 /**
- * @author vuochnin
- * @author Holden
- *
  *	Demonstrates wormhole and color functions
+ *
+ *	Functions introduced:
+ *		apiGetHeroColor()
+ *		apiAddOneWormHole(Color, double, double, double, double)
+ *		apiGetRandomColor()
+ *		apiSpawnGates()
+ *		apiSpeedUp(boolean)
+ *		apiGetTravelledDistance()
+ *	
+ *	@author Holden
+ *	@author Nin
  */
 public class Demo5 extends DHProceduralAPI
 {
@@ -42,6 +50,10 @@ public class Demo5 extends DHProceduralAPI
 		}
 		else{
 			apiSpeedUp(false);
+		}
+		
+		if(apiGetTravelledDistance() == 300){
+			apiAddOneWormHole(apiGetHeroColor(), 0f, 60f, 120f, 30f);
 		}
 	}
 }
