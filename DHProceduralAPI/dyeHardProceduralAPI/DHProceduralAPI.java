@@ -25,7 +25,7 @@ import dyehard.World.WormHole;
 
 
 /**
- * This is a procedural API for Dye Hard game.
+ * DHProceduralAPI class is a procedural API for Dye Hard game.
  * This API is designed to use as introductory computer science lessons.
  * 
  * @author Vuochly (Nin) Ky
