@@ -7,14 +7,30 @@ import java.util.Map.Entry;
 
 import org.omg.CORBA.INITIALIZE;
 
+/**
+ * Manages the IDs of game objects
+ */
 public class ApiIDManager
 {
+	/**
+	 * Whether the manager needs to update the indexed set of IDs
+	 */
 	private static boolean dirty;
+
+	/**
+	 * The next ID to assign
+	 */
 	private static int nextID;
 
+	/**
+	 * The mapping of IDs to Game objects
+	 */
 	private static
 		HashMap<Integer, CollidableGameObject> idMap;
 
+	/**
+	 * The indexed set of IDs
+	 */
 	private static Integer[] indexed;
 
 	static
@@ -22,13 +38,19 @@ public class ApiIDManager
 		initialize();
 	}
 
+	/**
+	 * Initialize the ID manager
+	 */
 	private static void initialize()
 	{
 		dirty = true;
 		nextID = 0;
 		idMap = new HashMap<>();
 	}
-	
+
+	/**
+	 * 	Hide the constructor to simulate a static class. Because Java doesn't have static classes.
+	 */
 	private ApiIDManager(){}
 
 	public static int count()
@@ -131,6 +153,9 @@ public class ApiIDManager
 		}
 	}
 
+	/**
+	 * Clear the ID manager and destroy managed objects.
+	 */
 	public static void reset()
 	{
 		for(CollidableGameObject o : idMap.values())
@@ -142,14 +167,19 @@ public class ApiIDManager
 	
 	/**
 	 * Retrieve an object by ID
-	 * @param id
-	 * @return
+	 * @param id the ID number
+	 * @return the object
 	 */
 	public static CollidableGameObject get(int id)
 	{
 		return idMap.get(id);
 	}
-	
+
+	/**
+	 * Retrieves an ID associated with a given object
+	 * @param obj the object to search
+	 * @return the object's ID number
+	 */
 	public static int reverseLookupID(CollidableGameObject obj)
 	{
 		for(Entry<Integer, CollidableGameObject> e : idMap.entrySet())

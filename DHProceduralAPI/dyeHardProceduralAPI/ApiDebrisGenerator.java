@@ -8,15 +8,28 @@ import java.util.List;
 import java.util.Random;
 
 /**
+ * Provides Debris spawning functionality for the API
+ *
  * @author Holden
  */
 public class ApiDebrisGenerator
 {
 	private static Random RANDOM = new Random();
-	private static float        interval;
-	private static boolean      active;
-	private static List<Debris> debrisList;
 
+	/**
+	 * The interval for Debris spawns
+	 */
+	private static float        interval;
+
+	/**
+	 * The active state of the generator
+	 */
+	private static boolean      active;
+
+	/**
+	 * The set of Debris in play
+	 */
+	private static List<Debris> debrisList;
 
 	static
 	{

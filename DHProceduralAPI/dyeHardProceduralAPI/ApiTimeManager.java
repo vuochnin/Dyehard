@@ -134,7 +134,10 @@ public class ApiTimeManager
 
 		return result;
 	}
-	
+
+	/**
+	 * Removes all timers.
+	 */
 	public static void reset()
 	{
 		timers.clear();
