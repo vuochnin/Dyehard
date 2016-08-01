@@ -275,6 +275,21 @@ public class StudentObjectManager {
 		return toReturn;
     }
     
+    public static Class<?> getClassFromString(String cName){
+    	Class<?> toReturn = null;
+    	
+    	// Assign toReturn to the provided class name
+    	try {
+    		toReturn = Class.forName(cName);
+    	} catch (ClassNotFoundException e) {
+    		e.printStackTrace();
+    		System.out.println("Class Retrieval Failed");
+    	}
+    			
+    	// Return the class
+    	return toReturn;
+    }
+    
     public boolean checkForField(String fieldToCheck){
     	
         studentObjRef = new ClassReflector("StudentObj");
@@ -282,4 +297,5 @@ public class StudentObjectManager {
 
     	return true;
     }
+
 }

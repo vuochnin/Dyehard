@@ -47,13 +47,13 @@ public class SampleUserCode extends DyeHardGame {
     /** The Lab currently being used */
     private int labNum = -1;
     
+    private String className = "";
+    
     /** The hero. */
     
     private ClassReflector cf;
     
     private Class<?> hero;
-    
-    private Object genericHero;
     
     private Object heroInst = null;
 
@@ -80,23 +80,36 @@ public class SampleUserCode extends DyeHardGame {
     	String labString = JOptionPane.showInputDialog("Please type in lab number");
     	labNum = Integer.parseInt(labString);
     	
+    	// Request the class name, and store under className
+    	className = JOptionPane.showInputDialog("Please type in your class name");
+    	
     	// Based on the provided int, initialize the corresponding lab number
     	switch(labNum)
     	{
     	
-    	// LAB 0: Class Hierarchy Lab
+    	// LAB 0: Class Hierarchy, Basic Fields
     	case 0:
     		initializeLab0();
     		break;
     		
-    	// LAB 1: Creating a new hero
+    	// LAB 1: New Hero Texture, Methods
     	case 1:
     		initializeLab1();
     		break;
     		
-    	// LAB 2: Verify Fields
+    	// LAB 2: New Constructors
     	case 2:
     		initializeLab2();
+    		break;
+    	
+    	// LAB 3: Creating a new Debris Subclass
+    	case 3:
+    		initializeLab3();
+    		break;
+    	
+    	// LAB 4: All together, with a new Weapon
+    	case 4:
+    		initializeLab4();
     		break;
     		
     	// Nothing. Break and exit program
@@ -108,21 +121,56 @@ public class SampleUserCode extends DyeHardGame {
     	}
     }
     
-    /**
-     * Lab 0 - Class Hierarchy.
+    
+
+	/**
+     * Lab 0 - Simple Method
      * 
-     * Basic Lab that validates that the validates the class hierachy. The
-     * student should have made a class with a default constructor which
-     * extends the Hero class.
+     * Basic Lab that validates if a student has made a class that extends Hero,
+     * and contains float values for variables "width" and "height".
      * 
      */
     private void initializeLab0() {
     	
+    	// Get the class from user input and see if it extends Hero.
+    	// If not, the student class does not extend Hero.
+    	if(!Hero.class.isAssignableFrom(hero = StudentObjectManager.getClassFromString(className))){
+    		System.out.println("Provided class does not extend Hero");
+    		System.exit(0);
+    	}
+    	
+    	// Create a new instance of class. Reflection requires an instance of an obj
+    	heroInst = StudentObjectManager.createObj(hero);
+
+    	try {
+    		// Must always create and reflect before anything!
+    		cf = new ClassReflector(className);
+    		cf.reflect();
+    		
+    		// Get the new width and height.
+    		float newWidth, newHeight = 0;
+    		newWidth = (float) cf.getFieldValue("width", heroInst);
+    		newHeight = (float) cf.getFieldValue("height", heroInst);
+    		
+    		// Create a new hero with the new width and height
+    		privateHero = new Hero();
+	    	privateHero.size.set(newWidth, newHeight);
+	    	
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
+    }
+    
+    
+    private void initializeLab1() {
+    	
     	// Get the class from user input, assign to hero
     	hero = StudentObjectManager.getClassFromInput();
     	
-    	// Create a new instance of class and Hero to modify/evaluate
+    	// Create a new instance of class. Reflection requires an instance of an obj
     	heroInst = StudentObjectManager.createObj(hero);
+    	
+    	// Create a new Hero instance.
     	privateHero = new Hero();
     	
     	// Try to set the texture of Hero to the class' getTexture() texture
@@ -132,27 +180,30 @@ public class SampleUserCode extends DyeHardGame {
 			privateHero.texture = img;
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException 
 				| IllegalArgumentException | InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	
-    	
-    	
-		
-    	// Create an instance of the class, assign to heroInst
-    	//heroInst = StudentObjectManager.createObj(hero);
-		//privateHero = StudentObjectManager.registerHero(hero);
-    	
+    }
+    
+    /**
+     * Lab 0 - Class Hierarchy.
+     * 
+     * Basic Lab that validates that the validates the class hierachy. The
+     * student should have made a class with a default constructor which
+     * extends the Hero class.
+     * 
+     */
+    private void lab0Update(){
+    	UpdateManager.getInstance().update();
+        CollisionManager.getInstance().update();
+        StudentObjectManager.update();
+        
+        privateHero.center.setX(mouse.getWorldX());
+        privateHero.center.setY(mouse.getWorldY());
 
-    	
-    	// if StudentObj is not a Hero class, it failed the lab
-		/*if(hero.getSuperclass() != Hero.class){
-    		JOptionPane.showMessageDialog(window, "Invalid Class. Current class"
-    			+ " is of " + hero.getName());
-    		System.exit(labNum);
-    	} else
-    		System.out.println("Success! Student class is: " + hero.getName());
-        */
+        if ((keyboard.isButtonDown(KeyEvent.VK_F))
+                || (mouse.isButtonDown(1))) {
+        	privateHero.currentWeapon.fire();
+        }
     }
     
     /**
@@ -161,9 +212,9 @@ public class SampleUserCode extends DyeHardGame {
      * Lab that validates the class has the listed methods
      * 
      */
-    private void initializeLab1(){
+    private void initializeLab2(){
     	// Request the class name
-    	String className = JOptionPane.showInputDialog("Please type in your class name");
+    	className = JOptionPane.showInputDialog("Please type in your class name");
     	
     	String[] arrayOfConstructors = { 
     			"public StudentObj()",
@@ -212,25 +263,51 @@ public class SampleUserCode extends DyeHardGame {
     	}
     }
     
-    private void initializeLab2(){
+    private void initializeLab3(){
     	// Request the class name
     	String className = JOptionPane.showInputDialog("Please type in your class name");
     	
     	// TempClass to use for testing Fields
     	class tempClass {
-    		private float height = 2;	// Test correctness
-    		public float width = 2;		// Test privacy/access
-    		private boolean color = false;	// Test type
+    		// Test Fields
+    		private float height = 2;		// Test correctness
+    		public float width = 2;			// Test privacy/access
+    		private boolean color = false;	// Test field type
+    		
+    		// Test Constructors -- CANT DO IN ANONYMOUS CLASS. NEED TO CREATE CLASS FILE
+    		
+    		// Test Methods
+    		public void setCenter(float test, float test2){}		// Test correctness
+    		public boolean setHeight(float test){ return false; }	// Test return type
+    		public void setWidth(boolean test){}					// Test parameters
+    		private float getHeight(){ return 2; }					// Test access
+    		
     	};
     	
     	tempClass test = new tempClass();
     	
-    	// Validate the class based on Test's fields
+    	// Reflect the class
 		cf = new ClassReflector(className);
+		ClassReflector cf2 = new ClassReflector("StudentObj");
+		cf2.reflect();
 		cf.reflect();
+		
+		// Validate the class
 		cf.verifyFields(test.getClass().getDeclaredFields());
+		cf.verifyMethods(test.getClass().getDeclaredMethods());
+		cf.verifyConstructors(test.getClass().getDeclaredConstructors());
+    	
+		StudentObj soClass = new StudentObj();
+		
+		cf.verifyFields(soClass.getClass().getDeclaredFields());
+		cf.verifyMethods(soClass.getClass().getDeclaredMethods());
+		cf.verifyConstructors(soClass.getClass().getDeclaredConstructors());
     }
 
+    private void initializeLab4() {
+		// TODO Auto-generated method stub
+		
+	}
 
     /**
      * Sample1 ini.
@@ -321,11 +398,7 @@ public class SampleUserCode extends DyeHardGame {
         
     }
     
-    private void lab0Update(){
-    	UpdateManager.getInstance().update();
-        CollisionManager.getInstance().update();
-        StudentObjectManager.update();
-    }
+
     
     private void lab1Update() {
     	UpdateManager.getInstance().update();

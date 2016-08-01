@@ -4,6 +4,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 
 /**
@@ -77,6 +79,7 @@ public class ClassReflector {
             
             for (Field field : reflectedClass.getDeclaredFields()){
             	fields.put(field.getName(), field);
+            	System.out.println(field.getName());
             }
             
             // Populate the HashMap with the constructors
@@ -95,8 +98,8 @@ public class ClassReflector {
                 methods.put(method.getName(), method);
                 
                 // Print out for debug
-                //System.out.println(method.getName() + "   "
-                //  + method.toGenericString());
+                // System.out.println(method.getName() + "   "
+                //   + method.toGenericString());
             }
 
         } catch (ClassNotFoundException x) {
@@ -249,6 +252,42 @@ public class ClassReflector {
     	return false;
     }
     
+    public float getFloatField(String fieldName, Object obj){
+    	try {
+			Field f = Class.forName(className).getDeclaredField(fieldName);
+			return (float) f.getFloat(obj);
+			
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException|
+				IllegalAccessException| ClassNotFoundException e) {
+			System.out.println(fieldName + " not found.");
+			e.printStackTrace();
+		}
+		return -1;
+    }
+    
+    /**
+     * 
+     * @param 	fieldName - the String name of the field
+     * @param 	obj - an instance of the class to extract information from.
+     * @return 	The object wrapped in its respective primitive class, null if not 
+     * 			found
+     */
+    // Return the value specified by the field string. 
+    // Return null if the field cannot be found.
+    public Object getFieldValue(String fieldName, Object obj){
+    	// Try to get the field by name, and return the value
+    	try {
+			Field f = Class.forName(className).getDeclaredField(fieldName);
+			return f.get(obj);
+			
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException|
+				IllegalAccessException| ClassNotFoundException e) {
+			System.out.println(fieldName + " not found.");
+			e.printStackTrace();
+		}
+		return null;
+    }
+    
     public void getFields(String className){
     	try {
     	    Class<?> classType = Class.forName(className);
@@ -301,5 +340,145 @@ public class ClassReflector {
     			System.out.println("Cannot find field by name: " + toCheck.getName());
     		}
         }
+    }
+    
+    public void verifyMethods(Method[] methodArr){
+    	
+    	// currentField	=	From the Student Obj. Hashmap of Methods
+    	// toCheck 		=	From the array. This array has the correct parameters
+    	Method currentField = null;
+    	
+    	boolean flag = true;
+    	
+    	System.out.println("-------- List of Student Methods --------");
+    	for(Method toPrint : methods.values())
+    		System.out.println(toPrint);
+    	System.out.println("----------------------------------------");
+    	
+    	System.out.println("-------- List of Correct Methods --------");
+    	for(Method toPrint2 : methodArr)
+    		System.out.println(toPrint2);
+    	System.out.println("----------------------------------------");
+    	
+    	for (Method toCheck : methodArr){
+    		
+    		flag = true;
+    		
+    		// First check -- see if the name matches 
+    		if (methods.containsKey(toCheck.getName())){
+    			
+    			// If there's a match, set currentField to it
+    			currentField = methods.get(toCheck.getName());
+    			
+    			// Second check -- see if they share the same return type
+    			if (currentField.getReturnType() != toCheck.getReturnType()){
+    				System.out.println("Found " + toCheck.getName() 
+    				+ " but the return type is " + currentField.getReturnType() 
+    				+ " instead of " + toCheck.getReturnType());
+    			}
+    			
+    			// Third check -- see if they share the same modifiers
+				// (public, static, private, etc.)
+				if (currentField.getModifiers() != toCheck.getModifiers()){
+					System.out.println("Found " + toCheck.getName() 
+					+ " but the modifier/accessbility flag(s) are incorrect");
+				}
+				
+				// Fourth check -- see if the parameters are the same
+				if (currentField.getGenericParameterTypes().length != toCheck.getGenericParameterTypes().length)
+					flag = false;
+				else{
+					// Sort to eliminate parameter order
+					HashMap<String, Integer> paramHM = new HashMap<String, Integer>();
+					HashMap<String, Integer> paramHM2 = new HashMap<String, Integer>();
+					
+					// For each field parameter, store inside hashmap with count
+					for (int i = 0; i < currentField.getGenericParameterTypes().length; i++){
+						String name = currentField.getGenericParameterTypes()[i].toString();
+						if (paramHM.containsKey(name) == false)
+							paramHM.put(name, 1);
+						else
+							paramHM.put(name, paramHM.get(name) + 1);
+					}
+					
+					// Do the same with the other method
+					for (int i = 0; i < toCheck.getGenericParameterTypes().length; i++){
+						String name = toCheck.getGenericParameterTypes()[i].toString();
+						if (paramHM2.containsKey(name) == false)
+							paramHM2.put(name, 1);
+						else
+							paramHM2.put(name, paramHM2.get(name) + 1);
+					}
+					
+					if (paramHM.equals(paramHM2) == false)
+						flag = false;
+					
+					// Check each individual parameter
+					/*for (int i = 0; i < currentField.getGenericParameterTypes().length; i++){
+						for (int j = 0; j < toCheck.getGenericParameterTypes().length; j++){
+							if (currentField.getGenericParameterTypes()[i] 
+									!= toCheck.getGenericParameterTypes()[i]){
+								flag = false;
+							}
+						}
+					}*/
+				}
+	
+				// TODO: Find a more efficient way to handle logic
+				if (flag == false){
+										
+					System.out.print("Found " + toCheck.getName() + " but the parameter(s) are ");
+					for (int i = 0; i < currentField.getGenericParameterTypes().length; i++)
+						System.out.print(currentField.getGenericParameterTypes()[i] + " ");
+					
+					System.out.print("instead of ");
+					for (int i = 0; i < toCheck.getGenericParameterTypes().length; i++)
+						System.out.print(toCheck.getGenericParameterTypes()[i]);
+					System.out.print("\n");
+				}
+    		}
+    		// Unable to find method by name.
+    		else
+    			System.out.println("Cannot find method by name: " + toCheck.getName());
+    	}
+    }
+    
+    
+    // CONSTRUCTORS MUST BE DECLARED IN A SPECIFIC ORDER
+    // The student class can be named differently than the testing class
+    public void verifyConstructors(Constructor<?>[] constructArr){
+    	
+    	// Check each parameter for each constructor between toCheck[i] 
+    	// and constructArr[i].
+    	for (Constructor<?> toCheck : constructArr){
+    		for (int i = 0; i < constructArr.length; i++){
+    			
+    			// First Check -- The modifiers (public, private, etc.)
+    			if (constructArr[i].getModifiers() != toCheck.getModifiers()){
+					System.out.println("Found " + toCheck.toString() + "but" 
+							+ "the modifiers are incorrect.");
+					continue;
+				}
+    			
+    			// Second Check -- Number of parameters
+    			if (constructArr[i].getParameterTypes().length != toCheck.getParameterTypes().length){
+    				System.out.println("Found " + toCheck.getName() 
+    				+ " but the parameter(s) are incorrect");
+    				System.out.println(constructArr[i].toString());
+    				System.out.println(toCheck.toString());
+    				continue;
+    			}
+    			
+    			// Third Check -- Parameter types.
+    			for (int paramCounter = 0; paramCounter < constructArr[i].getGenericParameterTypes().length; paramCounter++){
+    				if (constructArr[i].getGenericParameterTypes()[paramCounter] 
+    						!= toCheck.getGenericParameterTypes()[paramCounter]){
+    					System.out.println("Found " + toCheck.getName() 
+    					+ " but the parameter(s) are incorrect");
+        			}
+    			}
+    			
+    		}	
+    	}
     }
 }

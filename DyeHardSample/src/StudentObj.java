@@ -25,7 +25,7 @@ public class StudentObj {
     
     /** The color. */
     private Color color;
-
+    
     /**
      * Instantiates a new student obj.
      */
