@@ -11,7 +11,7 @@ import dyeHardProceduralAPI.KeysEnum;
  *		apiActivateLimitedAmmoWeapon()
  *		apiActivateSpreadFireWeapon()
  *		apiRandomFloat(double)
- *		apiSpawnSingleDebris(double)
+ *		apiSpawnSingleDebris(double, double)
  *		apiObjectCount()
  *		apiGetID(int)
  *		apiGetType(int)
@@ -65,7 +65,7 @@ public class Demo3 extends DHProceduralAPI
 		// Spawn single debris in random interval
 		if(apiRepeatingTimer("debris", apiRandomFloat(3)))
 		{
-			int spawnedID = apiSpawnSingleDebris(10);
+			int spawnedID = apiSpawnSingleDebris(100, 10);
 			apiEcho("Spawned debris with ID: " + spawnedID);
 		}
 		

@@ -646,11 +646,23 @@ public class DHProceduralAPI extends DyeHardGame{
 
 	/**
 	 * Spawn a single debris at a specific height (y-coordinate)
+	 * @param x the x-coordinate position of the enemy
+	 * @param y the y-coordinate position of the enemy
 	 * @return an id of this debris
 	 */
-	public int apiSpawnSingleDebris(double height)
+	public int apiSpawnSingleDebris(double x, double y)
 	{
-		return ApiDebrisGenerator.spawnDebris((float)height);
+		return ApiDebrisGenerator.spawnDebris((float)x, (float)y);
+	}
+	
+	public int apiSpawnSingleDebris(double x, double y, boolean startMoving)
+	{
+		int id = ApiDebrisGenerator.spawnDebris((float)x, (float)y);
+		
+		if(!startMoving)
+			apiSetObjectVelocity(id, 0, 0);
+		
+		return id;
 	}
 
 	//-------------- DEBRIS end --------------------------------
@@ -850,7 +862,8 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * @param y the Y-coordinate of the center position of the WormHole
 	 */
 	public void apiAddOneWormHole(Color color, double width, double height, double x, double y){
-		new WormHole(hero, color, (float)width, (float)height, (float)x, (float)y);
+		WormHole wh = new WormHole(hero, color, (float)width, (float)height, (float)x, (float)y);
+		wh.getPreview().overrideInvisible = true;
 	}
 
 	// -------------- WORMHOLES end ---------------------------------

@@ -89,11 +89,11 @@ public class ApiDebrisGenerator
 
 	/**
 	 * Spawns a single debris with a specified height
-	 * @param height The height at which to spawn the debris
+	 * @param y The height at which to spawn the debris
 	 */
-	public static int spawnDebris(float height)
+	public static int spawnDebris(float x, float y)
 	{
-		Debris d = new APIDebris(RANDOM.nextInt(3), 100, 100, height, height);// spawns debris at right edge of screen
+		Debris d = new APIDebris(RANDOM.nextInt(3), x, x, y, y);// spawns debris at right edge of screen
 		debrisList.add(d);
 		return ApiIDManager.register(d);
 	}

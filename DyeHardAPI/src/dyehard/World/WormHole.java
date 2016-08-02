@@ -196,11 +196,18 @@ public class WormHole {
         preview.visible = true;
     }
 
+    public GatePreview getPreview()
+    {
+    	return preview;
+    }
+    
     /**
      * The Class GatePreview.
      */
-    private class GatePreview extends DyeHardGameObject {
+    public class GatePreview extends DyeHardGameObject {
         
+    	public boolean overrideInvisible;
+    	
         /* (non-Javadoc)
          * @see Engine.Primitive#update()
          */
@@ -208,6 +215,12 @@ public class WormHole {
         public void update() {
             super.update();
 
+            if(overrideInvisible)
+            {
+            	visible = false;
+            	return;
+            }
+            
             visible = (path.center.getX() - (path.size.getX() / 2)) > ((preview.center
                     .getX() - (preview.size.getX() / 2)) + preview.size.getX())
             // Was path.LowerLeft.X TODO code it to work with different width
