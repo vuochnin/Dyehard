@@ -1,3 +1,4 @@
+/resources/
 /Demo0_basicMovement/
 /Demo1_timer/
 /Demo2_ui/
@@ -14,7 +15,9 @@
 /TutorialTwo/
 /dyeHardProceduralAPI/
 /dyehard/
-/resources/
+/lab1/
+/lab2/
+/src/
 /DeveloperControls$1.class
 /DeveloperControls.class
 /EnemyGenerator.class
@@ -33,6 +36,3 @@
 /UserGameWorld.class
 /NinDemo.class
 /NinMain.class
-/lab1/
-/lab2/
-/src/
