@@ -57,6 +57,22 @@ public class ClassReflector {
         reflected = false;
         validated = false;
         className = target;
+        reflect();
+    }
+    
+    public Class<?> getReflectedClass(){
+    	Class<?> toReturn = null;
+    	
+    	// Assign toReturn to the provided class name
+    	try {
+    		toReturn = Class.forName(className);
+    	} catch (ClassNotFoundException e) {
+    		e.printStackTrace();
+    		System.out.println("ClassReflector - Class Retrieval Failed");
+    	}
+    			
+    	// Return the class
+    	return toReturn;
     }
 
     /**
@@ -65,6 +81,10 @@ public class ClassReflector {
      * @return 	true, if successful. False if class is invalid/null.
      */
     public boolean reflect() {
+    	// Check if the ClassReflector has already been reflected
+    	if (reflected)
+    		return true;
+    	
     	try {	
     		System.out.println("Populating hashmap with constructors and methods");
         	// Set the class name
@@ -79,7 +99,6 @@ public class ClassReflector {
             
             for (Field field : reflectedClass.getDeclaredFields()){
             	fields.put(field.getName(), field);
-            	System.out.println(field.getName());
             }
             
             // Populate the HashMap with the constructors
@@ -248,29 +267,30 @@ public class ClassReflector {
         return className;
     }
     
-    public boolean hasMethod(String methodToCheck){
-    	return false;
+    public boolean hasMethodSignature(String methodToCheck){
+    	return methods.containsKey(methodToCheck);
     }
     
-    public float getFloatField(String fieldName, Object obj){
-    	try {
-			Field f = Class.forName(className).getDeclaredField(fieldName);
-			return (float) f.getFloat(obj);
-			
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException|
-				IllegalAccessException| ClassNotFoundException e) {
-			System.out.println(fieldName + " not found.");
-			e.printStackTrace();
-		}
-		return -1;
+    public Field getFieldByName(String fieldName){
+    	if (fields.containsKey(fieldName))
+    		return fields.get(fieldName);
+    	else
+    		return null;
+    }
+    
+    public Method getMethodByName(String methodName){
+    	if (methods.containsKey(methodName))
+    		return methods.get(methodName);
+    	else
+    		return null;
     }
     
     /**
      * 
      * @param 	fieldName - the String name of the field
      * @param 	obj - an instance of the class to extract information from.
-     * @return 	The object wrapped in its respective primitive class, null if not 
-     * 			found
+     * @return 	The object wrapped in its respective primitive class, or null if 
+     * 			not found.
      */
     // Return the value specified by the field string. 
     // Return null if the field cannot be found.
@@ -441,6 +461,30 @@ public class ClassReflector {
     		else
     			System.out.println("Cannot find method by name: " + toCheck.getName());
     	}
+    }
+    
+    /**
+     * Return the stored Fields, in an array format.
+     * @return
+     */
+    public Field[] getArrayOfFields(){
+    	// Need to do this since returning fields.toArray() is Object[]
+    	// and will crash if you try to type-cast it as Field[]
+    	//System.out.println(fields.values().toArray().toString());
+    	Field[] retFields = fields.values().toArray(new Field[fields.size()]);
+    	return retFields;
+    }
+    
+    public Method[] getArrayOfMethods(){
+    	Method[] retMethods = methods.values().toArray(new Method[methods.size()]);
+    	return retMethods;
+    }
+    
+    @SuppressWarnings("rawtypes")
+	public Constructor[] getArrayOfConstructors(){
+    	Constructor[] retConstructors = constructors.values().
+    			toArray(new Constructor[constructors.size()]);
+    	return retConstructors;
     }
     
     

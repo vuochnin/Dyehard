@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 import Engine.BaseCode;
 import Engine.Text;
 import Engine.Vector2;
+import TutorialFour.DebrisGenerator;
 import dyehard.DyeHardGame;
 import dyehard.UpdateManager;
 import dyehard.Collectibles.DyePack;
@@ -30,6 +31,7 @@ import dyehard.Collectibles.SlowDown;
 import dyehard.Collectibles.SpeedUp;
 import dyehard.Collectibles.Unarmed;
 import dyehard.Collision.CollisionManager;
+import dyehard.Obstacles.Debris;
 import dyehard.Player.Hero;
 import dyehard.Reflection.ClassReflector;
 import dyehard.Reflection.StudentObjectManager;
@@ -112,6 +114,9 @@ public class SampleUserCode extends DyeHardGame {
     		initializeLab4();
     		break;
     		
+    	// LAB 5: Making a level. 
+    	case 5:
+    		initializeLab5();
     	// Nothing. Break and exit program
     	default:
     		JOptionPane.showMessageDialog(window, "INVALID NUMBER");
@@ -121,17 +126,41 @@ public class SampleUserCode extends DyeHardGame {
     	}
     }
     
-    
+    private void initializeLab0() {
+		// TODO Auto-generated method stub
+		
+	}
+
+    /**
+     * Update the game state based on the initialized lab.
+     * @see	dyehard.DyehardGame#update()
+     */
+    @Override
+    protected void update() {
+    	switch (labNum){
+    	case 0:
+    		break;
+    	case 1:
+    		lab1Update();
+    		break;
+    	case 2:
+    		//lab2Update();
+    		break;
+    	case 3:
+    		break;
+    	case 4:
+    		lab4Update();
+    	}
+    }
 
 	/**
-     * Lab 0 - Simple Method
+     * Lab 1 - Simple Inheritance, simple field values
      * 
      * Basic Lab that validates if a student has made a class that extends Hero,
      * and contains float values for variables "width" and "height".
      * 
      */
-    private void initializeLab0() {
-    	
+    private void initializeLab1() {
     	// Get the class from user input and see if it extends Hero.
     	// If not, the student class does not extend Hero.
     	if(!Hero.class.isAssignableFrom(hero = StudentObjectManager.getClassFromString(className))){
@@ -156,55 +185,115 @@ public class SampleUserCode extends DyeHardGame {
     		privateHero = new Hero();
 	    	privateHero.size.set(newWidth, newHeight);
 	    	
-		} catch (SecurityException e) {
+		} catch (SecurityException | IllegalArgumentException e) {
 			e.printStackTrace();
 		}
     }
     
-    
-    private void initializeLab1() {
+    /**
+     * Lab 1 - Simple Inheritance, simple field values
+     * 
+     * Update Hero position and fire
+     * 
+     */
+    private void lab1Update(){
+    	// Update all applicable updates
+    	UpdateManager.getInstance().update();
+        CollisionManager.getInstance().update();
+        StudentObjectManager.update();
+
+        // Update Hero position
+        privateHero.center.setX(mouse.getWorldX());
+        privateHero.center.setY(mouse.getWorldY());
+
+        // Hero shoot
+        if ((keyboard.isButtonDown(KeyEvent.VK_F))
+                || (mouse.isButtonDown(1))) {
+        	privateHero.currentWeapon.fire();
+        }
+    }
+
+    /**
+     * Lab 2 - Hero Texture and Method Validation
+     */
+    private void initializeLab2() {
+    	// Used to track the amount of correct method signatures
+    	boolean hasMethod = false;
     	
     	// Get the class from user input, assign to hero
-    	hero = StudentObjectManager.getClassFromInput();
+    	hero = StudentObjectManager.getClassFromString(className);
     	
     	// Create a new instance of class. Reflection requires an instance of an obj
     	heroInst = StudentObjectManager.createObj(hero);
     	
     	// Create a new Hero instance.
     	privateHero = new Hero();
+    	cf = new ClassReflector(className);
+    	cf.getArrayOfMethods().toString();
     	
     	// Try to set the texture of Hero to the class' getTexture() texture
     	try {
-    		Method methodToCall = hero.getDeclaredMethod("getTexture");
-			BufferedImage img = (BufferedImage) methodToCall.invoke(heroInst);
-			privateHero.texture = img;
+    		// Search for the method by its name, then see if it takes no args
+    		if (cf.getMethodByName("getTexture") != null &&
+    			cf.getMethodByName("getTexture").getGenericParameterTypes().length == 0){
+    			hasMethod = true;
+    		} else {
+    			System.out.println("Class contains getTexture()");
+    		}
+    		
+    		if (cf.getMethodByName("getColorWrong") != null){
+    			System.out.println("Class does not contain getColorWrong()");
+    		}
+    		
+    		if (cf.getMethodByName("getWidth") != null){
+    			System.out.println("Class does contain getWidth");
+    		}
+    		
+    	} catch (SecurityException
+				| IllegalArgumentException e) {
+			e.printStackTrace();
+		}
+    	
+    	// Method found -- invoke on heroInst and apply to privateHero
+    	if (hasMethod){
+    		Method methodToCall = null;
+    		
+			try {
+				methodToCall = hero.getDeclaredMethod("getTexture");
+				BufferedImage img = (BufferedImage) methodToCall.invoke(heroInst);
+				privateHero.texture = img;
+			} 
+			
+			catch (NoSuchMethodException | SecurityException 
+					| IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException e) {
+				e.printStackTrace();
+			} 
+    	}
+	}
+
+    private void lab2Update() {
+    	UpdateManager.getInstance().update();
+        CollisionManager.getInstance().update();
+        StudentObjectManager.update();
+        
+        try {
+        	// Get "setCenter"
+        	hero.getDeclaredMethod("setCenter", float.class, float.class).invoke(heroInst, mouse.getWorldX(), mouse.getWorldY());
+        	privateHero.center = (Vector2) hero.getDeclaredMethod("getCenter").invoke(heroInst);
+        	
+            // Hero shoot
+            if ((keyboard.isButtonDown(KeyEvent.VK_F))
+                    || (mouse.isButtonDown(1))) {
+            	privateHero.currentWeapon.fire();
+            }
+			
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException 
 				| IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
     }
-    
-    /**
-     * Lab 0 - Class Hierarchy.
-     * 
-     * Basic Lab that validates that the validates the class hierachy. The
-     * student should have made a class with a default constructor which
-     * extends the Hero class.
-     * 
-     */
-    private void lab0Update(){
-    	UpdateManager.getInstance().update();
-        CollisionManager.getInstance().update();
-        StudentObjectManager.update();
-        
-        privateHero.center.setX(mouse.getWorldX());
-        privateHero.center.setY(mouse.getWorldY());
 
-        if ((keyboard.isButtonDown(KeyEvent.VK_F))
-                || (mouse.isButtonDown(1))) {
-        	privateHero.currentWeapon.fire();
-        }
-    }
     
     /**
      * Lab 1
@@ -212,7 +301,7 @@ public class SampleUserCode extends DyeHardGame {
      * Lab that validates the class has the listed methods
      * 
      */
-    private void initializeLab2(){
+    private void oldinitializeLab3(){
     	// Request the class name
     	className = JOptionPane.showInputDialog("Please type in your class name");
     	
@@ -234,7 +323,7 @@ public class SampleUserCode extends DyeHardGame {
     		// Instantiate the class based on the provided string
     		hero = Class.forName(className);
     		
-    		// Validate the class
+    		// Validate the class 
     		boolean isValid =
     		StudentObjectManager.validate(className, arrayOfConstructors, arrayOfMethods);
     		
@@ -264,51 +353,42 @@ public class SampleUserCode extends DyeHardGame {
     }
     
     private void initializeLab3(){
-    	// Request the class name
-    	String className = JOptionPane.showInputDialog("Please type in your class name");
-    	
-    	// TempClass to use for testing Fields
-    	class tempClass {
-    		// Test Fields
-    		private float height = 2;		// Test correctness
-    		public float width = 2;			// Test privacy/access
-    		private boolean color = false;	// Test field type
-    		
-    		// Test Constructors -- CANT DO IN ANONYMOUS CLASS. NEED TO CREATE CLASS FILE
-    		
-    		// Test Methods
-    		public void setCenter(float test, float test2){}		// Test correctness
-    		public boolean setHeight(float test){ return false; }	// Test return type
-    		public void setWidth(boolean test){}					// Test parameters
-    		private float getHeight(){ return 2; }					// Test access
-    		
-    	};
-    	
-    	tempClass test = new tempClass();
-    	
-    	// Reflect the class
-		cf = new ClassReflector(className);
-		ClassReflector cf2 = new ClassReflector("StudentObj");
-		cf2.reflect();
-		cf.reflect();
-		
+    	// Input Lab3Incorrect, and verify against Lab3Correct
+		cf = new ClassReflector(className);		// should be Lab3Incorrect	
+		ClassReflector cf2 = new ClassReflector("Lab3Correct");
+
 		// Validate the class
-		cf.verifyFields(test.getClass().getDeclaredFields());
-		cf.verifyMethods(test.getClass().getDeclaredMethods());
-		cf.verifyConstructors(test.getClass().getDeclaredConstructors());
-    	
-		StudentObj soClass = new StudentObj();
-		
-		cf.verifyFields(soClass.getClass().getDeclaredFields());
-		cf.verifyMethods(soClass.getClass().getDeclaredMethods());
-		cf.verifyConstructors(soClass.getClass().getDeclaredConstructors());
+		cf.verifyFields(cf2.getArrayOfFields());
+		cf.verifyMethods(cf2.getArrayOfMethods());
+		cf.verifyConstructors(cf2.getArrayOfConstructors());
     }
 
     private void initializeLab4() {
-		// TODO Auto-generated method stub
+    	cf = new ClassReflector(className);		// should be Lab4Incorrect
+		ClassReflector cf2 = new ClassReflector("Lab4Correct");
 		
+		// Check to see if the reflected class extends Debris
+		if (!Debris.class.isAssignableFrom(cf.getReflectedClass())){
+			System.out.println(className + " does not extend Debris");
+		} else {
+			// Validate the class
+			cf.verifyFields(cf2.getArrayOfFields());
+			cf.verifyMethods(cf2.getArrayOfMethods());
+			cf.verifyConstructors(cf2.getArrayOfConstructors());
+		}
+	}
+    
+	private void lab4Update() {
+		Lab4DebrisGenerator.getInstance().update();
+		UpdateManager.getInstance().update();
+        CollisionManager.getInstance().update();
 	}
 
+    private void initializeLab5() {
+		// TODO Auto-generated method stub
+    	cf = new ClassReflector(className);
+	}
+    
     /**
      * Sample1 ini.
      * 
@@ -369,53 +449,6 @@ public class SampleUserCode extends DyeHardGame {
         // new WormHole(hero, Colors.randomColor(), 30f, 15f, 100f, 20f);
     }
 
-    /* (non-Javadoc)
-     * @see dyehard.DyeHardGame#update()
-     */
-    @Override
-    protected void update() {
-
-    	switch (labNum){
-    	case 0:
-    		lab0Update();
-    		break;
-    	
-    	case 1:
-    		lab1Update();
-    		break;
-    		
-    	case 2:
-    		// lab2Update();
-    		break;
-    	}
-    	
-    	//lab1Update();
-    	
-    	// sample1Update();
-        // sample2Update();
-        // sample3Update();
-        // sample4Update();
-        
-    }
-    
-
-    
-    private void lab1Update() {
-    	UpdateManager.getInstance().update();
-        CollisionManager.getInstance().update();
-        StudentObjectManager.update();
-        
-        try {
-        	hero.getDeclaredMethod("setCenter", float.class, float.class).invoke(heroInst, mouse.getWorldX(), mouse.getWorldY());
-        	privateHero.center = (Vector2) hero.getDeclaredMethod("getCenter").invoke(heroInst);
-			
-		} catch (NoSuchMethodException | SecurityException | IllegalAccessException 
-				| IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
-		}
-        
-        //privateHero.moveTo(mouse.getWorldX(), mouse.getWorldY());
-    }
 
     /**
      * Sample1 update.

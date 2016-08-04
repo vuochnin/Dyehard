@@ -1,10 +1,10 @@
 import dyehard.Player.Hero;
 
-public class Lab0Class extends Hero {
+public class Lab1Correct extends Hero {
 	
-	public float width = 20f;
+	public static float width = 20f;
 	
-	public float height = 20f;
+	public static float height = 20f;
 	
 	public float getWidth(){
 		return width;
