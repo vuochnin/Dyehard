@@ -57,6 +57,7 @@ public class DHProceduralAPI extends DyeHardGame{
 		
 		endMenu = new DyehardEndMenu();
 		start = new LogScreen();
+		ApiDyePackGenerator.initialize(100);
 		buildGame();
 		if(showStartMenu)
 			DyeHardGame.setState(State.BEGIN);
@@ -167,7 +168,6 @@ public class DHProceduralAPI extends DyeHardGame{
 		ApiEnemyGenerator.initialize(hero);
 		// TODO: Look into possibility of separating individual UI elements into functions
 		ui = new DyehardUI(hero);
-		
 		// Move cursor to the center of the hero
 		try{
 			Robot robot = new Robot();
@@ -291,15 +291,13 @@ public class DHProceduralAPI extends DyeHardGame{
     	setState(State.PLAYING);
     	background.destroy();
 		background = new BackgroundScreen();
+		ApiTimeManager.reset();
+        ApiIDManager.reset();
+        System.gc();
         distance = 0;
         GameState.DistanceTravelled = 0;
         GameState.Score = 0;
         hero.center = hero.getStart();
-
-        ApiTimeManager.reset();
-        
-        ApiIDManager.reset();
-        System.gc();
         buildGame();
 	}
 	
@@ -445,6 +443,10 @@ public class DHProceduralAPI extends DyeHardGame{
 	 */
 	public void apiSetGoalDistance(int distance){
 		GameState.TargetDistance = distance;
+		if(ui.distanceMeter != null)
+		{
+			ui.distanceMeter.maxValue = GameState.TargetDistance;
+		}
 	}
 	
 	/**
@@ -552,13 +554,25 @@ public class DHProceduralAPI extends DyeHardGame{
 	
 	/**
      * Check if the given key is tapped on the keyboard. 
-     * The key is triggered only once when the key is tapped.
-     * (Note: the button 'tapped' and button 'down' or 'press' are different.)
-     * @param key - the key on the keyboard. Ex: KeysEnum.a => the 'a' key.
+     * The key is triggered only once when the key is first pressed.
+     * Holding the key will return false -- the function only returns true once per key press.
+     * (Note: the button 'tapped' and button 'down' or 'pressed' are different.)
+     * @param key - the key on the keyboard. Ex: KeysEnum.a => the 'a' or 'A' key.
      * @return - true if the key is tapped, false otherwise
      */
 	public boolean apiIsKeyboardButtonTapped(KeysEnum key) {
         return keyboard.isButtonTapped(keyEventMap[key.ordinal()]);  //ordinal is like indexOf for enums->ints
+    }
+	
+	/**
+     * Check if the given key is pressed on the keyboard. 
+     * The key is triggered when the key is held down.
+     * (Note: the button 'tapped' and button 'down' or 'pressed' are different.)
+     * @param key - the key on the keyboard. Ex: KeysEnum.a => the 'a' or 'A' key.
+     * @return - true if the key is pressed, false otherwise
+     */
+	public boolean apiIsKeyboardButtonPressed(KeysEnum key) {
+        return keyboard.isButtonDown(keyEventMap[key.ordinal()]);  //ordinal is like indexOf for enums->ints
     }
 	
 	/**
@@ -645,22 +659,16 @@ public class DHProceduralAPI extends DyeHardGame{
 	}
 
 	/**
-	 * Spawn a single debris at a specific height (y-coordinate)
+	 * Spawn a single debris at a specific position, and disable initial movement
 	 * @param x the x-coordinate position of the enemy
 	 * @param y the y-coordinate position of the enemy
 	 * @return an id of this debris
 	 */
 	public int apiSpawnSingleDebris(double x, double y)
 	{
-		return ApiDebrisGenerator.spawnDebris((float)x, (float)y);
-	}
-	
-	public int apiSpawnSingleDebris(double x, double y, boolean startMoving)
-	{
 		int id = ApiDebrisGenerator.spawnDebris((float)x, (float)y);
 		
-		if(!startMoving)
-			apiSetObjectVelocity(id, 0, 0);
+		apiSetObjectVelocity(id, 0, 0);
 		
 		return id;
 	}
@@ -767,8 +775,20 @@ public class DHProceduralAPI extends DyeHardGame{
 		ApiDyePackGenerator.setActive(false);
 	}
 	
+	
+	/**
+	 * Spawns a single moving DyePack with a random height and color
+	 * @return an integer which represents the id of the DyePack
+	 */
+	public int apiSpawnSingleDyePack(){
+		
+		int id = ApiDyePackGenerator.generateDyePack();
+		return id;
+	}
+	
 	/**
 	 * Spawns a single DyePack with the specified color (as a String) and location
+	 * and this also disables initial movement
 	 * @param color [ "red" | "blue" | "green" | "teal" | "yellow" | "pink" ]. 
 	 * Note: if the color specified is not in the list of color, function will pick red as the default
 	 * @param x the x-coordinate position of the DyePack
@@ -776,7 +796,11 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * @return an integer which represents the id of the DyePack
 	 */
 	public int apiSpawnSingleDyePack(String color, double x, double y){
-		return ApiDyePackGenerator.spawnDyePack(color, (float)x, (float)y);
+		int id = ApiDyePackGenerator.spawnDyePack(color, (float)x, (float)y);
+		
+		apiSetObjectVelocity(id, 0, 0);
+		
+		return id;
 	}
 	
 	/**

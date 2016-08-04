@@ -18,7 +18,7 @@ import dyehard.Resources.ImageDataParser.ImageID;
 public class DyehardDistanceMeter {
     
     /** The max value. */
-    private int maxValue;    
+    public int maxValue;    
     
     /** The current value. */
     private int currentValue;
@@ -95,14 +95,6 @@ public class DyehardDistanceMeter {
 
         Rectangle baseMarker = DyeHardResources.getInstance().getScaledRectangle(ImageID.UI_PATH_MARKER);
         markers = new ArrayList<Rectangle>();
-
-        // first gate at 500 and every 900 afterwards
-        for (int i = 500; i < maxValue; i += 900) {
-            Rectangle marker = new Rectangle(baseMarker);
-            marker.center.setX(toWorldUnits(i));
-            marker.center.setY(fromTop(marker, yPadding)); //0.9f
-            markers.add(marker);
-        }
 
         baseMarker.visible = false;
 

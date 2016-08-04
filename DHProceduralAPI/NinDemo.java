@@ -16,9 +16,9 @@ public class NinDemo extends DHProceduralAPI
 	
 	public void buildGame(){
 		heroID = apiStartHero();
-		apiSetLivesTo(8);
 		apiShowScore(true);
-		apiSetGoalDistance(300);
+		apiSetLivesTo(8);
+		apiSetGoalDistance(1000);
 		apiShowDistanceMeter();
 		apiSetWinningScore(15);
 		apiStartDebrisSpawner(1.5f);
@@ -26,10 +26,12 @@ public class NinDemo extends DHProceduralAPI
 		apiStartEnemySpawner();
 		//spawnGates();
 		
+		apiSpawnSingleDebris(30, 30);
+		
 	}
 	
+	
 	public void updateGame(){
-		
 		
 		if(apiRepeatingTimer("powerup", 5)){
 			apiSpawnSinglePowerUp(apiGetWorldWidth() - 10f, apiRandomInt((int)apiGetWorldHeight() - 10));
@@ -93,7 +95,8 @@ public class NinDemo extends DHProceduralAPI
 		
 		if(apiIsKeyboardButtonTapped(KeysEnum.b))
 			apiEcho("DistanceTravelled = " + GameState.DistanceTravelled);
-		
+		if(apiIsKeyboardButtonTapped(KeysEnum.r))
+			apiRestartGame();
 	}
 	
 	

@@ -40,7 +40,7 @@ public class DyehardUI extends UpdateableObject {
     Rectangle hud;
     
     /** The distance meter. */
-    DyehardDistanceMeter distanceMeter;
+    public DyehardDistanceMeter distanceMeter;
     
     /** The score text. */
     Text scoreText;

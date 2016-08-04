@@ -16,6 +16,6 @@ public class Lab2 extends DHProceduralAPI
 		apiSpawnSingleDebris(100, 30);			// x position = 100, y position = 30
 		apiSpawnSingleDebris(100, 20);			// x position = 100, y position = 20
 		apiSpawnSingleDebris(60, 30);			// x position = 60, y position = 30
-		apiSpawnSingleDebris(70, 20, false);	// x position = 70, y position = 20, startMoving = false
+		apiSpawnSingleDebris(70, 20);			// x position = 70, y position = 20
 	}
 }
