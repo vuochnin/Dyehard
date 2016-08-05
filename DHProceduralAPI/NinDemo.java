@@ -1,7 +1,6 @@
 import dyeHardProceduralAPI.DHProceduralAPI;
 import dyeHardProceduralAPI.KeysEnum;
 import dyehard.DyeHardGame;
-import dyehard.UpdateManager;
 import dyehard.World.GameState;
 
 /**
@@ -57,10 +56,10 @@ public class NinDemo extends DHProceduralAPI
 			apiDefaultWeapon();
 		}
 		if(apiIsKeyboardButtonTapped(KeysEnum.S)){
-			apiIncreaseScoreBy(2);
+			apiAdjustScoreBy(2);
 		}
 		if(apiIsKeyboardButtonTapped(KeysEnum.A)){
-			apiDecreaseScoreBy(2);
+			apiAdjustScoreBy(-2);
 		}
 		if(apiIsKeyboardButtonTapped(KeysEnum.E)){
 			apiSpawnSingleEnemy("Portal", 50, 20);			//TEST SpawnSingleEnemy()
@@ -97,6 +96,8 @@ public class NinDemo extends DHProceduralAPI
 			apiEcho("DistanceTravelled = " + GameState.DistanceTravelled);
 		if(apiIsKeyboardButtonTapped(KeysEnum.r))
 			apiRestartGame();
+		if(apiIsKeyboardButtonTapped(KeysEnum.c))
+			apiEcho("count " + apiObjectCount());
 	}
 	
 	

@@ -10,12 +10,10 @@ import dyeHardProceduralAPI.DHProceduralAPI;
  *		apiStartEnemySpawner(double)
  *		apiSpawnSingleDebris()
  *		apiRandomFloat(double, double)
- *		apiSetObjectVelocity(int, double, double)
  *		apiColliding(int, int)
  *		apiGetSubtype(int)
  *		apiDestroy(int)
- *		apiIncreaseScoreBy(int)
- *		apiDecreaseScoreBy(int)
+ *		apiAdjustScoreBy(int)
  *	
  *	@author Holden
  *	@author Nin
@@ -70,25 +68,23 @@ public class Demo4 extends DHProceduralAPI
 							apiGetType(id2) == "Enemy"))
 					{
 
-						apiEcho("Special collision behavior executed." + apiGetSubtype(id1));
+						apiEcho("Special collision behavior executed. " + apiGetSubtype(id1));
 						apiDestroy(id2);
 					}
 					
 					if(apiGetType(id1) == "Hero" && apiGetType(id2) == "Enemy")
 					{
 						apiDestroy(id1);
-						apiDecreaseScoreBy(1);
+						apiAdjustScoreBy(-1);
 					}
 					
 					if(apiGetType(id1) == "Bullet" && apiGetType(id2) == "Enemy" &&
 							apiGetSubtype(id2) != "Charger")
 					{
-						apiIncreaseScoreBy(2);
+						apiAdjustScoreBy(5);
 						apiDestroy(id2);
 					}
-
-				}
-					
+				}	
 			}
 		}
 	}

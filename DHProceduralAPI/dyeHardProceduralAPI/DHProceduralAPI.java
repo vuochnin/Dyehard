@@ -116,11 +116,6 @@ public class DHProceduralAPI extends DyeHardGame{
 		}
 	}
 	
-	//--------------------------------------------------------------------------	
-	//--------------------- POSSIBLE PROCEDURAL FUNCTIONS ----------------------
-	//--------------------------------------------------------------------------
-	
-
 	/**
 	 * A callback function, for user to override.
 	 * (Call Once)
@@ -133,6 +128,9 @@ public class DHProceduralAPI extends DyeHardGame{
 	 */
 	public void updateGame(){ }
 	
+	//--------------------------------------------------------------------------	
+	//--------------------- POSSIBLE PROCEDURAL FUNCTIONS ----------------------
+	//--------------------------------------------------------------------------
 
 	/**
 	 * Presents the subtype of an object
@@ -238,6 +236,14 @@ public class DHProceduralAPI extends DyeHardGame{
 			hero.moveTo((float)x, (float)y);
 		else
 			ApiIDManager.get(id).center = (new Vector2((float)x,(float)y));
+	}
+	
+	/**
+	 * Makes an object specified by the id to always appear on top of other objects
+	 * @param id the object to bring to top
+	 */
+	public void apiAlwaysOnTop(int id){
+		ApiIDManager.get(id).alwaysOnTop = true;
 	}
 
 	/**
@@ -375,9 +381,13 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * @param deltaY vertical position
 	 */
 	public void apiMoveObject(int id, double deltaX, double deltaY){
-		CollidableGameObject obj = ApiIDManager.get(id);
-		
-		obj.center = new Vector2(obj.center.getX() + (float) deltaX,obj.center.getY() + (float) deltaY);
+		if(!(apiGetObjectPositionX(id)+deltaX < 0 && apiGetObjectPositionX(id)+deltaX > apiGetWorldWidth()
+				&& apiGetObjectPositionY(id)+deltaY < 0 && apiGetObjectPositionY(id)+deltaY > apiGetWorldHeight()))
+		{
+			CollidableGameObject obj = ApiIDManager.get(id);
+			
+			obj.center = new Vector2(obj.center.getX() + (float) deltaX,obj.center.getY() + (float) deltaY);
+		}
 	}
 	
 	/**
@@ -392,21 +402,14 @@ public class DHProceduralAPI extends DyeHardGame{
 		obj.velocity = new Vector2((float)x, (float)y);
 	}
 	
-	
 	/**
-	 * Increases the score according to the argument.
-	 * @param n - the number of score to increase by
+	 * Adjusts the score based on the argument.
+	 * If n is positive, the score is increasing by n. (n, increasing)
+	 * If n is negative, the score is decreasing by n. (-n, decreasing)
+	 * @param n the value to adjust
 	 */
-	public void apiIncreaseScoreBy(int n){
+	public void apiAdjustScoreBy(int n){
 		GameState.Score += n;
-	}
-	
-	/**
-	 * Decreases the score according to the argument.
-	 * @param n - the number of score to decrease by
-	 */
-	public void apiDecreaseScoreBy(int n){
-		GameState.Score -= n;
 	}
 	
 	/**

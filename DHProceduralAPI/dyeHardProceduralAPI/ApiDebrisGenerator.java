@@ -93,7 +93,9 @@ public class ApiDebrisGenerator
 	 */
 	public static int spawnDebris(float x, float y)
 	{
-		Debris d = new APIDebris(RANDOM.nextInt(3), x, x, y, y);// spawns debris at right edge of screen
+		// the super class constructor will set the location randomly?
+		Debris d = new APIDebris(RANDOM.nextInt(3), x, x, y, y);
+		d.center.set(x, y);		// so make sure the position is set as specified
 		debrisList.add(d);
 		return ApiIDManager.register(d);
 	}

@@ -12,6 +12,7 @@ import dyeHardProceduralAPI.KeysEnum;
  *		apiActivateSpreadFireWeapon()
  *		apiRandomFloat(double)
  *		apiSpawnSingleDebris(double, double)
+ *		apiSetObjectVelocity(int, double, double);
  *		apiObjectCount()
  *		apiGetID(int)
  *		apiGetType(int)
@@ -66,6 +67,7 @@ public class Demo3 extends DHProceduralAPI
 		if(apiRepeatingTimer("debris", apiRandomFloat(3)))
 		{
 			int spawnedID = apiSpawnSingleDebris(100, 10);
+			apiSetObjectVelocity(spawnedID, -0.1, 0);
 			apiEcho("Spawned debris with ID: " + spawnedID);
 		}
 		
@@ -85,6 +87,5 @@ public class Demo3 extends DHProceduralAPI
 			}
 			
 		}
-		
 	}
 }
