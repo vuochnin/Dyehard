@@ -107,32 +107,10 @@ public class ApiEnemyGenerator {
      * @return the id of the enemy as integer
      */
     public static int spawnEnemy(String EnemyType){
-	    if (hero == null)
-	    {
-		    System.err.println("EnemyGenerator: Hero not initialized!");
-		    return -1;
-	    }
 
-    	String type = EnemyType.toLowerCase();
+		Vector2 randpos = randomPosition();
 
-		Enemy result;
-
-    	switch(type){
-    	case "portal":
-    		result = (new PortalEnemy(randomPosition(), hero));
-            break;
-    	case "charger":
-		    result = (new ChargerEnemy(randomPosition(), hero));
-            break;
-        case "collector":
-	        result = (new CollectorEnemy(randomPosition(), hero));
-            break;
-        default:
-	        result = (new RegularEnemy(randomPosition(), hero));
-            break;
-    	}
-	    EnemyManager.getInstance().registerEnemy(result);
-	    return ApiIDManager.register(result);
+	    return spawnEnemy(EnemyType, randpos.getX(), randpos.getY());
     }
     
     /**
@@ -163,7 +141,12 @@ public class ApiEnemyGenerator {
         case "collector":
 	        result = (new CollectorEnemy(pos, hero));
             break;
+	    case "regular":
+		    result = (new RegularEnemy(pos, hero));
+            break;
         default:
+	        System.err.println("Unrecognized enemy type. Did you spell your input correctly?");
+	        System.err.println("Choose one of: 'Regular' 'Collector' 'Charger' 'Portal'");
 	        result = (new RegularEnemy(pos, hero));
             break;
     	}

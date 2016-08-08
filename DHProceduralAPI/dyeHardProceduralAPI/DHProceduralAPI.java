@@ -828,7 +828,6 @@ public class DHProceduralAPI extends DyeHardGame{
 			spawned = new Ghost();
 			break;
 		default:
-			// Defaults to invincibility
 			spawned = new Invincibility();
 		}
 		spawned.initialize(new Vector2((float)positionX, (float)positionY));
@@ -857,8 +856,13 @@ public class DHProceduralAPI extends DyeHardGame{
 		case "ghost":
 			spawned = new Ghost();
 			break;
+		case "invincibility":
+			spawned = new Invincibility();
+			break;
 		default:
-			// Defaults to invincibility
+			// Defaults to invincibility and presents error message
+			System.err.println("Unrecognized powerup type. Did you spell your input correctly?");
+			System.err.println("Choose one of: 'SpeedUp' 'SlowDown' 'Ghost' 'Invincibility'");
 			spawned = new Invincibility();
 		}
 		spawned.initialize(new Vector2((float)positionX, (float)positionY));

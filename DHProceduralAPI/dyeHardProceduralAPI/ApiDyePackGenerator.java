@@ -105,7 +105,7 @@ public class ApiDyePackGenerator {
 	 */
 	private static DyePack spawn(String color, float posX, float posY)
 	{
-		Color c = Colors.Red;
+		Color c;
 		if(color.equalsIgnoreCase("blue")){
 			c = Colors.Blue;
 		}
@@ -120,6 +120,15 @@ public class ApiDyePackGenerator {
 		}
 		else if(color.equalsIgnoreCase("yellow")){
 			c = Colors.Yellow;
+		}
+		else
+		{
+			c = Colors.Red;
+			if(!color.equalsIgnoreCase("red")) // default case error message
+			{
+				System.err.println("Unrecognized color. Did you spell your input correctly?");
+				System.err.println("Chose one of: 'Blue' 'Red' 'Green' 'Teal' 'Pink' 'Yellow'");
+			}
 		}
 		DyePack dye = new DyePack(c);
 
