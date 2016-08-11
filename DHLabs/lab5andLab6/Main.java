@@ -1,4 +1,4 @@
-package lab5;
+package lab5andLab6;
 
 
 import Engine.GameWindow;

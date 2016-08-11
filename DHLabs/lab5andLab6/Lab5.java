@@ -1,4 +1,4 @@
-package lab5;
+package lab5andLab6;
 import dyeHardProceduralAPI.DHProceduralAPI;
 import dyeHardProceduralAPI.KeysEnum;
 
@@ -90,8 +90,9 @@ public class Lab5 extends DHProceduralAPI
 	
 	public void paintDebris(){
 		
-	   // if drawingMode is 'true', the pen is against the paper
+	   
 		if(apiIsKeyboardButtonTapped(KeysEnum.UP)){
+			// if drawingMode is 'true', the pen is against the paper
 			if(drawingMode){
 				// Place a dyepack as 'ink'
 				apiSpawnSingleDebris(x, y);
