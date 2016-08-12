@@ -98,15 +98,51 @@ public class NinDemo extends DHProceduralAPI
 			apiRestartGame();
 		if(apiIsKeyboardButtonTapped(KeysEnum.c))
 			apiEcho("count " + apiObjectCount());
+
 	}
-	
-	
-	
-//	public void handleCollisions(String type1, String subtype1, int id1, String type2, String subtype2, int id2)
-//	{
-//		if(type1 == "Hero" && type2 == "Debris")
-//		{
-//			move(id2, 2, 4);
+		
+		// AMERICAN FLAG		
+//		for(int row = 0; row < 7; row++){
+//			for(int col = 0; col < 7; col++){
+//				int x = 25 + col * 3;
+//				int y = 35 + row * 3;
+//				
+//				apiSpawnSingleDyePack("blue", x, y);
+//			}
 //		}
-//	}
+//		
+//		for(int i = 0; i < 5; i++){
+//			for(int k = 0; k < 5; k++){
+//				int x = 28 + k*3;
+//				int y = 38 + i*3;
+//				if(i%2 == 0 && k%2 == 0) // both i and k are even
+//					apiSpawnSingleDyePack("teal", x, y);
+//				else if(i%2 == 1 && k%2 == 1)	// both i and k are odd
+//					apiSpawnSingleDyePack("teal", x, y);
+//			}
+//		}
+//		
+//		
+//		for(int i = 0; i < 7; i++){
+//			for(int k = 0; k < 15; k++){
+//				int x = 46 + k * 3;
+//				int y = 35 + i * 3;
+//				if(i%2 == 0)
+//					apiSpawnSingleDyePack("red", x, y);
+//				else
+//					apiSpawnSingleDyePack("teal", x, y);
+//			}
+//		}
+//		
+//		for(int i = 0; i < 4; i++){
+//			for(int k = 0; k < 22; k++){
+//				int x = 25 + k * 3;
+//				int y = 23 + i * 3;
+//				if(i%2 == 0)
+//					apiSpawnSingleDyePack("red", x, y);
+//				else
+//					apiSpawnSingleDyePack("teal", x, y);
+//			}
+//		}
+
 }
