@@ -1,3 +1,33 @@
+/**
+ * 	ClassReflector.
+ * 
+ * 	This is the primary class that reflects and validates a class.
+ * 
+ * 	<p><b>General flow:</b><p>
+ * 			
+ * 	<b>1.</b> Tester.java file calls ClassReflector's constructor,
+ * 	providing the reflected class' name.<p>
+ *
+ * 	<b>2.</b> ClassReflector will call reflect() to fill in ClassReflector's 
+ * 	HashMaps, so ClassReflector will be populated with the specified 
+ * 	class's constructors, methods, and fields. The keys are the names
+ *	of each type (String) while the values are the actual types themselves.<p>
+ * 
+ * 	Example: 													<br>
+ * 		method:	setHeight(float x)	<-- Method in .java file	<br>
+ * 		key:	"setHeight"			<-- String of method name	<br>
+ * 		value: 	setHeight(float)	<-- Actual Method object	<br><p>
+ * 
+ * 	<b>3.</b> With the hashmaps populated, multiple analytics can be performed.
+ * 	You can compare one ClassReflector's hashmaps of constructors, methods,
+ * 	and fields with another ClassReflector. Or you can see if a specific
+ * 	method has the correct signature. Or you can verify ClassReflector's
+ * 	fields with a string of "correct" fields, with the correct type
+ * 	and accessibility modifiers.<p>
+ * 
+ * @author - Sammy Nimnuch. 8/11/16
+ */
+
 package dyehard.Reflection;
 
 import java.lang.reflect.Constructor;
@@ -8,27 +38,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 
-/**
- * The Class ClassReflector.
- * 
- * @purpose	This is the primary class that reflects and validates a class given 
- * 			a set of Constructors and Methods.
- * 
- * 			General flow: 
- * 
- * 			1. Other class calls ClassReflector's constructor,
- * 			providing the reflected class' name. 
- * 
- * 			2. Then the other class will call ClassReflector's reflect() 
- * 			to fill in ClassReflector's HashMaps, so ClassReflector will be 
- * 			populated with the other class's constructors and methods.
- * 
- * 			3. Given an array of strings, ClassReflector's validate() can
- * 			determine how alike ClassReflector's constructors and methods are
- * 			to the array of strings. 
- * 
- * @see		StudentObjectManager.java
- */
+
 public class ClassReflector {
     
     /** The HashMap of constructors. */
@@ -50,7 +60,7 @@ public class ClassReflector {
     private boolean validated;
 
     /**
-     * @purpose	Instantiates a new class reflector.
+     * Instantiates a new class reflector.
      * @param 	target the target
      */
     public ClassReflector(String target) {
@@ -60,6 +70,10 @@ public class ClassReflector {
         reflect();
     }
     
+    /**
+     * The Class which ClassReflector is currently reflecting.
+     * @return The class. Null if not reflecting anything.
+     */
     public Class<?> getReflectedClass(){
     	Class<?> toReturn = null;
     	
@@ -70,14 +84,12 @@ public class ClassReflector {
     		e.printStackTrace();
     		System.out.println("ClassReflector - Class Retrieval Failed");
     	}
-    			
-    	// Return the class
-    	return toReturn;
+    	return toReturn;	// Return the class
     }
 
     /**
-     * @purpose	Get the class' constructors, fields, and methods. Store it within
-     * 			ClassReflector's hashmaps
+     * Get the class' constructors, fields, and methods. Store it within
+     * ClassReflector's hashmaps.
      * @return 	true, if successful. False if class is invalid/null.
      */
     public boolean reflect() {
@@ -86,39 +98,24 @@ public class ClassReflector {
     		return true;
     	
     	try {	
-    		System.out.println("Populating hashmap with constructors and methods");
-        	// Set the class name
             Class<?> reflectedClass = Class.forName(className);
-            
-            // System.out.format("Class:%n  %s%n%n", c.getCanonicalName());
-            // Package p = c.getPackage();
-            // System.out.format("Package:%n  %s%n%n", (p != null ? p.getName()
-            // : "-- No Package --"));
-
             int i = 0;
             
+            // Populate the HashMap with the class' fields
             for (Field field : reflectedClass.getDeclaredFields()){
             	fields.put(field.getName(), field);
             }
             
-            // Populate the HashMap with the constructors
+            // Populate the HashMap with the class' constructors
             for (Constructor<?> constructor : reflectedClass.getDeclaredConstructors()) {
                 String temp = constructor.getName() + Integer.toString(i);
                 constructors.put(temp, constructor);
                 i++;
-                
-                // Print out for debug
-                // System.out.println(constructor.getName() + "   " +
-                // constructor);
             }
             
             // Populate the HashMap with the methods
             for (Method method : reflectedClass.getDeclaredMethods()) {
                 methods.put(method.getName(), method);
-                
-                // Print out for debug
-                // System.out.println(method.getName() + "   "
-                //   + method.toGenericString());
             }
 
         } catch (ClassNotFoundException x) {
@@ -127,13 +124,12 @@ public class ClassReflector {
             return false;
         }
         reflected = true;		// set flag to reflected
-        System.out.println("------------ End reflect() ------------");
         return true;
     }
 
     /**
-     * @purpose To validate the class. Checks to see if it has the appropriate
-     * 			constructions and fields.
+     * To validate the class. Checks to see if it has the appropriate constructors
+     * and methods with String arrays of correct constructors and methods.
      *
      * @param 	constructsArr the array of constructors passed by StudentObjectManager
      * @param 	methodsArr the array of methods passed by StudentObjectManager
@@ -195,18 +191,31 @@ public class ClassReflector {
     }
 
     /**
-     * @purpose	To create and return an object by calling its constructor.
-     * 			The signature must match the Object's constructor signature
-     * 			exactly.
-     * @param 	construc, the name of the object's class
+     * Create and return an object by calling its constructor.
+     * The signature must match the Object's constructor signature exactly.
+     * 
      * @param 	arguments, the necessary parameters for the constructor
      * @return 	the newly created object if successful. Else return null.
      */
-    public Object createObj(String construc, Object... arguments) {
+    public Object createObj(Object... arguments) {
     	// Get the object's constructor, and create a new instance of it with
     	// the arguments.
         try {
-            return constructors.get(construc).newInstance(arguments);
+        	for (Constructor<?> toFind : constructors.values()){
+        		// Get the array of constructor parameters
+        		Class<?>[] params = toFind.getParameterTypes();
+        		
+        		// if the length and all arguments are all the same, return it.
+        		if (params.length == arguments.length){
+        			for (int i = 0; i < params.length; i++){
+        				if (!params[i].isAssignableFrom(arguments[i].getClass())){
+        					return null;
+        				}
+        			}
+        			return toFind.newInstance(arguments);
+        		}
+        	}
+        	return null;
         } catch (InstantiationException | IllegalAccessException
                 | IllegalArgumentException | InvocationTargetException e) {
             // TODO Auto-generated catch block
@@ -216,15 +225,16 @@ public class ClassReflector {
     }
 
     /**
-     * @purpose to Invoke method by name and signature.
-     * @param 	obj, the object being used
-     * @param 	method, the method's name from the object
-     * @param 	params, the parameters required for the method
+     * Invoke method by name and signature.
+     * 
+     * @param 	obj - the object being used
+     * @param 	methodName - the method's name from the object
+     * @param 	params - the parameters required for the method
      * @return 	the object if successful. Else return false.
      */
-    public Object invokeMethod(Object obj, String method, Object... params) {
+    public Object invokeMethod(Object obj, String methodName, Object... params) {
     	// Check to see if the method is within the HashMap of methods.
-        if (!methods.containsKey(method)) {
+        if (!methods.containsKey(methodName)) {
         	System.out.println("not a method");
             return false;
         } 
@@ -232,7 +242,7 @@ public class ClassReflector {
         // If so, try to invoke the object's methods with the parameters.
         else {	
             try {
-                return methods.get(method).invoke(obj, params);
+                return methods.get(methodName).invoke(obj, params);
             } catch (IllegalAccessException | IllegalArgumentException
                     | InvocationTargetException e) {
                 // TODO Auto-generated catch block
@@ -244,33 +254,37 @@ public class ClassReflector {
     }
 
     /**
-     * @purpose Checks if is reflected.
-     * @return 	true, if is reflected
+     * Checks if is reflected.
+     * 
+     * @return true, if reflected
      */
     public boolean isReflected() {
         return reflected;
     }
 
     /**
-     * @purpose	Checks if is validated.
-     * @return 	true, if is validated
+     * Checks if the class has been validated.
+     * 
+     * @return 	true, if validated
      */
     public boolean isValidated() {
         return validated;
     }
 
     /**
-     * @purpose Gets the class name
+     * Gets the class name
+     * 
      * @return the class name
      */
     public String getClassName() {
         return className;
     }
     
-    public boolean hasMethodSignature(String methodToCheck){
-    	return methods.containsKey(methodToCheck);
-    }
-    
+    /**
+     * Return the Field object specified by its name.
+     * @param fieldName - The name of the Field.
+     * @return The Field Object if found, null otherwise.
+     */
     public Field getFieldByName(String fieldName){
     	if (fields.containsKey(fieldName))
     		return fields.get(fieldName);
@@ -278,6 +292,11 @@ public class ClassReflector {
     		return null;
     }
     
+    /**
+     * Return the Method object specified by its name.
+     * @param methodName - The name of the Method.
+     * @return The Method Object if found, null otherwise.
+     */
     public Method getMethodByName(String methodName){
     	if (methods.containsKey(methodName))
     		return methods.get(methodName);
@@ -286,14 +305,13 @@ public class ClassReflector {
     }
     
     /**
+     * Return the value specified by the field name.
      * 
      * @param 	fieldName - the String name of the field
      * @param 	obj - an instance of the class to extract information from.
      * @return 	The object wrapped in its respective primitive class, or null if 
      * 			not found.
      */
-    // Return the value specified by the field string. 
-    // Return null if the field cannot be found.
     public Object getFieldValue(String fieldName, Object obj){
     	// Try to get the field by name, and return the value
     	try {
@@ -308,19 +326,10 @@ public class ClassReflector {
 		return null;
     }
     
-    public void getFields(String className){
-    	try {
-    	    Class<?> classType = Class.forName(className);
-    	    Field[] fieldsArr = classType.getDeclaredFields();
-
-    	} catch (ClassNotFoundException x) {
-    	    x.printStackTrace();
-    	}
-    }
-    
     /**
      * Verify the contents of fields with a provided "correct fields" array.
-     * @param arrOfFields, the correct array of Field members
+     * 
+     * @param arrOfFields - the correct array of Field members
      */
     public void verifyFields(Field[] arrOfFields){
     	// currentField	=	From the Student Obj. Hashmap of Fields
@@ -362,8 +371,12 @@ public class ClassReflector {
         }
     }
     
+    /**
+     * Verify the Hashmap of methods against an array of "correct" Methods.
+     * 
+     * @param constructArr - the array of "correct" methods
+     */
     public void verifyMethods(Method[] methodArr){
-    	
     	// currentField	=	From the Student Obj. Hashmap of Methods
     	// toCheck 		=	From the array. This array has the correct parameters
     	Method currentField = null;
@@ -381,9 +394,7 @@ public class ClassReflector {
     	System.out.println("----------------------------------------");
     	
     	for (Method toCheck : methodArr){
-    		
     		flag = true;
-    		
     		// First check -- see if the name matches 
     		if (methods.containsKey(toCheck.getName())){
     			
@@ -405,7 +416,8 @@ public class ClassReflector {
 				}
 				
 				// Fourth check -- see if the parameters are the same
-				if (currentField.getGenericParameterTypes().length != toCheck.getGenericParameterTypes().length)
+				if (currentField.getGenericParameterTypes().length != 
+						toCheck.getGenericParameterTypes().length)
 					flag = false;
 				else{
 					// Sort to eliminate parameter order
@@ -432,21 +444,9 @@ public class ClassReflector {
 					
 					if (paramHM.equals(paramHM2) == false)
 						flag = false;
-					
-					// Check each individual parameter
-					/*for (int i = 0; i < currentField.getGenericParameterTypes().length; i++){
-						for (int j = 0; j < toCheck.getGenericParameterTypes().length; j++){
-							if (currentField.getGenericParameterTypes()[i] 
-									!= toCheck.getGenericParameterTypes()[i]){
-								flag = false;
-							}
-						}
-					}*/
 				}
 	
-				// TODO: Find a more efficient way to handle logic
 				if (flag == false){
-										
 					System.out.print("Found " + toCheck.getName() + " but the parameter(s) are ");
 					for (int i = 0; i < currentField.getGenericParameterTypes().length; i++)
 						System.out.print(currentField.getGenericParameterTypes()[i] + " ");
@@ -465,21 +465,28 @@ public class ClassReflector {
     
     /**
      * Return the stored Fields, in an array format.
-     * @return
+     * @return the stored Fields objects in an array
      */
     public Field[] getArrayOfFields(){
     	// Need to do this since returning fields.toArray() is Object[]
     	// and will crash if you try to type-cast it as Field[]
-    	//System.out.println(fields.values().toArray().toString());
     	Field[] retFields = fields.values().toArray(new Field[fields.size()]);
     	return retFields;
     }
     
+    /**
+     * Return the stored Methods, in an array format.
+     * @return the stored Methods objects in an array
+     */
     public Method[] getArrayOfMethods(){
     	Method[] retMethods = methods.values().toArray(new Method[methods.size()]);
     	return retMethods;
     }
     
+    /**
+     * Return the stored Constructors, in an array format.
+     * @return the stored Constructor objects in an array
+     */
     @SuppressWarnings("rawtypes")
 	public Constructor[] getArrayOfConstructors(){
     	Constructor[] retConstructors = constructors.values().
@@ -488,41 +495,84 @@ public class ClassReflector {
     }
     
     
+    /**
+     * Verify the Hashmap of constructors against an array of "correct" Constructors.
+     * The constructor names can be different, as this method compares the 
+     * parameters of the correct constructors.
+     * 
+     * @param constructArr - the array of "correct" constructors
+     */
     // CONSTRUCTORS MUST BE DECLARED IN A SPECIFIC ORDER
     // The student class can be named differently than the testing class
     public void verifyConstructors(Constructor<?>[] constructArr){
     	
     	// Check each parameter for each constructor between toCheck[i] 
     	// and constructArr[i].
+    	boolean rightMods, rightParamType, rightParamNum;
+    	
     	for (Constructor<?> toCheck : constructArr){
+    		rightParamNum = rightMods = rightParamType = true;
     		for (int i = 0; i < constructArr.length; i++){
     			
     			// First Check -- The modifiers (public, private, etc.)
     			if (constructArr[i].getModifiers() != toCheck.getModifiers()){
-					System.out.println("Found " + toCheck.toString() + "but" 
-							+ "the modifiers are incorrect.");
-					continue;
+					rightMods = false;
 				}
     			
     			// Second Check -- Number of parameters
     			if (constructArr[i].getParameterTypes().length != toCheck.getParameterTypes().length){
-    				System.out.println("Found " + toCheck.getName() 
-    				+ " but the parameter(s) are incorrect");
-    				System.out.println(constructArr[i].toString());
-    				System.out.println(toCheck.toString());
-    				continue;
+    				rightParamNum = false;
     			}
-    			
-    			// Third Check -- Parameter types.
-    			for (int paramCounter = 0; paramCounter < constructArr[i].getGenericParameterTypes().length; paramCounter++){
-    				if (constructArr[i].getGenericParameterTypes()[paramCounter] 
-    						!= toCheck.getGenericParameterTypes()[paramCounter]){
-    					System.out.println("Found " + toCheck.getName() 
-    					+ " but the parameter(s) are incorrect");
+    			else {
+    				// Third Check -- Parameter types.
+        			for (int paramCounter = 0; paramCounter < constructArr[i].getGenericParameterTypes().length; paramCounter++){
+        				if (constructArr[i].getGenericParameterTypes()[paramCounter] 
+        						!= toCheck.getGenericParameterTypes()[paramCounter]){
+        					rightParamType = false;
+            			}
         			}
     			}
-    			
+    			// Print out the results.
+    			if (rightMods == true && rightParamType == true && rightParamNum == true){
+    				System.out.println("Found " + constructArr[i].toString());
+    			} else {
+    				String toPrint = constructArr[i].toString() + " not found." 
+    						+ "this is due to incorrect: ";
+    				if (rightMods == false)
+    					toPrint += "accessibility modifiers, ";
+    				if (rightParamNum == false)
+    					toPrint += "number of parameters, ";
+    				if (rightParamType == false)
+    					toPrint += "number of parameter types, ";
+    				System.out.println(toPrint + "please check your code and try again.");
+    			}
     		}	
     	}
+    }
+    
+    public String printDetails(){
+    	String toRet = "";
+    	
+    	toRet += "\n--- Fields ---\n";
+    	if (fields.isEmpty())
+    		toRet += "(none)\n";
+    	for (Field fie : fields.values())
+        	toRet += fie.toString() + '\n';
+    	
+    	toRet += "\n--- Constructors ---\n";
+    	if (constructors.isEmpty())
+    		toRet += "(none)\n";
+    	for (Constructor<?> con : constructors.values())
+    		toRet += con.toString() + '\n';
+    	
+    	toRet += "\n--- Methods ---\n";
+    	if (methods.isEmpty())
+    		toRet += "(none)";
+    	for (Method meth : methods.values())
+    		toRet += meth.toString() + "\n";
+    	
+    	toRet += '\n';
+    	
+    	return toRet;
     }
 }

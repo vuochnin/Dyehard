@@ -23,34 +23,34 @@ public class BackgroundScreen extends UpdateableObject {
 	private ManagerStateEnum updateState = ManagerStateEnum.ACTIVE;
 	
     /** The ship. */
-    private final Deque<Tile> ship;    
+    private Deque<Tile> ship;    
     
     /** The ship textures. */
-    private final List<BufferedImage> shipTextures;
+    protected List<BufferedImage> shipTextures;
     
     /** The ship texture paths. */
-    private final String[] shipTexturePaths = {
+    protected String[] shipTexturePaths = {
             "Textures/Background/Dyehard_ship_tile_01.png",
             "Textures/Background/Dyehard_ship_tile_02.png",
             "Textures/Background/Dyehard_ship_tile_03.png",
             "Textures/Background/Dyehard_ship_tile_04.png", };
 
     /** The background. */
-    private final Deque<Tile> background;    
+    private Deque<Tile> background;    
     
     /** The background textures. */
-    private final List<BufferedImage> backgroundTextures;    
+    private List<BufferedImage> backgroundTextures;    
     
     /** The background texture paths. */
-    private final String[] backgroundTexturePaths = {
+    private String[] backgroundTexturePaths = {
             "Textures/Background/Dyehard_starfield_01.png",
             "Textures/Background/Dyehard_starfield_02.png", };
     
     /** The foreground. */
-    private final Deque<Tile> foreground;    
+    private Deque<Tile> foreground;    
     
     /** The foreground textures. */
-    private final List<BufferedImage> foregroundTextures;
+    private List<BufferedImage> foregroundTextures;
     
     /** The foreground texture paths. */
     private final String[] foregroundTexturePaths = {
@@ -64,16 +64,22 @@ public class BackgroundScreen extends UpdateableObject {
      * Instantiates a new background screen.
      */
     public BackgroundScreen() {
-        backgroundTextures = loadTextures(backgroundTexturePaths);
-        background = createTiles(backgroundTextures, -0.00390625f); // 1/256
-
-        foregroundTextures = loadTextures(foregroundTexturePaths);
-        foreground = createTiles(foregroundTextures, -0.0078125f); // 1/128
-
-        shipTextures = loadTextures(shipTexturePaths);
-        ship = createTiles(shipTextures, -0.03125f); // 1/32
+    	refreshBackgroundTiles();
+    	refreshForegroundAndShip();
     }
 
+    protected void refreshBackgroundTiles() {
+    	backgroundTextures = loadTextures(backgroundTexturePaths);
+        background = createTiles(backgroundTextures, -0.00390625f); // 1/256
+    }
+    
+    protected void refreshForegroundAndShip(){
+    	foregroundTextures = loadTextures(foregroundTexturePaths);
+    	foreground = createTiles(foregroundTextures, -0.0078125f); // 1/128
+    	shipTextures = loadTextures(shipTexturePaths);
+    	ship = createTiles(shipTextures, -0.03125f); // 1/32
+    }
+    
     /* (non-Javadoc)
      * @see dyehard.Updateable#updateState()
      */
@@ -118,7 +124,7 @@ public class BackgroundScreen extends UpdateableObject {
      * @param paths is the paths to the images to load
      * @return the list
      */
-    private List<BufferedImage> loadTextures(String[] paths) {
+    protected List<BufferedImage> loadTextures(String[] paths) {
         List<BufferedImage> textures = new ArrayList<BufferedImage>();
         for (String path : paths) {
             BufferedImage texture = BaseCode.resources.loadImage(path);
