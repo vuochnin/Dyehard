@@ -763,10 +763,10 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * game window with the specified interval
 	 * @param interval the interval in second to spawns DyePack 
 	 */
-	public void apiStartDyePackSpawner(float interval)
+	public void apiStartDyePackSpawner(double interval)
 	{
 		ApiDyePackGenerator.initialize(100);
-		ApiDyePackGenerator.setInterval(interval);
+		ApiDyePackGenerator.setInterval((float) interval);
 		ApiDyePackGenerator.setActive(true);
 	}
 

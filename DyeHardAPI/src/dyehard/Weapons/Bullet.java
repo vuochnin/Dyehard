@@ -17,9 +17,6 @@ import dyehard.Player.Hero;
  */
 public class Bullet extends CollidableGameObject {
     
-    /** The dye color. */
-    public Color dyeColor;
-    
     /** The muzzle. */
     private final DyehardRectangle muzzle;
     
@@ -38,15 +35,15 @@ public class Bullet extends CollidableGameObject {
         this.hero = hero;
 
         size = new Vector2(6.25f, 2.25f);
-        dyeColor = hero.getColor();
-        texture = hero.bulletTextures.get(dyeColor);
+        color = hero.getColor();
+        texture = hero.bulletTextures.get(color);
         setPosition(this);
         shouldTravel = true;
         velocity = new Vector2(3f, 0f);
         
         muzzle = new DyehardRectangle();
         muzzle.size = new Vector2(2.5f, 3.5f);
-        muzzle.texture = hero.muzzleTextures.get(dyeColor);
+        muzzle.texture = hero.muzzleTextures.get(color);
         muzzle.setUsingSpriteSheet(true);
         muzzle.setSpriteSheet(muzzle.texture, 50, 70, 3, 3);
         muzzle.stopAtEnd = true;
@@ -140,7 +137,7 @@ public class Bullet extends CollidableGameObject {
      */
     @Override
     public void handleCollision(CollidableGameObject other) {
-        if ((other instanceof Enemy) && (other.color != dyeColor)) {
+        if ((other instanceof Enemy) && (other.color != color)) {
             // int frame = getCurFrame();
             // float offset = 0;
             // if (frame == 3) {
@@ -172,7 +169,7 @@ public class Bullet extends CollidableGameObject {
             // collidableState = ManagerState.DESTROYED;
             // }
             Enemy enemy = (Enemy) other;
-            enemy.setColor(dyeColor);
+            enemy.setColor(color);
             enemy.beenHit = true;
             enemy.setHarmless();
         }
