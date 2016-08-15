@@ -2,14 +2,21 @@ package Demo4;
 
 
 import dyeHardProceduralAPI.DHProceduralAPI;
-import dyeHardProceduralAPI.KeysEnum;
 
 /**
- * 
- * @author vuochnin
- *
- *
- *	Demonstrates
+ *	Demonstrates collision behavior in order to customize behavior for collisions
+ *	
+ *	Functions introduced:
+ *		apiStartEnemySpawner(double)
+ *		apiSpawnSingleDebris()
+ *		apiRandomFloat(double, double)
+ *		apiColliding(int, int)
+ *		apiGetSubtype(int)
+ *		apiDestroy(int)
+ *		apiAdjustScoreBy(int)
+ *	
+ *	@author Holden
+ *	@author Nin
  */
 public class Demo4 extends DHProceduralAPI
 {
@@ -19,8 +26,8 @@ public class Demo4 extends DHProceduralAPI
 	{
 		
 		heroID = apiStartHero();
-		apiEcho("Hero started with ID: " + heroID);
-		
+		apiShowScore(true);
+		apiSetLivesTo(3);
 		apiStartEnemySpawner(1);
 	}
 	
@@ -28,18 +35,25 @@ public class Demo4 extends DHProceduralAPI
 	{
 		apiObjectFollowTheMouse(heroID);
 		
-		if(apiRepeatingTimer("reverse debris", 0.6f))
+		if(apiIsMouseLeftClicked())
+			apiHerofirePaint();
+		
+		
+		// Custom debris loop
+		if(apiRepeatingTimer("reverse debris", 1.2))
 		{
 			int debrisID = apiSpawnSingleDebris();
 			
 			float y = apiGetObjectPositionY(debrisID);
 			
+			float yspeed = apiRandomFloat(-0.1, 0.1);
+			
 			apiMoveObjectTo(debrisID, 0, y);
-			apiSetObjectVelocity(debrisID, 0.5, 0);
+			apiSetObjectVelocity(debrisID, 0.3, yspeed);
 		}
 
 		
-		// Collison loop
+		// Collision loop
 		for(int i = 0; i < apiObjectCount(); i++)
 		{
 			int id1 = apiGetID(i);
@@ -54,16 +68,24 @@ public class Demo4 extends DHProceduralAPI
 							apiGetType(id2) == "Enemy"))
 					{
 
-						apiEcho("1");
+						apiEcho("Special collision behavior executed. " + apiGetSubtype(id1));
 						apiDestroy(id2);
 					}
-
-				}
 					
+					if(apiGetType(id1) == "Hero" && apiGetType(id2) == "Enemy")
+					{
+						apiDestroy(id1);
+						apiAdjustScoreBy(-1);
+					}
+					
+					if(apiGetType(id1) == "Bullet" && apiGetType(id2) == "Enemy" &&
+							apiGetSubtype(id2) != "Charger")
+					{
+						apiAdjustScoreBy(5);
+						apiDestroy(id2);
+					}
+				}	
 			}
 		}
-		
-		//echo("Objects in play: " + objectCount());
-		
 	}
 }

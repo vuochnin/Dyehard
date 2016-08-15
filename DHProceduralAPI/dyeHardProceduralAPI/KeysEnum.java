@@ -1,5 +1,10 @@
 package dyeHardProceduralAPI;
 
+/**
+ * KeysEnum class is used to access keyboard keys by the index of each of the Enum key.
+ * 
+ * @author vuochnin
+ */
 public enum KeysEnum {
 	LEFT, RIGHT, UP, DOWN, SPACE, ENTER, ESCAPE, SHIFT, LESS_THAN, GREATER_THAN,
 	ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, 

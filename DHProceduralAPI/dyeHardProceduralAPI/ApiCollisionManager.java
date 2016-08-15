@@ -8,22 +8,29 @@ import dyehard.Collectibles.*;
 import dyehard.Collectibles.PowerUp;
 import dyehard.Collision.CollidableGameObject;
 import dyehard.Enemies.Enemy;
-import dyehard.Enums.ManagerStateEnum;
 import dyehard.Obstacles.Debris;
 import dyehard.Player.Hero;
+import dyehard.Util.Colors;
 import dyehard.Weapons.Bullet;
 import dyehard.World.WormHole.*;
 
-public class CollisionManager {
+/**
+ * Provides custom collision functionality for the API.
+ * Records collisions for use in user-defined behaviour.
+ * @author Holden
+ */
+public class ApiCollisionManager {
 
+	/**
+	 * Holds identifiers for collisions.
+	 *
+	 * The key is a pair of ints formatted as "#,#"
+	 */
 	private static HashMap<String, Boolean> collisionMemory;
-	
-	private static DHProceduralAPI api;
-	
-	private static boolean collisionIsDirty;
-	
-	private static int i, j;
-	
+
+	/**
+	 * A reference to the base CollisionManager instance
+	 */
 	private static dyehard.Collision.CollisionManager instance;
 
 	static
@@ -31,49 +38,72 @@ public class CollisionManager {
 		collisionMemory = new HashMap<>();
 		instance = dyehard.Collision.CollisionManager.getInstance();
 	}
-	
-	private static CollidableGameObject[] objects;
-	
-	public static void register(DHProceduralAPI newApi)
-	{
-		api = newApi;
-	}
-	
-	public static int objectCount()
-	{
-		return objects.length;
-	}
 
+	/**
+	 * The set of objects managed by the collision manager
+	 */
+	private static CollidableGameObject[] objects;
+
+	/**
+	 * Tell the base CollisionManager to refresh the set of objects
+	 */
 	public static void refreshSet()
 	{
 		instance.updateSet();
 	}
 
+	/**
+	 * Retrieve the set of objects managed by the collision manager
+	 * @return the set of objects managed by the collision manager
+	 */
 	public static CollidableGameObject[] getObjects()
 	{
 		return objects;
 	}
 
+	/**
+	 * Find a game object based on the associated ID
+	 * @param id the ID number
+	 * @return the game object
+	 */
 	private static CollidableGameObject lookup(int id)
 	{
-		return IDManager.get(id);
+		return ApiIDManager.get(id);
 	}
 
+	/**
+	 * Retrieve the type of an object
+	 * @param i the ID number
+	 * @return the type of the object
+	 */
 	public static String getType(int i)
 	{
 		return parseType(lookup(i));
 	}
-	
+
+	/**
+	 * Retrieve the subtype of an object
+	 * @param i the ID number
+	 * @return the subtype of the object
+	 */
 	public static String getSubtype(int i)
 	{
 		return getSubtype(getType(i), lookup(i));
 	}
 
+	/**
+	 * Check if a collision happened between two objects
+	 * @param id1 the first ID number
+	 * @param id2 the second ID number
+	 */
 	public static boolean rememberCollision(int id1, int id2)
 	{
 		return collisionMemory.getOrDefault(id1 + "," + id2, false);
 	}
-	
+
+	/**
+	 * Update the API CollisionManager
+	 */
 	public static void update(){
 		collisionMemory.clear();
 		
@@ -87,12 +117,33 @@ public class CollisionManager {
 		
 		// ACTORS: Hero, Enemies
 		// CollidableGameObjects: DyePacks, PowerUps, Bullets, and Debris
-		for(i = 0; i < count; i++)
+		for(int i = 0; i < count; i++)
 		{
 			//if(objects[firstID].collideState() != ManagerStateEnum.ACTIVE)
 				//continue;
-			
-			for(j = i+1; j < count; j++)
+
+			// Clear objects that are far out of bounds to the right
+			//
+			// Special behavior is required for this, since the engine's out-of-bounds code
+			// does not handle the right side of the boundary, because it would mess up the
+			// behaviour of wormholes.
+			if(objects[i].center.getX() > 200)
+			{
+				switch(parseType(objects[i]))
+				{
+				case "Debris":
+				case "Bullet":
+				case "Enemy":
+				case "DyePack":
+				case "PowerUp":
+					objects[i].destroy();
+					continue; // Object is being destroyed, no need to check collision.
+				default:
+					// Continue with collision check
+				}
+			}
+
+			for(int j = i+1; j < count; j++)
 			{
 				//if(objects[secondID].collideState() != ManagerStateEnum.ACTIVE)
 					//continue;
@@ -102,50 +153,20 @@ public class CollisionManager {
 					objects[i].handleCollision(objects[j]);
 					objects[j].handleCollision(objects[i]);
 					
-					String key = IDManager.reverseLookupID(objects[i])+
-							"," + IDManager.reverseLookupID(objects[j]);
+					String key = ApiIDManager.reverseLookupID(objects[i])+
+							"," + ApiIDManager.reverseLookupID(objects[j]);
 					
 					collisionMemory.put(key, true);
 				}
 			}
 		}
 	}
-	
-	public static boolean isColliding(int id1, int id2){
-		if(id1 < 0 || id1 >= objectCount())
-		{
-			System.err.println("Invalid id for id1: " + id1);
-			return false;
-		}
-		if(id2 < 0 || id2 >= objectCount())
-		{
-			System.err.println("Invalid id for id2: " + id2);
-			return false;
-		}
-		
-		return lookup(id1).collided(lookup(id2));
-	}
-	
-	public static void setDirty()
-	{
-		collisionIsDirty = true;
-	}
-	
-	private static void handleCollision(CollidableGameObject first, int id1, CollidableGameObject second, int id2)
-	{
-		String type1 = "", type2 = "", subtype1 = "", subtype2 = "";
-		
-		type1 = parseType(first);
-		type2 = parseType(second);
 
-		subtype1 = getSubtype(type1, first);
-		subtype2 = getSubtype(type2, second);
-		
-		// get types of Collidable objects
-		if(type1 != "" && type2 != "")
-			api.handleCollisions(type1, subtype1, id1, type2, subtype2, id2);
-	}
-	
+	/**
+	 * Figure out the type of an object
+	 * @param obj the object
+	 * @return the string representation of the type
+	 */
 	private static String parseType(CollidableGameObject obj)
 	{
 		if(obj instanceof Hero){
@@ -176,44 +197,13 @@ public class CollisionManager {
 		//default case:
 		return "";
 	}
-	
 
-	
-	
-	
-	
-	
-	
-	
-	
-//	private void handleHeroCollisions(CollidableGameObject hero, CollidableGameObject other)
-//	{
-//		//if other instanceof Debris
-//		if(other instanceof Debris){
-//			int id = DebrisGenerator.getID((Debris)other);
-//			//handleDebrisCollision(id);
-//		}
-//		//handle enemy(id, type)
-//		else if(other instanceof Enemy){
-//			String type = other.toString();
-//			int id = EnemyManager.getInstance().getId((Enemy) other);
-//			//handleEnemyCollision(id, type);
-//		}
-//		
-//		// powerup(id, type)
-//		else if(other instanceof PowerUp)
-//		{
-//			String type = getPowerUpType(other);
-//			
-//			//handlePowerUpCollision(id, type);
-//		}
-//		
-//		// dyePack(id, color)
-//		else if(other instanceof DyePack){
-//			
-//		}
-//	}
-	
+	/**
+	 * Figure out the subtype of an object
+	 * @param type the type object
+	 * @param obj the object
+	 * @return the string representation of the subtype
+	 */
 	private static String getSubtype(String type, CollidableGameObject obj)
 	{
 		if(type == "Enemy")
@@ -223,9 +213,18 @@ public class CollisionManager {
 		else if(type == "PowerUp")
 		{
 			return getPowerUpType(obj);
-		}else if(type == "DyePack")
+		}
+		else if(type == "Debris"){
+			return obj.toString();
+		}
+		else if(type == "DyePack" || type == "Bullet")
 		{
-			// return color of dyepack
+			return obj.color == Colors.Blue ? "Blue" :
+				obj.color == Colors.Green ? "Green":
+				obj.color == Colors.Pink ? "Pink" :
+				obj.color == Colors.Red ? "Red":
+				obj.color == Colors.Teal ? "Teal" :
+				"Yellow";
 		}
 		return "";
 	}

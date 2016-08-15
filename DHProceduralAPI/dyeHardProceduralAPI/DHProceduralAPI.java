@@ -17,6 +17,7 @@ import dyehard.Resources.ConfigurationFileParser;
 import dyehard.Ui.DyehardEndMenu;
 import dyehard.Ui.DyehardUI;
 import dyehard.Util.Colors;
+import dyehard.Util.DyeHardSound;
 import dyehard.World.GameState;
 import dyehard.Player.Hero;
 import dyehard.Weapons.*;
@@ -24,7 +25,10 @@ import dyehard.World.WormHole;
 
 
 /**
- * @author vuochnin
+ * DHProceduralAPI class is a procedural API for Dye Hard game.
+ * This API is designed to use as introductory computer science lessons.
+ * 
+ * @author Vuochly (Nin) Ky
  * @author Holden
  */
 public class DHProceduralAPI extends DyeHardGame{
@@ -39,21 +43,22 @@ public class DHProceduralAPI extends DyeHardGame{
 	private DyehardUI ui;
 	
 	private DyehardEndMenu endMenu;
-	private LogScreen start;			// "Click Anywhere to Start"
+	private LogScreen start;		// "Click Anywhere to Start"
 	
 	/**
 	 * @Override 
 	 * Must override the initialize() method from the abstract super class, DyeHardGame
 	 */
 	public void initialize(){
-		CollisionManager.register(this);
-
 		window.requestFocusInWindow();
-		apiSetGoalDistance();
+		
+		// Sets the distance the player must travel to beat the game to a default value
+		GameState.TargetDistance = ConfigurationFileParser.getInstance().getWorldData().getWorldMapLength();
+		
 		endMenu = new DyehardEndMenu();
 		start = new LogScreen();
+		ApiDyePackGenerator.initialize(100);
 		buildGame();
-		apiShowStartScreen();
 		if(showStartMenu)
 			DyeHardGame.setState(State.BEGIN);
 		else
@@ -66,7 +71,6 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * Must override the update() method from the abstract super class, DyeHardGame
 	 */
 	public void update(){
-		//checkControl();
 		switch (getState()) {
         case PLAYING:
         	if(endMenuActive){
@@ -75,13 +79,14 @@ public class DHProceduralAPI extends DyeHardGame{
 			UpdateManager.getInstance().update();
 			distance += Speed;
 			GameState.DistanceTravelled = (int) distance;
-			DebrisGenerator.update();
-			DyePackGenerator.update();
-			EnemyGenerator.update();
-	
-			CollisionManager.update();
+			ApiDebrisGenerator.update();
+			ApiDyePackGenerator.update();
+			ApiEnemyGenerator.update();
+			ApiCollisionManager.update();
 			
-			IDManager.cleanup();
+			ApiIDManager.cleanup();
+	        ApiIDManager.collectStrayObjects();
+
 			updateGame();
 			break;
         case BEGIN:
@@ -101,7 +106,7 @@ public class DHProceduralAPI extends DyeHardGame{
 				endMenu.select(mouse.getWorldX(), mouse.getWorldY(), false);
         	break;
         case QUIT:
-        	window.close();
+        	apiQuitGame();
         	break;
         case RESTART:
         	apiRestartGame();
@@ -111,11 +116,6 @@ public class DHProceduralAPI extends DyeHardGame{
 		}
 	}
 	
-	//--------------------------------------------------------------------------------------------	
-	//--------------------- SOME POSSIBLE PROCEDURAL FUNCTIONS -----------------------------------
-	//--------------------------------------------------------------------------------------------
-	
-
 	/**
 	 * A callback function, for user to override.
 	 * (Call Once)
@@ -128,65 +128,42 @@ public class DHProceduralAPI extends DyeHardGame{
 	 */
 	public void updateGame(){ }
 	
-	
-	
-	public void handleCollisions(String type1, String subtype1, int id1, String type2, String subtype2, int id2)
-	{
-		// User overrides this
-	}
-	
-	/**
-	 * Reports the number of objects in play
-	 * @return the number of objects in play
-	 */
-	public int apiObjectCount()
-	{
-		return IDManager.count();
-	}
-
-	/**
-	 * Retrieves the ID of a registered object. Used in for loops.
-	 * @param index
-	 * @return
-	 */
-	public int apiGetID(int index)
-	{
-		return IDManager.getID(index);
-	}
-
-	/**
-	 * presents the type of an object
-	 * @param id
-	 * @return
-	 */
-	public String apiGetType(int id){
-		return CollisionManager.getType(id);
-	}
+	//--------------------------------------------------------------------------	
+	//--------------------- POSSIBLE PROCEDURAL FUNCTIONS ----------------------
+	//--------------------------------------------------------------------------
 
 	/**
 	 * Presents the subtype of an object
-	 * @param id
-	 * @return
+	 * @param id the id of an object
+	 * @return the subtype of the object as a String
 	 */
 	public String apiGetSubtype(int id){
-		return CollisionManager.getSubtype(id);
+		return ApiCollisionManager.getSubtype(id);
 	}
-	
 	
 	/**
 	 * Fire the current weapon
 	 */
-	public void apiHerofirePaint(){					// Fire the paint
+	public void apiHerofirePaint(){	
 		hero.currentWeapon.fire();
+	}
+	
+	/**
+	 * Gets the travelled distance of the hero
+	 * @return the travelled distance as an Integer
+	 */
+	public int apiGetTravelledDistance(){
+		return GameState.DistanceTravelled;
 	}
 	
 	/**
 	 * Create new Hero object and set it to hero instance and 
 	 * set the cursor to the center of that hero
+	 * @return an Integer which represent the ID of the Hero
 	 */
 	public int apiStartHero(){					// Create new Hero
 		hero = new Hero();
-		EnemyGenerator.initialize(hero);
+		ApiEnemyGenerator.initialize(hero);
 		// TODO: Look into possibility of separating individual UI elements into functions
 		ui = new DyehardUI(hero);
 		// Move cursor to the center of the hero
@@ -201,11 +178,40 @@ public class DHProceduralAPI extends DyeHardGame{
 			e.printStackTrace();
 		}
 
-		return IDManager.register(hero);
+		return ApiIDManager.register(hero);
+	}
+	
+	// -------------------- Utilities functions ------------------
+	/**
+	 * Reports the number of objects in play
+	 * @return the number of objects in play
+	 */
+	public int apiObjectCount()
+	{
+		return ApiIDManager.count();
+	}
+
+	/**
+	 * Retrieves the ID of a registered object. Used in for loops.
+	 * @param index 
+	 * @return an Integer which represents the ID of the object
+	 */
+	public int apiGetID(int index)
+	{
+		return ApiIDManager.getID(index);
+	}
+
+	/**
+	 * presents the type of an object
+	 * @param id the id of an object
+	 * @return the type of the object as a String
+	 */
+	public String apiGetType(int id){
+		return ApiCollisionManager.getType(id);
 	}
 	
 	/**
-	 * Makes the hero follow the mouse movement
+	 * Makes the object specified by the id follow the mouse movement
 	 */
 	public void apiObjectFollowTheMouse(int id){
 		apiMoveObjectTo(id, apiMousePositionX(), apiMousePositionY());
@@ -221,57 +227,98 @@ public class DHProceduralAPI extends DyeHardGame{
 	
 	/**
 	 * Moves the object to a specific position
+	 * @param id the id of the object to be moved to
 	 * @param x the X-coordinate position
 	 * @param y the Y-coordinate position
 	 */
-	public void apiMoveObjectTo(int id, float x, float y){
+	public void apiMoveObjectTo(int id, double x, double y){
 		if(apiGetType(id) == "Hero")
-			hero.moveTo(x, y);
+			hero.moveTo((float)x, (float)y);
 		else
-			IDManager.get(id).center = (new Vector2(x,y));
+			ApiIDManager.get(id).center = (new Vector2((float)x,(float)y));
 	}
 	
-	
-	
-	// -------------------- Utilities functions ------------------
+	/**
+	 * Makes an object specified by the id to always appear on top of other objects
+	 * @param id the object to bring to top
+	 */
+	public void apiAlwaysOnTop(int id){
+		ApiIDManager.get(id).alwaysOnTop = true;
+	}
 
+	/**
+	 * Gets a random DyeHard color (blue, red, yellow, teal, pink, green) 
+	 * @return a random DyeHard color
+	 */
+	public Color apiGetRandomColor(){
+		return Colors.randomColor();
+	}
+	
+	/**
+	 * Gets the world width of the game
+	 * @return the width of the game world
+	 */
 	public float apiGetWorldWidth(){
 		return world.getWidth();
 	}
 	
+	/**
+	 * Gets the world height of the game
+	 * @return the height of the game world
+	 */
 	public float apiGetWorldHeight(){
 		return world.getHeight();
 	}
 	
+	/**
+	 * Gets the X-coordinate position of the object specified by id
+	 * @param id the ID of the object
+	 * @return the x position as a floating point number
+	 */
 	public float apiGetObjectPositionX(int id){
-		return IDManager.get(id).center.getX();
+		return ApiIDManager.get(id).center.getX();
 	}
 	
+	/**
+	 * Gets the Y-coordinate position of the object specified by id
+	 * @param id the ID of the object
+	 * @return the y position as a floating point number
+	 */
 	public float apiGetObjectPositionY(int id){
-		return IDManager.get(id).center.getY();
+		return ApiIDManager.get(id).center.getY();
 	}
 	
+	/**
+	 * Restarts the game. Clean out every objects on the screen or 
+	 * reset everything and start over
+	 */
 	public void apiRestartGame() {
 		endMenu.active(false);
     	setState(State.PLAYING);
     	background.destroy();
 		background = new BackgroundScreen();
+		ApiTimeManager.reset();
+        ApiIDManager.reset();
+        System.gc();
         distance = 0;
         GameState.DistanceTravelled = 0;
         GameState.Score = 0;
         hero.center = hero.getStart();
-
-        TimeManager.reset();
-        
-        IDManager.reset();
-        System.gc();
         buildGame();
 	}
 	
+	/**
+	 * Checks if the user has lose in the game(lost all the lives)
+	 * @return true if the user has lose, false otherwise
+	 */
 	public boolean apiUserLose(){
 		return (GameState.RemainingLives <= 0);
 	}
 	
+	/**
+	 * Checks if the user has reach the target distance or target score
+	 * @return true if user has win the game, false otherwise
+	 */
 	public boolean apiUserWon(){
 		if(GameState.DistanceTravelled >= GameState.TargetDistance)
 			return true;
@@ -282,6 +329,9 @@ public class DHProceduralAPI extends DyeHardGame{
 		}	
 	}
 	
+	/**
+	 * Quits the game
+	 */
 	public void apiQuitGame(){
 		//window.close();
 		System.exit(0);
@@ -304,27 +354,24 @@ public class DHProceduralAPI extends DyeHardGame{
 	 */
 	public boolean apiColliding(int id1, int id2)
 	{
-		return CollisionManager.rememberCollision(id1, id2) || CollisionManager.rememberCollision(id2, id1);
+		return ApiCollisionManager.rememberCollision(id1, id2) || ApiCollisionManager.rememberCollision(id2, id1);
 	}
-
-//		/**
-//		 * DEPRECATED
-//		 * Do nothing.
-//		 * Called within handleCollisions to prevent default behavior.
-//		 */
-//		public void doNothing(){
-//			CollisionManager.setDirty();
-//		}
 	
 	/**
-	 * Destroys an object
+	 * Destroys an object. (If the object is hero, the health will be decreased)
 	 * @param id the id of the object to be destroyed
 	 */
 	public void apiDestroy(int id)
 	{
-		CollidableGameObject obj = IDManager.get(id);
-		obj.destroy();
-		CollisionManager.setDirty();
+		CollidableGameObject obj = ApiIDManager.get(id);
+		if(obj instanceof Hero)
+		{
+			((Hero)obj).damageHero(hero, null);
+		}
+		else
+		{
+			obj.destroy();
+		}
 	}
 	
 	/**
@@ -333,45 +380,50 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * @param deltaX horizontal position
 	 * @param deltaY vertical position
 	 */
-	public void apiMoveObject(int id, float deltaX, float deltaY){
-		CollidableGameObject obj = IDManager.get(id);
-		
-		obj.center = new Vector2(obj.center.getX() + deltaX,obj.center.getY() + deltaY);
+	public void apiMoveObject(int id, double deltaX, double deltaY){
+		if(!(apiGetObjectPositionX(id)+deltaX < 0 && apiGetObjectPositionX(id)+deltaX > apiGetWorldWidth()
+				&& apiGetObjectPositionY(id)+deltaY < 0 && apiGetObjectPositionY(id)+deltaY > apiGetWorldHeight()))
+		{
+			CollidableGameObject obj = ApiIDManager.get(id);
+			
+			obj.center = new Vector2(obj.center.getX() + (float) deltaX,obj.center.getY() + (float) deltaY);
+		}
 	}
 	
 	/**
 	 * Sets a game object's velocity.
 	 * @param id the id of the object to be moved
-	 * @param deltaX horizontal position
-	 * @param deltaY vertical position
+	 * @param x horizontal velocity
+	 * @param y vertical velocity
 	 */
 	public void apiSetObjectVelocity(int id, double x, double y){
-		CollidableGameObject obj = IDManager.get(id);
+		CollidableGameObject obj = ApiIDManager.get(id);
 		
 		obj.velocity = new Vector2((float)x, (float)y);
 	}
 	
-	
 	/**
-	 * Increases the score according to the argument.
-	 * @param n - the number of score to increase by
+	 * Adjusts the score based on the argument.
+	 * If n is positive, the score is increasing by n. (n, increasing)
+	 * If n is negative, the score is decreasing by n. (-n, decreasing)
+	 * @param n the value to adjust
 	 */
-	public void apiIncreaseScoreBy(int n){
+	public void apiAdjustScoreBy(int n){
 		GameState.Score += n;
 	}
 	
 	/**
-	 * Decreases the score according to the argument.
-	 * @param n - the number of score to decrease by
+	 * Sets the winning score
+	 * @param winScore the target score
 	 */
-	public void apiDecreaseScoreBy(int n){
-		GameState.Score -= n;
-	}
-	
-	public void apiSetwinningScore(int winScore){
+	public void apiSetWinningScore(int winScore){
 		winningScore = winScore;
 	}
 	
+	/**
+	 * Speeds up the game
+	 * @param up true to speedup, false to set back to normal speed
+	 */
 	public void apiSpeedUp(boolean up){
 		UpdateManager.getInstance().setSpeedUp(up);
 		if(up)
@@ -380,7 +432,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	}
 	
 	/**
-	 * Sets the number of lives the hero has to the number, n
+	 * Sets the number of lives the hero has to the number n
 	 * and displays to the screen
 	 * @param n the number of lives to set to
 	 */
@@ -389,18 +441,15 @@ public class DHProceduralAPI extends DyeHardGame{
 	}
 	
 	/**
-	 * Sets the distance the player must travel to beat the game to a default value
-	 */
-	public void apiSetGoalDistance(){
-		GameState.TargetDistance = ConfigurationFileParser.getInstance().getWorldData().getWorldMapLength();
-	}
-	
-	/**
 	 * Sets the distance the player must travel to beat the game 
 	 * @param distance The new distance required to beat the game
 	 */
 	public void apiSetGoalDistance(int distance){
 		GameState.TargetDistance = distance;
+		if(ui.distanceMeter != null)
+		{
+			ui.distanceMeter.maxValue = GameState.TargetDistance;
+		}
 	}
 	
 	/**
@@ -427,12 +476,12 @@ public class DHProceduralAPI extends DyeHardGame{
 	}
 	/**
 	 * Generate a random floating point number between 0 (inclusive) and max (exclusive)
-	 * @param n the upper range
+	 * @param max the upper range
 	 * @return a random number between 0 and n
 	 */
-	public float apiRandomFloat(float max){
+	public float apiRandomFloat(double max){
 		Random rand = new Random();
-		return rand.nextFloat() % max;
+		return rand.nextFloat() * (float)max; //% max;
 	}
 
 	/**
@@ -440,22 +489,20 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * @param max the upper range
 	 * @return a random number between min and max
 	 */
-	public float apiRandomFloat(float min, float max){
+	public float apiRandomFloat(double min, double max){
 		Random rand = new Random();
-		return (rand.nextFloat() % (max - min)) + min;
+		return (float)(rand.nextFloat() % (max - min)) + (float)min;
 	}
 	/**
 	 * Sets a timer associated with an ID.
-	 * <br><br>
-	 * If there is already a timer associated with the ID,<br>
-	 * * Resets the timer.
+	 * If there is already a timer associated with the ID, Resets the timer.
 	 *
 	 * @param id The string ID
 	 * @param seconds The length of the timer in seconds
 	 */
-	public void apiSetSingleTimer(String id, float seconds)
+	public void apiSetSingleTimer(String id, double seconds)
 	{
-		TimeManager.setTimer(id, seconds);
+		ApiTimeManager.setTimer(id, (float)seconds);
 	}
 
 	/**
@@ -465,20 +512,18 @@ public class DHProceduralAPI extends DyeHardGame{
 	 */
 	public static boolean apiIsTimerFinished(String id)
 	{
-		return TimeManager.isTimerFinished(id);
+		return ApiTimeManager.isTimerFinished(id);
 	}
 
 	/**
 	 * Handles a repeating timer.
-	 * <br><br>
-	 * Returns true every time the timer elapses, false otherwise.
-	 *
 	 * @param id
 	 * @param seconds
+	 * @return Returns true every time the timer elapses, false otherwise.
 	 */
-	public static boolean apiRepeatingTimer(String id, float seconds)
+	public static boolean apiRepeatingTimer(String id, double seconds)
 	{
-		return TimeManager.repeatingTimer(id, seconds);
+		return ApiTimeManager.repeatingTimer(id, (float)seconds);
 	}
 	// ---------- Utilities functions end ------------
 	
@@ -512,13 +557,25 @@ public class DHProceduralAPI extends DyeHardGame{
 	
 	/**
      * Check if the given key is tapped on the keyboard. 
-     * The key is triggered only once when the key is tapped.
-     * (Note: the button 'tapped' and button 'down' or 'press' are different.)
-     * @param key - the key on the keyboard. Ex: KeysEnum.a => the 'a' key.
+     * The key is triggered only once when the key is first pressed.
+     * Holding the key will return false -- the function only returns true once per key press.
+     * (Note: the button 'tapped' and button 'down' or 'pressed' are different.)
+     * @param key - the key on the keyboard. Ex: KeysEnum.a => the 'a' or 'A' key.
      * @return - true if the key is tapped, false otherwise
      */
 	public boolean apiIsKeyboardButtonTapped(KeysEnum key) {
         return keyboard.isButtonTapped(keyEventMap[key.ordinal()]);  //ordinal is like indexOf for enums->ints
+    }
+	
+	/**
+     * Check if the given key is pressed on the keyboard. 
+     * The key is triggered when the key is held down.
+     * (Note: the button 'tapped' and button 'down' or 'pressed' are different.)
+     * @param key - the key on the keyboard. Ex: KeysEnum.a => the 'a' or 'A' key.
+     * @return - true if the key is pressed, false otherwise
+     */
+	public boolean apiIsKeyboardButtonPressed(KeysEnum key) {
+        return keyboard.isButtonDown(keyEventMap[key.ordinal()]);  //ordinal is like indexOf for enums->ints
     }
 	
 	/**
@@ -581,10 +638,10 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * Debris spawn at random locations along the right edge.
 	 * @param interval The interval to spawn debris.
 	 */
-	public void apiStartDebrisSpawner(float interval)
+	public void apiStartDebrisSpawner(double interval)
 	{
-		DebrisGenerator.enable();
-		DebrisGenerator.setInterval(interval);
+		ApiDebrisGenerator.enable();
+		ApiDebrisGenerator.setInterval((float)interval);
 	}
 
 	/**
@@ -592,32 +649,31 @@ public class DHProceduralAPI extends DyeHardGame{
 	 */
 	public void apiStopDebrisSpawner()
 	{
-		DebrisGenerator.disable();
+		ApiDebrisGenerator.disable();
 	}
 
 	/**
 	 * Spawn a single debris at a random height
+	 * @return an id of this debris
 	 */
 	public int apiSpawnSingleDebris()
 	{
-		return DebrisGenerator.spawnDebris();
+		return ApiDebrisGenerator.spawnDebris();
 	}
 
 	/**
-	 * Spawn a single debris at a specific height (y-coordinate)
+	 * Spawn a single debris at a specific position, and disable initial movement
+	 * @param x the x-coordinate position of the enemy
+	 * @param y the y-coordinate position of the enemy
+	 * @return an id of this debris
 	 */
-	public int apiSpawnSingleDebris(float height)
+	public int apiSpawnSingleDebris(double x, double y)
 	{
-		return DebrisGenerator.spawnDebris(height);
-	}
-
-	/**
-	 * Reports the number of debris in play
-	 * @return The number of debris
-	 */
-	public int apiDebrisCount()
-	{
-		return DebrisGenerator.debrisCount();
+		int id = ApiDebrisGenerator.spawnDebris((float)x, (float)y);
+		
+		apiSetObjectVelocity(id, 0, 0);
+		
+		return id;
 	}
 
 	//-------------- DEBRIS end --------------------------------
@@ -637,17 +693,18 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * Spawns random enemies at random locations on the right of the 
 	 * game window with the given time interval
 	 */
-	public void apiStartEnemySpawner(float interval){
-		EnemyGenerator.enable();
-		EnemyGenerator.setInterval(interval);
+	public void apiStartEnemySpawner(double interval){
+		ApiEnemyGenerator.enable();
+		ApiEnemyGenerator.setInterval((float)interval);
 	}
 	
 	/**
 	 * Spawn a single random enemy at a random position on the right of the 
 	 * game window
+	 * @return an id of this enemy
 	 */
-	public void apiSpawnSingleEnemy(){
-		EnemyGenerator.spawnEnemy();
+	public int apiSpawnSingleEnemy(){
+		return ApiEnemyGenerator.spawnEnemy();
 	}
 	
 	/**
@@ -656,80 +713,107 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * @param y the y-coordinate position of the enemy
 	 * @return an integer which represents the id of the enemy
 	 */
-	public int apiSpawnSingleEnemy(float x, float y){
-		return EnemyGenerator.spawnEnemy(x, y);
+	public int apiSpawnSingleEnemy(double x, double y){
+		return ApiEnemyGenerator.spawnEnemy((float)x, (float)y);
 	}
 
 	/**
 	 * Spawn a single enemy of the specified type at a random position on 
 	 * the right of the game window
-	 * @param type the type of the enemy (as a string)
+	 * @param type the type of the enemy as a string (case insensitive)
 	 * @return an integer which represents the id of the enemy
 	 */
 	public int apiSpawnSingleEnemy(String type){
-		return EnemyGenerator.spawnEnemy(type);
+		return ApiEnemyGenerator.spawnEnemy(type);
 	}
 	
 	/**
 	 * Spawn an enemy with the specified type at the specified location (x, y)
-	 * @param type the type of the enemy (as a string)
+	 * @param type the type of the enemy as a string (case insensitive)
 	 * @param x the x-coordinate position of the enemy
 	 * @param y the y-coordinate position of the enemy
 	 * @return an integer which represents the id of the enemy
 	 */
-	public int apiSpawnSingleEnemy(String type, float x, float y){
-		return EnemyGenerator.spawnEnemy(type, x, y);
+	public int apiSpawnSingleEnemy(String type, double x, double y){
+		return ApiEnemyGenerator.spawnEnemy(type, (float)x, (float)y);
 	}
 
 	/**
 	 * Disable the enemy spawner
 	 */
 	public void apiStopEnemySpawner(){
-		EnemyGenerator.disable();
-	}
-	
-	/**
-	 * Reports the number of enemies instantiated 
-	 * @return the number of enemies instantiated 
-	 */
-	public int apiEnemyCount(){
-		return EnemyGenerator.enemyCount();
+		ApiEnemyGenerator.disable();
 	}
 	
 	//------------------ ENEMY end --------------------------------
 
 	//-------------- COLLECTIBLES -----------------------------------
 	
+	/**
+	 * Spawns DyePack object randomly on the right of the 
+	 * game window every 2 seconds
+	 */
 	public void apiStartDyePackSpawner()
 	{
 		apiStartDyePackSpawner(2);
 	}
-
-	public void apiStartDyePackSpawner(float interval)
+	
+	/**
+	 * Spawns DyePack object randomly on the right of the
+	 * game window with the specified interval
+	 * @param interval the interval in second to spawns DyePack 
+	 */
+	public void apiStartDyePackSpawner(double interval)
 	{
-		DyePackGenerator.initialize(100);
-		DyePackGenerator.setInterval(interval);
-		DyePackGenerator.setActive(true);
+		ApiDyePackGenerator.initialize(100);
+		ApiDyePackGenerator.setInterval((float) interval);
+		ApiDyePackGenerator.setActive(true);
 	}
 
+	/**
+	 * Disables the DyePack spawner
+	 */
 	public void apiStopDyePackSpawner()
 	{
-		DyePackGenerator.setActive(false);
+		ApiDyePackGenerator.setActive(false);
+	}
+	
+	
+	/**
+	 * Spawns a single moving DyePack with a random height and color
+	 * @return an integer which represents the id of the DyePack
+	 */
+	public int apiSpawnSingleDyePack(){
+		
+		int id = ApiDyePackGenerator.generateDyePack();
+		return id;
 	}
 	
 	/**
 	 * Spawns a single DyePack with the specified color (as a String) and location
+	 * and this also disables initial movement
 	 * @param color [ "red" | "blue" | "green" | "teal" | "yellow" | "pink" ]. 
 	 * Note: if the color specified is not in the list of color, function will pick red as the default
 	 * @param x the x-coordinate position of the DyePack
 	 * @param y the Y-coordinate position of the DyePack
 	 * @return an integer which represents the id of the DyePack
 	 */
-	public int apiSpawnSingleDyePack(String color, float x, float y){
-		return DyePackGenerator.spawnDyePack(color, x, y);
+	public int apiSpawnSingleDyePack(String color, double x, double y){
+		int id = ApiDyePackGenerator.spawnDyePack(color, (float)x, (float)y);
+		
+		apiSetObjectVelocity(id, 0, 0);
+		
+		return id;
 	}
 	
-	public int apiSpawnSinglePowerUp(float positionX, float positionY)
+	/**
+	 * Spawns random PowerUp object at a specified location.
+	 * Note: There are 4 types of PowerUp, SpeedUp, SlowDown, Ghost, and Invincibility
+	 * @param positionX the x-coordinate position of the DyePack
+	 * @param positionY the y-coordinate position of the DyePack
+	 * @return an Integer to represent the ID of the PowerUp
+	 */
+	public int apiSpawnSinglePowerUp(double positionX, double positionY)
 	{
 		PowerUp spawned;
 		switch (apiRandomInt(3))
@@ -744,14 +828,21 @@ public class DHProceduralAPI extends DyeHardGame{
 			spawned = new Ghost();
 			break;
 		default:
-			// Defaults to invincibility
 			spawned = new Invincibility();
 		}
-		spawned.initialize(new Vector2(positionX, positionY));
-		return  IDManager.register(spawned);
+		spawned.initialize(new Vector2((float)positionX, (float)positionY));
+		return  ApiIDManager.register(spawned);
 	}
 
-	public int apiSpawnSinglePowerUp(String type, float positionX, float positionY)
+	/**
+	 * Spawn a PowerUp specified by the type at a specified location
+	 * There are 4 types of PowerUp: SpeedUp, SlowDown, Ghost, and Invincibility
+	 * @param type the type of the PowerUp as a string (case insensitive)
+	 * @param positionX the x-coordinate position of the DyePack
+	 * @param positionY the y-coordinate position of the DyePack
+	 * @return an Integer to represent the ID of the PowerUp
+	 */
+	public int apiSpawnSinglePowerUp(String type, double positionX, double positionY)
 	{
 		PowerUp spawned;
 		switch (type.toLowerCase())
@@ -765,12 +856,17 @@ public class DHProceduralAPI extends DyeHardGame{
 		case "ghost":
 			spawned = new Ghost();
 			break;
+		case "invincibility":
+			spawned = new Invincibility();
+			break;
 		default:
-			// Defaults to invincibility
+			// Defaults to invincibility and presents error message
+			System.err.println("Unrecognized powerup type. Did you spell your input correctly?");
+			System.err.println("Choose one of: 'SpeedUp' 'SlowDown' 'Ghost' 'Invincibility'");
 			spawned = new Invincibility();
 		}
-		spawned.initialize(new Vector2(positionX, positionY));
-		return  IDManager.register(spawned);
+		spawned.initialize(new Vector2((float)positionX, (float)positionY));
+		return  ApiIDManager.register(spawned);
 	}
 
 	//-------------- COLLECTIBLES end -------------------------------
@@ -779,14 +875,13 @@ public class DHProceduralAPI extends DyeHardGame{
 
 	public void apiSpawnGates()
 	{
-//		new WormHole(hero, Colors.randomColor(), 40f, 15f, 120f, 5f);
-//		new WormHole(hero, getHeroColor(), 40f, 15f, 120f, 20f);
-//		new WormHole(hero, Colors.randomColor(), 40f, 15f, 120f, 35f);
-//		new WormHole(hero, Colors.randomColor(), 40f, 15f, 120f, 50f);
-		apiAddOneWormHole(Colors.randomColor(), 40f, 15f, 120f, 5f);
-		apiAddOneWormHole(apiGetHeroColor(), 40f, 15f, 120f, 20f);
-		apiAddOneWormHole(Colors.randomColor(), 40f, 15f, 120f, 35f);
-		apiAddOneWormHole(Colors.randomColor(), 40f, 15f, 120f, 50f);
+		int safePortal = apiRandomInt(3);
+
+		for (int i = 0; i < 4; i++)
+		{
+			Color c = i == safePortal ? apiGetHeroColor() : Colors.randomColor();
+			apiAddOneWormHole(c, 40f, 13, 200f, 8 + (i * 15));
+		}
 	}
 	
 	/**
@@ -794,26 +889,36 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * @param color the color of the WormHole
 	 * @param width the width of the WormHole
 	 * @param height the height of the WormHole
-	 * @param x the X-coordinate position of the WormHole
-	 * @param y the Y-coordinate position of the WormHole
+	 * @param x the X-coordinate of the center position of the WormHole
+	 * @param y the Y-coordinate of the center position of the WormHole
 	 */
-	public void apiAddOneWormHole(Color color, float width, float height, float x, float y){
-		new WormHole(hero, color, width, height, x, y);
+	public void apiAddOneWormHole(Color color, double width, double height, double x, double y){
+		WormHole wh = new WormHole(hero, color, (float)width, (float)height, (float)x, (float)y);
+		wh.getPreview().overrideInvisible = true;
 	}
 
 	// -------------- WORMHOLES end ---------------------------------
 
 	//-------------- WEAPONS -----------------------------------
+	/**
+	 * Switch the hero's weapon to Spread Fire weapon
+	 */
 	public void apiActivateSpreadFireWeapon(){
 		// add a new weapon to the WeaponRack list
 		//hero.registerWeapon(new SpreadFireWeapon(hero));
 		hero.changeWeapon(new SpreadFireWeapon(hero));
 	}
 	
+	/**
+	 * Switch the hero's weapon to Limited Ammo weapon
+	 */
 	public void apiActivateLimitedAmmoWeapon(){
 		hero.changeWeapon(new LimitedAmmoWeapon(hero));
 	}
 	
+	/**
+	 * Switch the hero's weapon to default (Over Head) weapon 
+	 */
 	public void apiDefaultWeapon(){
 		hero.changeWeapon(new OverHeatWeapon(hero));
 	}
@@ -826,11 +931,12 @@ public class DHProceduralAPI extends DyeHardGame{
 	/**
 	 * Displays the Winning menu on the screen
 	 */
-	public void apiShowWinMenu(boolean yes){
+	public void apiShowWinMenu(boolean show){
+		DyeHardSound.play(DyeHardSound.winSound);
 		setState(State.GAMEOVER);
 		endMenu.setMenu(true);	// True for win menu
-		endMenu.active(yes);
-		if(yes)
+		endMenu.active(show);
+		if(show)
 			endMenuActive = true;
 		else
 			endMenuActive = false;
@@ -839,11 +945,12 @@ public class DHProceduralAPI extends DyeHardGame{
 	/**
 	 * Displays the Losing menu on the screen
 	 */
-	public void apiShowLoseMenu(boolean yes){
+	public void apiShowLoseMenu(boolean show){
+		DyeHardSound.play(DyeHardSound.loseSound);
 		setState(State.GAMEOVER);
 		endMenu.setMenu(false);		// False for win menu
-		endMenu.active(yes);
-		if(yes)
+		endMenu.active(show);
+		if(show)
 			endMenuActive = true;
 		else
 			endMenuActive = false;
@@ -860,8 +967,15 @@ public class DHProceduralAPI extends DyeHardGame{
 	 * Displays the score UI on the game screen. 
 	 * @param display true to display, false otherwise
 	 */
-	public void apiDisplayScore(boolean display){
+	public void apiShowScore(boolean display){
 		ui.displayScore(display);
+	}
+	
+	/**
+	 * Displays the distance meter on the game window
+	 */
+	public void apiShowDistanceMeter(){
+		ui.displayDistanceMeter(GameState.TargetDistance);
 	}
 	//------------------ MENU / UI end -----------------------------------
 	

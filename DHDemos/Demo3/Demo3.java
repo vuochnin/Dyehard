@@ -3,12 +3,27 @@ import dyeHardProceduralAPI.DHProceduralAPI;
 import dyeHardProceduralAPI.KeysEnum;
 
 /**
- * 
- * @author vuochnin
+ *	Demonstrates weapons switching and interacting with objects by their IDs
  *
+ *	Functions introduced:
+ *		apiEcho(String)
+ *		apiDefaultWeapon()
+ *		apiActivateLimitedAmmoWeapon()
+ *		apiActivateSpreadFireWeapon()
+ *		apiRandomFloat(double)
+ *		apiSpawnSingleDebris(double, double)
+ *		apiSetObjectVelocity(int, double, double);
+ *		apiObjectCount()
+ *		apiGetID(int)
+ *		apiGetType(int)
+ *		apiGetObjectPositionX(int)
+ *		apiGetObjectPositionY(int)
+ *		apiMoveObjectTo(int, double, double)
+ *		apiMoveObject(int, double, double)
  *
- *	Demonstrates interacting with objects by their IDs, spawn single 
- *	debris object, and the repeatingTimer()
+ *	@author Holden
+ *	@author Nin
+ *  	
  */
 public class Demo3 extends DHProceduralAPI
 {
@@ -21,14 +36,42 @@ public class Demo3 extends DHProceduralAPI
 		apiEcho("Hero started with ID: " + heroID);
 	}
 	
+	int weaponselect = 0;
+	
 	public void updateGame()
 	{
-		if(apiRepeatingTimer("debris", apiRandomFloat(0.5f, 3)))
+		apiObjectFollowTheMouse(heroID);
+		
+		if(apiIsMouseLeftClicked())
+			apiHerofirePaint();
+		
+		// Switching the weapon
+		if(apiIsKeyboardButtonTapped(KeysEnum.w)){
+			weaponselect = (weaponselect + 1) % 3;
+			
+			switch(weaponselect)
+			{
+			case 0:
+				apiDefaultWeapon();
+				break;
+			case 1:
+				apiActivateLimitedAmmoWeapon();
+				break;
+			case 2:
+				apiActivateSpreadFireWeapon();
+				break;
+			}
+		}
+		
+		// Spawn single debris in random interval
+		if(apiRepeatingTimer("debris", apiRandomFloat(3)))
 		{
-			int spawnedID = apiSpawnSingleDebris(10);
+			int spawnedID = apiSpawnSingleDebris(100, 10);
+			apiSetObjectVelocity(spawnedID, -0.1, 0);
 			apiEcho("Spawned debris with ID: " + spawnedID);
 		}
 		
+		// Interacting with debris
 		for(int i = 0; i < apiObjectCount(); i++)
 		{
 			int id = apiGetID(i);
@@ -44,6 +87,5 @@ public class Demo3 extends DHProceduralAPI
 			}
 			
 		}
-		
 	}
 }

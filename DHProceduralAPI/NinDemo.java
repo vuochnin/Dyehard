@@ -1,7 +1,6 @@
 import dyeHardProceduralAPI.DHProceduralAPI;
 import dyeHardProceduralAPI.KeysEnum;
 import dyehard.DyeHardGame;
-import dyehard.UpdateManager;
 import dyehard.World.GameState;
 
 /**
@@ -16,29 +15,22 @@ public class NinDemo extends DHProceduralAPI
 	
 	public void buildGame(){
 		heroID = apiStartHero();
-		apiSetLivesTo(2);
-		apiDisplayScore(true);
-		apiSetGoalDistance();
-		apiSetwinningScore(15);
+		apiShowScore(true);
+		apiSetLivesTo(8);
+		apiSetGoalDistance(1000);
+		apiShowDistanceMeter();
+		apiSetWinningScore(15);
 		apiStartDebrisSpawner(1.5f);
 		apiStartDyePackSpawner();
 		apiStartEnemySpawner();
-		apiEcho("worldWidth " + world.getWidth());
-		apiEcho("worldHeight " + world.getHeight());
-		apiEcho("worldPositionX " + world.getPositionX());
-		apiEcho("worldPositionY " + world.getWorldPositionY());
 		//spawnGates();
 		
-		
+		apiSpawnSingleDebris(30, 30);
 		
 	}
 	
+	
 	public void updateGame(){
-		//for(int i = 0; i < objectCount(); i++)
-		// if(getType(i) == "Hero")
-		//		move(i, 0, 1);
-		// else if(getType(i) == "Debris"
-		// 		move(i, 
 		
 		if(apiRepeatingTimer("powerup", 5)){
 			apiSpawnSinglePowerUp(apiGetWorldWidth() - 10f, apiRandomInt((int)apiGetWorldHeight() - 10));
@@ -51,6 +43,11 @@ public class NinDemo extends DHProceduralAPI
 			apiHerofirePaint();
 		}
 		
+		if(apiIsKeyboardButtonTapped(KeysEnum.y)){			// CHECK debris subtype
+			int deId = apiSpawnSingleDebris();
+			apiEcho("The subtype of this debris is " + apiGetSubtype(deId));
+		}
+		
 		// TEST Change the weapon according to the keyboard inputs
 		if(apiIsKeyboardLeftPressed()){
 			apiActivateSpreadFireWeapon();
@@ -59,10 +56,10 @@ public class NinDemo extends DHProceduralAPI
 			apiDefaultWeapon();
 		}
 		if(apiIsKeyboardButtonTapped(KeysEnum.S)){
-			apiIncreaseScoreBy(2);
+			apiAdjustScoreBy(2);
 		}
 		if(apiIsKeyboardButtonTapped(KeysEnum.A)){
-			apiDecreaseScoreBy(2);
+			apiAdjustScoreBy(-2);
 		}
 		if(apiIsKeyboardButtonTapped(KeysEnum.E)){
 			apiSpawnSingleEnemy("Portal", 50, 20);			//TEST SpawnSingleEnemy()
@@ -71,7 +68,10 @@ public class NinDemo extends DHProceduralAPI
 			apiSpawnSingleDyePack("blue", 50, 20); 		// TEST spawnSingleDyePack(color, x, y)
 
 		if(apiIsKeyboardButtonTapped(KeysEnum.ESCAPE)){
-			DyeHardGame.setState(State.PAUSED);
+			if(getState() == State.PLAYING)
+				DyeHardGame.setState(State.PAUSED);
+			else
+				DyeHardGame.setState(State.PLAYING);
 		}
 		
 		if(apiIsKeyboardButtonTapped(KeysEnum.X))
@@ -94,15 +94,55 @@ public class NinDemo extends DHProceduralAPI
 		
 		if(apiIsKeyboardButtonTapped(KeysEnum.b))
 			apiEcho("DistanceTravelled = " + GameState.DistanceTravelled);
+		if(apiIsKeyboardButtonTapped(KeysEnum.r))
+			apiRestartGame();
+		if(apiIsKeyboardButtonTapped(KeysEnum.c))
+			apiEcho("count " + apiObjectCount());
+
 	}
-	
-	
-	
-//	public void handleCollisions(String type1, String subtype1, int id1, String type2, String subtype2, int id2)
-//	{
-//		if(type1 == "Hero" && type2 == "Debris")
-//		{
-//			move(id2, 2, 4);
+		
+		// AMERICAN FLAG		
+//		for(int row = 0; row < 7; row++){
+//			for(int col = 0; col < 7; col++){
+//				int x = 25 + col * 3;
+//				int y = 35 + row * 3;
+//				
+//				apiSpawnSingleDyePack("blue", x, y);
+//			}
 //		}
-//	}
+//		
+//		for(int i = 0; i < 5; i++){
+//			for(int k = 0; k < 5; k++){
+//				int x = 28 + k*3;
+//				int y = 38 + i*3;
+//				if(i%2 == 0 && k%2 == 0) // both i and k are even
+//					apiSpawnSingleDyePack("teal", x, y);
+//				else if(i%2 == 1 && k%2 == 1)	// both i and k are odd
+//					apiSpawnSingleDyePack("teal", x, y);
+//			}
+//		}
+//		
+//		
+//		for(int i = 0; i < 7; i++){
+//			for(int k = 0; k < 15; k++){
+//				int x = 46 + k * 3;
+//				int y = 35 + i * 3;
+//				if(i%2 == 0)
+//					apiSpawnSingleDyePack("red", x, y);
+//				else
+//					apiSpawnSingleDyePack("teal", x, y);
+//			}
+//		}
+//		
+//		for(int i = 0; i < 4; i++){
+//			for(int k = 0; k < 22; k++){
+//				int x = 25 + k * 3;
+//				int y = 23 + i * 3;
+//				if(i%2 == 0)
+//					apiSpawnSingleDyePack("red", x, y);
+//				else
+//					apiSpawnSingleDyePack("teal", x, y);
+//			}
+//		}
+
 }

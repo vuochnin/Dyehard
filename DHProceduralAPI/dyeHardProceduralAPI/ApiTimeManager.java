@@ -8,7 +8,7 @@ import java.util.HashMap;
  *
  * Handles a set of timers matched to string IDs.
  */
-public class TimeManager
+public class ApiTimeManager
 {
 	/**
 	 * A representation of a conversion from seconds to milliseconds.
@@ -29,7 +29,7 @@ public class TimeManager
 	/**
 	 * 	Hide the constructor to simulate a static class. Because Java doesn't have static classes.
 	 */
-	private TimeManager(){}
+	private ApiTimeManager(){}
 
 	/**
 	 * Sets a timer associated with an ID.
@@ -134,7 +134,10 @@ public class TimeManager
 
 		return result;
 	}
-	
+
+	/**
+	 * Removes all timers.
+	 */
 	public static void reset()
 	{
 		timers.clear();

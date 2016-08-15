@@ -1,4 +1,5 @@
-package Demo1;
+package lab5andLab6;
+
 
 import Engine.GameWindow;
 
@@ -9,7 +10,7 @@ import Engine.GameWindow;
 public class Main extends GameWindow{
 	
 	public Main(){
-		setRunner(new Demo1());
+		setRunner(new Lab5());
 	}
 	
 	/**

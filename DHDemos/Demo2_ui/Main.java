@@ -1,4 +1,4 @@
-package Demo2;
+package Demo2_ui;
 
 import Engine.GameWindow;
 

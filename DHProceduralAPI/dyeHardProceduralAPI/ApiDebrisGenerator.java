@@ -1,23 +1,35 @@
 package dyeHardProceduralAPI;
 
-import dyehard.Collision.CollidableGameObject;
-import dyehard.Enums.ManagerStateEnum;
 import dyehard.Obstacles.Debris;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 /**
+ * Provides Debris spawning functionality for the API
+ *
  * @author Holden
  */
-public class DebrisGenerator
+public class ApiDebrisGenerator
 {
-	private static float        interval;
-	private static boolean      active;
-	private static List<Debris> debrisList;
+	private static Random RANDOM = new Random();
 
+	/**
+	 * The interval for Debris spawns
+	 */
+	private static float        interval;
+
+	/**
+	 * The active state of the generator
+	 */
+	private static boolean      active;
+
+	/**
+	 * The set of Debris in play
+	 */
+	private static List<Debris> debrisList;
 
 	static
 	{
@@ -29,7 +41,7 @@ public class DebrisGenerator
 	/**
 	 * 	Hide the constructor to simulate a static class. Because Java doesn't have static classes.
 	 */
-	private DebrisGenerator(){}
+	private ApiDebrisGenerator(){}
 
 	/**
 	 * Starts the debris generator
@@ -69,21 +81,23 @@ public class DebrisGenerator
 	 */
 	public static int spawnDebris()
 	{
-		Debris d = new Debris(100,100);// spawns debris at right edge of screen
+		Debris d = new APIDebris(RANDOM.nextInt(3),100,100);// spawns debris at right edge of screen
 		debrisList.add(d);
 		
-		return IDManager.register(d);
+		return ApiIDManager.register(d);
 	}
 
 	/**
 	 * Spawns a single debris with a specified height
-	 * @param height The height at which to spawn the debris
+	 * @param y The height at which to spawn the debris
 	 */
-	public static int spawnDebris(float height)
+	public static int spawnDebris(float x, float y)
 	{
-		Debris d = new Debris(100,100, height, height);// spawns debris at right edge of screen
+		// the super class constructor will set the location randomly?
+		Debris d = new APIDebris(RANDOM.nextInt(3), x, x, y, y);
+		d.center.set(x, y);		// so make sure the position is set as specified
 		debrisList.add(d);
-		return IDManager.register(d);
+		return ApiIDManager.register(d);
 	}
 
 	/**
@@ -92,7 +106,7 @@ public class DebrisGenerator
 	public static void update()
 	{
 		if(active &&
-		   TimeManager.repeatingTimer("DEBRIS_GENERATION", interval))
+		   ApiTimeManager.repeatingTimer("DEBRIS_GENERATION", interval))
 		{
 			spawnDebris();
 			cleanup();

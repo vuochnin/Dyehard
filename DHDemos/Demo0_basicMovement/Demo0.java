@@ -1,15 +1,25 @@
-package Demo1;
+package Demo0_basicMovement;
 import dyeHardProceduralAPI.DHProceduralAPI;
 import dyeHardProceduralAPI.KeysEnum;
 
 /**
  * 
- * @author vuochnin
+ *	Demonstrates basic object movement and Input functionality
+ *	
+ *	Functions introduced:
+ *		apiStartHero()
+ *		apiIsKeyboardButtonTapped(KeysEnum)
+ *		apiObjectFollowTheMouse(int)
+ *		apiIsKeyboardUpPressed()
+ *		apiIsKeyboardDownPressed()
+ *		apiIsKeyboardLeftPressed()
+ *		apiIsKeyboardRightPressed()
+ *		apiMoveObject(int, double, double)
  *
- *
- *	Demonstrates basic Hero functionality and Input functionality
+ *	@author Holden
+ *	@author Nin
  */
-public class Demo1 extends DHProceduralAPI
+public class Demo0 extends DHProceduralAPI
 {
 	int controlSelect = 0;
 	int heroID;

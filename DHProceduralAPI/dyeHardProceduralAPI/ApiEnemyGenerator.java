@@ -7,8 +7,15 @@ import Engine.Vector2;
 import dyehard.Enemies.*;
 import dyehard.Player.Hero;
 
-
-public class EnemyGenerator {
+/**
+ * ApiEnemyGenerator is a supporting class for DyeHard Procedural API,
+ * which is responsible for generating enemies in game.
+ * 
+ * @author Holden
+ * @author Nin
+ *
+ */
+public class ApiEnemyGenerator {
     private static Random RANDOM = new Random();
     private static Hero hero;
     
@@ -21,22 +28,22 @@ public class EnemyGenerator {
 	}
 	
 	/**
-	 * Register the hero with the EnemyGenerator
+	 * Register the hero with the ApiEnemyGenerator
 	 * @param hero the initialized hero
 	 */
     public static void initialize(Hero hero) {
-        EnemyGenerator.hero = hero;
+        ApiEnemyGenerator.hero = hero;
     }
     
     /**
-     * Enables the EnemyGenerator
+     * Enables the ApiEnemyGenerator
      */
     public static void enable(){
     	active = true;
     }
     
     /**
-     * Disables the EnemyGenerator
+     * Disables the ApiEnemyGenerator
      */
     public static void disable(){
     	active = false;
@@ -90,7 +97,7 @@ public class EnemyGenerator {
             break;
         }
 	    EnemyManager.getInstance().registerEnemy(result);
-	    return IDManager.register(result);
+	    return ApiIDManager.register(result);
     }
     
     /**
@@ -100,32 +107,10 @@ public class EnemyGenerator {
      * @return the id of the enemy as integer
      */
     public static int spawnEnemy(String EnemyType){
-	    if (hero == null)
-	    {
-		    System.err.println("EnemyGenerator: Hero not initialized!");
-		    return -1;
-	    }
 
-    	String type = EnemyType.toLowerCase();
+		Vector2 randpos = randomPosition();
 
-		Enemy result;
-
-    	switch(type){
-    	case "portal":
-    		result = (new PortalEnemy(randomPosition(), hero));
-            break;
-    	case "charger":
-		    result = (new ChargerEnemy(randomPosition(), hero));
-            break;
-        case "collector":
-	        result = (new CollectorEnemy(randomPosition(), hero));
-            break;
-        default:
-	        result = (new RegularEnemy(randomPosition(), hero));
-            break;
-    	}
-	    EnemyManager.getInstance().registerEnemy(result);
-	    return IDManager.register(result);
+	    return spawnEnemy(EnemyType, randpos.getX(), randpos.getY());
     }
     
     /**
@@ -156,12 +141,17 @@ public class EnemyGenerator {
         case "collector":
 	        result = (new CollectorEnemy(pos, hero));
             break;
+	    case "regular":
+		    result = (new RegularEnemy(pos, hero));
+            break;
         default:
+	        System.err.println("Unrecognized enemy type. Did you spell your input correctly?");
+	        System.err.println("Choose one of: 'Regular' 'Collector' 'Charger' 'Portal'");
 	        result = (new RegularEnemy(pos, hero));
             break;
     	}
 	    EnemyManager.getInstance().registerEnemy(result);
-	    return IDManager.register(result);
+	    return ApiIDManager.register(result);
     }
     
     
@@ -197,7 +187,7 @@ public class EnemyGenerator {
 		    break;
 	    }
 	    EnemyManager.getInstance().registerEnemy(result);
-	    return IDManager.register(result);
+	    return ApiIDManager.register(result);
     }
 
     /**
@@ -209,10 +199,10 @@ public class EnemyGenerator {
     }
 
     /**
-     * Updates the EnemyGenerator
+     * Updates the ApiEnemyGenerator
      */
     public static void update() {
-        if (active && TimeManager.repeatingTimer("ENEMY_GENERATION", interval)) {
+        if (active && ApiTimeManager.repeatingTimer("ENEMY_GENERATION", interval)) {
             spawnEnemy();
         }
     }
