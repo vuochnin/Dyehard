@@ -21,9 +21,11 @@ public class ReflectionWindow extends JFrame implements ActionListener{
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
-		foo.append("Good job student");
+		
 		add(foo, BorderLayout.CENTER);
 		add(submit, BorderLayout.SOUTH);
+		
+		foo.append("starting up...");
 		
 		setVisible(true);
 		

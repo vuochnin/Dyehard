@@ -3,13 +3,12 @@ import java.awt.image.BufferedImage;
 
 import Engine.BaseCode;
 import Engine.Vector2;
-import dyehard.Player.Hero;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class StudentObj.
+ * The Class Lab1Incorrect.
  */
-public class StudentObj {
+public class Lab2Incorrect {
     
     /** The height. */
     private float height;
@@ -26,10 +25,7 @@ public class StudentObj {
     /** The color. */
     private Color color;
     
-    /**
-     * Instantiates a new student obj.
-     */
-    public StudentObj() {
+    public Lab2Incorrect() {
         center = new Vector2(0, 0);
         height = 5f;
         width = 5f;
@@ -37,20 +33,22 @@ public class StudentObj {
         System.out.println("Constructor called");
     }
 
-    /**
-     * StudentObj
-     * @purpose	Instantiates a new student object.
-     *
-     * @param 	c, the center
-     * @param 	w, the width
-     * @param 	h, the height
-     */
-    public StudentObj(Vector2 c, float w, float h) {
+    public Lab2Incorrect(Vector2 c, float w, float h) {
         center = c;
         height = h;
         width = w;
         texture = BaseCode.resources.loadImage("Beak.png");
     }
+    
+    /**
+     * IMPLEMENTED INCORRECTLY FOR LAB
+     *
+     * @return the texture
+     */
+    public BufferedImage getTextureWrong() {
+        return texture;
+    }
+    
 
     /**
      * Sets the center.
@@ -139,15 +137,9 @@ public class StudentObj {
      */
     @Override
     public String toString() {
-        return "Student Object";
+        return "Lab1Correct Object";
     }
 
-    /**
-     * Gets the texture.
-     *
-     * @return the texture
-     */
-    public BufferedImage getTexture() {
-        return texture;
-    }
+
 }
+
