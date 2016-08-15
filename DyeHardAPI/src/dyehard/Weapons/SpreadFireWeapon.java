@@ -17,7 +17,7 @@ import dyehard.Player.Hero;
 public class SpreadFireWeapon extends Weapon {
     
     /** The info. */
-    private final Rectangle info;
+    //private final Rectangle info;
 
     /**
      * Instantiates a new spread fire weapon.
@@ -26,12 +26,13 @@ public class SpreadFireWeapon extends Weapon {
      */
     public SpreadFireWeapon(Hero hero) {
         super(hero);
-
+/*
         info = new Rectangle();
         info.center = new Vector2(BaseCode.world.getPositionX() + 12,
                 BaseCode.world.getHeight() - 4);
         info.size.set(4, 4);
         info.color = Color.BLUE;
+        */
     }
 
     /* (non-Javadoc)

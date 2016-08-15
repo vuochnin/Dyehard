@@ -12,11 +12,13 @@ import dyehard.Resources.ImageDataParser.ImageID;
 // TODO: Auto-generated Javadoc
 /**
  * The Class DyehardDistanceMeter.
+ * 
+ * Modified by Nin
  */
 public class DyehardDistanceMeter {
     
     /** The max value. */
-    private int maxValue;    
+    public int maxValue;    
     
     /** The current value. */
     private int currentValue;
@@ -48,7 +50,7 @@ public class DyehardDistanceMeter {
         progress = DyeHardResources.getInstance().getScaledRectangle(ImageID.UI_PATH);
         progress.alwaysOnTop = true;
 
-        progress.center.setX(BaseCode.world.getWidth() / 2);
+        progress.center.setX(BaseCode.world.getWidth() / 2f);
         progress.center.setY(fromTop(progress, 1.4f));
 
         Rectangle baseMarker = DyeHardResources.getInstance().getScaledRectangle(ImageID.UI_PATH_MARKER);
@@ -69,6 +71,38 @@ public class DyehardDistanceMeter {
         dyeMarker = DyeHardResources.getInstance().getScaledRectangle(ImageID.UI_DYE_PATH_MARKER);
         dyeMarker.alwaysOnTop = true;
         dyeMarker.center.setY(fromTop(dyeMarker, 0.9f));
+
+        setValue(currentValue);
+    }
+    
+    /**
+     * (Added for ProAPI)
+     * Instantiates a new dyehard distance meter with yPadding
+     * This additional constructor is for the purpose of adjusting the
+     * location (yPadding) of the distance meter UI.
+     * @param maxValue the maximum distance (target distance)
+     * @param yPadding the horizontal padding of the UI
+     */
+    public DyehardDistanceMeter(int maxValue, float yPadding) {
+        this.maxValue = maxValue;
+        currentValue = 0;
+
+        progress = DyeHardResources.getInstance().getScaledRectangle(ImageID.UI_PATH);
+        progress.alwaysOnTop = true;
+
+        progress.center.setX(BaseCode.world.getWidth() / 2f);
+        progress.center.setY(fromTop(progress, yPadding + 0.5f)); //1.4f
+
+        Rectangle baseMarker = DyeHardResources.getInstance().getScaledRectangle(ImageID.UI_PATH_MARKER);
+        markers = new ArrayList<Rectangle>();
+
+        baseMarker.visible = false;
+
+        filledMarker = DyeHardResources.getInstance().getTexture(ImageID.UI_PATH_MARKER_FULL);
+
+        dyeMarker = DyeHardResources.getInstance().getScaledRectangle(ImageID.UI_DYE_PATH_MARKER);
+        dyeMarker.alwaysOnTop = true;
+        dyeMarker.center.setY(fromTop(dyeMarker, yPadding)); //0.9f
 
         setValue(currentValue);
     }

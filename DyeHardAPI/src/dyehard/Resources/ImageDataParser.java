@@ -12,7 +12,7 @@ import Engine.Vector2;
 public class ImageDataParser implements CsvParser {
 	
 	/** The data. */
-	private ImageData data = new ImageData();
+	//private ImageData data = new ImageData();
     
     /** The image data. */
     private Map<ImageID, ImageData> imageData = new HashMap<ImageID, ImageData>();
@@ -69,7 +69,7 @@ public class ImageDataParser implements CsvParser {
      */
     public void addData(ImageID image, String path, Vector2 actualSize,
             Vector2 targetSize) {
-        //ImageData data = new ImageData();
+        ImageData data = new ImageData();
 
         data.setTexturePath(path);
         data.setActualPixelSize(actualSize);
