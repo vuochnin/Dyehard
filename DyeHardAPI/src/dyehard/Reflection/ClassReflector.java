@@ -335,7 +335,8 @@ public class ClassReflector {
     	// currentField	=	From the Student Obj. Hashmap of Fields
     	// toCheck 		=	From the array. This array has the correct parameters
     	Field currentField = null;
-    	
+
+    	System.out.println("-------- Fields Analysis --------");
     	for (Field toCheck : arrOfFields){
     		
     		// First check -- see if the name matches 
@@ -345,7 +346,7 @@ public class ClassReflector {
     			currentField = fields.get(toCheck.getName());
     			
     			// Second check -- see if they share the same type
-    			if (currentField.getGenericType() == toCheck.getGenericType()){
+    			if (currentField.getType() == toCheck.getType()){
     				
     				// Third check -- see if they share the same modifiers
     				// (public, static, private, etc.)
@@ -360,7 +361,7 @@ public class ClassReflector {
     			}
     			// They don't share the same type.
     			else{
-    				System.out.println("Found " + toCheck.getName() + " but the type is " 
+    				System.out.println("Found field " + toCheck.getName() + " but the type is " 
     			+ currentField.getType() + " instead of " + toCheck.getType());
     			}
     		}
@@ -369,6 +370,7 @@ public class ClassReflector {
     			System.out.println("Cannot find field by name: " + toCheck.getName());
     		}
         }
+    	System.out.println();
     }
     
     /**
@@ -384,15 +386,16 @@ public class ClassReflector {
     	boolean flag = true;
     	
     	System.out.println("-------- List of Student Methods --------");
-    	for(Method toPrint : methods.values())
-    		System.out.println(toPrint);
-    	System.out.println("----------------------------------------");
+    	for (Method toPrint : methods.values())
+    		System.out.println(toPrint.toString());
+    	System.out.println();
     	
     	System.out.println("-------- List of Correct Methods --------");
-    	for(Method toPrint2 : methodArr)
-    		System.out.println(toPrint2);
-    	System.out.println("----------------------------------------");
+    	for (Method toPrint : methodArr)
+    		System.out.println(toPrint.toString());
+    	System.out.println();
     	
+    	System.out.println("-------- Methods Analysis --------");
     	for (Method toCheck : methodArr){
     		flag = true;
     		// First check -- see if the name matches 
@@ -404,7 +407,7 @@ public class ClassReflector {
     			// Second check -- see if they share the same return type
     			if (currentField.getReturnType() != toCheck.getReturnType()){
     				System.out.println("Found " + toCheck.getName() 
-    				+ " but the return type is " + currentField.getReturnType() 
+    				+ ", but the return type is " + currentField.getReturnType() 
     				+ " instead of " + toCheck.getReturnType());
     			}
     			
@@ -412,12 +415,12 @@ public class ClassReflector {
 				// (public, static, private, etc.)
 				if (currentField.getModifiers() != toCheck.getModifiers()){
 					System.out.println("Found " + toCheck.getName() 
-					+ " but the modifier/accessbility flag(s) are incorrect");
+					+ ", but the modifier/accessbility flag(s) are incorrect");
 				}
 				
 				// Fourth check -- see if the parameters are the same
-				if (currentField.getGenericParameterTypes().length != 
-						toCheck.getGenericParameterTypes().length)
+				if (currentField.getParameterTypes().length != 
+						toCheck.getParameterTypes().length)
 					flag = false;
 				else{
 					// Sort to eliminate parameter order
@@ -425,8 +428,8 @@ public class ClassReflector {
 					HashMap<String, Integer> paramHM2 = new HashMap<String, Integer>();
 					
 					// For each field parameter, store inside hashmap with count
-					for (int i = 0; i < currentField.getGenericParameterTypes().length; i++){
-						String name = currentField.getGenericParameterTypes()[i].toString();
+					for (int i = 0; i < currentField.getParameterTypes().length; i++){
+						String name = currentField.getParameterTypes()[i].toString();
 						if (paramHM.containsKey(name) == false)
 							paramHM.put(name, 1);
 						else
@@ -434,8 +437,8 @@ public class ClassReflector {
 					}
 					
 					// Do the same with the other method
-					for (int i = 0; i < toCheck.getGenericParameterTypes().length; i++){
-						String name = toCheck.getGenericParameterTypes()[i].toString();
+					for (int i = 0; i < toCheck.getParameterTypes().length; i++){
+						String name = toCheck.getParameterTypes()[i].toString();
 						if (paramHM2.containsKey(name) == false)
 							paramHM2.put(name, 1);
 						else
@@ -447,20 +450,30 @@ public class ClassReflector {
 				}
 	
 				if (flag == false){
-					System.out.print("Found " + toCheck.getName() + " but the parameter(s) are ");
-					for (int i = 0; i < currentField.getGenericParameterTypes().length; i++)
-						System.out.print(currentField.getGenericParameterTypes()[i] + " ");
+					System.out.print("Found method " + toCheck.getName() + ", but the parameter(s) are ");
+					for (int i = 0; i < currentField.getParameterTypes().length; i++){
+						if (i == currentField.getParameterTypes().length - 1 )
+							System.out.print(currentField.getParameterTypes()[i]);
+						else
+							System.out.print(currentField.getParameterTypes()[i] + ",");
+					}
+						
 					
-					System.out.print("instead of ");
-					for (int i = 0; i < toCheck.getGenericParameterTypes().length; i++)
-						System.out.print(toCheck.getGenericParameterTypes()[i]);
+					System.out.print(" instead of ");
+					for (int i = 0; i < toCheck.getParameterTypes().length; i++){
+						if (i == toCheck.getParameterTypes().length - 1 )
+							System.out.print(toCheck.getParameterTypes()[i]);
+						else
+							System.out.print(toCheck.getParameterTypes()[i] + ",");
+					}
 					System.out.print("\n");
 				}
     		}
     		// Unable to find method by name.
     		else
-    			System.out.println("Cannot find method by name: " + toCheck.getName());
+    			System.out.println("Cannot find method: " + toCheck.getName());
     	}
+    	System.out.println();
     }
     
     /**
@@ -508,45 +521,45 @@ public class ClassReflector {
     	
     	// Check each parameter for each constructor between toCheck[i] 
     	// and constructArr[i].
-    	boolean rightMods, rightParamType, rightParamNum;
+    	boolean found;
+    	found = false;
     	
-    	for (Constructor<?> toCheck : constructArr){
-    		rightParamNum = rightMods = rightParamType = true;
-    		for (int i = 0; i < constructArr.length; i++){
-    			
+    	System.out.println("-------- Constructors Analysis --------");
+    	for (int i = 0; i < constructArr.length; i++){
+    		found = false;
+    		
+    		for(Constructor<?> toCheck : constructors.values()){
+    			found = true;
     			// First Check -- The modifiers (public, private, etc.)
     			if (constructArr[i].getModifiers() != toCheck.getModifiers()){
-					rightMods = false;
+    				found = false;
+					continue;
 				}
     			
     			// Second Check -- Number of parameters
     			if (constructArr[i].getParameterTypes().length != toCheck.getParameterTypes().length){
-    				rightParamNum = false;
+    				found = false;
+    				continue;
     			}
     			else {
     				// Third Check -- Parameter types.
-        			for (int paramCounter = 0; paramCounter < constructArr[i].getGenericParameterTypes().length; paramCounter++){
-        				if (constructArr[i].getGenericParameterTypes()[paramCounter] 
-        						!= toCheck.getGenericParameterTypes()[paramCounter]){
-        					rightParamType = false;
+        			for (int paramCounter = 0; paramCounter < constructArr[i].getParameterTypes().length; paramCounter++){
+        				if (constructArr[i].getParameterTypes()[paramCounter] 
+        						!= toCheck.getParameterTypes()[paramCounter]){
+        					found = false;
+        					continue;
             			}
         			}
     			}
-    			// Print out the results.
-    			if (rightMods == true && rightParamType == true && rightParamNum == true){
+    			
+    			// Found the method
+    			if (found == true){
     				System.out.println("Found " + constructArr[i].toString());
-    			} else {
-    				String toPrint = constructArr[i].toString() + " not found." 
-    						+ "this is due to incorrect: ";
-    				if (rightMods == false)
-    					toPrint += "accessibility modifiers, ";
-    				if (rightParamNum == false)
-    					toPrint += "number of parameters, ";
-    				if (rightParamType == false)
-    					toPrint += "number of parameter types, ";
-    				System.out.println(toPrint + "please check your code and try again.");
+    				break;
     			}
-    		}	
+    		}
+    		if (found == false)
+    			System.out.println("Could not find " + constructArr[i].toString());
     	}
     }
     

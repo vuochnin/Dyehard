@@ -38,5 +38,7 @@ public class Lab3Correct {
         height = h;
         width = w;
     }
+    
+    public Lab3Correct(int t){}
 
 }

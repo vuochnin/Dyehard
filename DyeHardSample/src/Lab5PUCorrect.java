@@ -1,3 +1,5 @@
+import java.awt.Color;
+
 import Engine.BaseCode;
 import dyehard.Collectibles.PowerUp;
 import dyehard.Player.Hero;

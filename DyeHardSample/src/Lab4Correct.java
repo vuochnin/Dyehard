@@ -13,7 +13,6 @@ public class Lab4Correct extends Debris {
 	private float height = 10f;
 	
 	// Variables to mess around with: center, size, velocity, speed, shouldTravel
-
 	
 	public Lab4Correct(float minX, float maxX) {
 		this(minX,maxX, BaseCode.world.getWorldPositionY(), BaseCode.world.getHeight());

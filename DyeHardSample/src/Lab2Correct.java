@@ -3,12 +3,13 @@ import java.awt.image.BufferedImage;
 
 import Engine.BaseCode;
 import Engine.Vector2;
+import dyehard.Player.Hero;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class StudentObj.
  */
-public class Lab2Correct {
+public class Lab2Correct extends Hero {
     
     /** The height. */
     private float height;
@@ -19,9 +20,6 @@ public class Lab2Correct {
     /** The center. */
     private final Vector2 center;
     
-    /** The texture. */
-    private BufferedImage texture;
-    
     /** The color. */
     private Color color;
     
@@ -29,7 +27,7 @@ public class Lab2Correct {
         center = new Vector2(0, 0);
         height = 5f;
         width = 5f;
-        texture = BaseCode.resources.loadImage("Beak.png");
+        //texture = BaseCode.resources.loadImage("Beak.png");
         System.out.println("Constructor called");
     }
 
@@ -37,7 +35,11 @@ public class Lab2Correct {
         center = c;
         height = h;
         width = w;
-        texture = BaseCode.resources.loadImage("Beak.png");
+        //texture = BaseCode.resources.loadImage("Beak.png");
+    }
+    
+    public void setNewTexture(){
+    	texture = BaseCode.resources.loadImage("Beak.png");
     }
 
     /**

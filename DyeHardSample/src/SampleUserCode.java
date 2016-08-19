@@ -263,25 +263,17 @@ public class SampleUserCode extends DyeHardGame {
     	// Used to track the amount of correct method signatures
     	boolean hasMethod = false;
     	
-    	// Get the class from user input, assign to hero
-    	heroClass = StudentObjectManager.getClassFromString(className);
-    	
-    	// Create a new instance of class. Reflection requires an instance of an obj
-    	heroInst = StudentObjectManager.createObj(heroClass);
-    	
     	// Create a new Hero instance.
-    	privateHero = new Hero();
     	cf = new ClassReflector(className);
-    	cf.getArrayOfMethods().toString();
     	
     	// Try to set the texture of Hero to the class' getTexture() texture
     	try {
     		// Search for the method by its name, then see if it takes no args
     		if (cf.getMethodByName("getTexture") != null &&
-    			cf.getMethodByName("getTexture").getGenericParameterTypes().length == 0){
+    			cf.getMethodByName("getTexture").getParameterTypes().length == 0){
     			hasMethod = true;
     		} else {
-    			System.out.println("Class contains getTexture()");
+    			System.out.println("Class does not contain getTexture()");
     		}
     		
     		if (cf.getMethodByName("getColorWrong") != null){
@@ -297,19 +289,28 @@ public class SampleUserCode extends DyeHardGame {
 			e.printStackTrace();
 		}
     	
-    	// Method found -- invoke on heroInst and apply to privateHero
+    	// Method found -- invoke on heroInst and apply to privateHero.
+    	// The Hero should now be set to the "Beak.png" texture
     	if (hasMethod){
-    		Method methodToCall = null;
-    		
 			try {
-				methodToCall = heroClass.getDeclaredMethod("getTexture");
-				BufferedImage img = (BufferedImage) methodToCall.invoke(heroInst);
-				privateHero.texture = img;
+				// Create an object of the student class
+				Object studentObj = cf.createObj();
+				
+				// Set the texture of the student class. This function 
+				// should set the Hero's texture to "Beak.png"
+				cf.invokeMethod(studentObj, "setNewTexture");
+				
+				// Check to see if the new texture is "Beak.png"
+				BufferedImage toTest = BaseCode.resources.loadImage("Beak.png");
+				if (cf.invokeMethod(studentObj, "getTexture") != toTest){
+					// If not, fail student here
+					System.out.println("Student has failed.");
+				} else {
+					System.out.println("Student has not failed. This time.");
+				}
 			} 
 			
-			catch (NoSuchMethodException | SecurityException 
-					| IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException e) {
+			catch (SecurityException | IllegalArgumentException e) {
 				e.printStackTrace();
 			} 
     	}
@@ -322,8 +323,8 @@ public class SampleUserCode extends DyeHardGame {
         
         try {
         	// Get "setCenter"
-        	heroClass.getDeclaredMethod("setCenter", float.class, float.class).invoke(heroInst, mouse.getWorldX(), mouse.getWorldY());
-        	privateHero.center = (Vector2) heroClass.getDeclaredMethod("getCenter").invoke(heroInst);
+        	//heroClass.getDeclaredMethod("setCenter", float.class, float.class).invoke(heroInst, mouse.getWorldX(), mouse.getWorldY());
+        	//privateHero.center = (Vector2) heroClass.getDeclaredMethod("getCenter").invoke(heroInst);
         	
             // Hero shoot
             if ((keyboard.isButtonDown(KeyEvent.VK_F))
@@ -331,8 +332,8 @@ public class SampleUserCode extends DyeHardGame {
             	privateHero.currentWeapon.fire();
             }
 			
-		} catch (NoSuchMethodException | SecurityException | IllegalAccessException 
-				| IllegalArgumentException | InvocationTargetException e) {
+		} catch (SecurityException 
+				| IllegalArgumentException e) {
 			e.printStackTrace();
 		}
     }
@@ -346,8 +347,13 @@ public class SampleUserCode extends DyeHardGame {
 		cf.verifyFields(cf2.getArrayOfFields());
 		cf.verifyMethods(cf2.getArrayOfMethods());
 		cf.verifyConstructors(cf2.getArrayOfConstructors());
+		
     }
 
+    /**
+     * Lab 4 - Verify a class based on a "correct" class file
+     * 
+     */
     private void initializeLab4() {
     	cf = new ClassReflector(className);
 		ClassReflector cf2 = new ClassReflector("Lab4Correct");

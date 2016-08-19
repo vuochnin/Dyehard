@@ -1,3 +1,7 @@
+import dyehard.Util.Colors;
+
+import java.awt.Color;
+
 import Engine.Vector2;
 
 public class Lab3Incorrect {
@@ -16,7 +20,8 @@ public class Lab3Incorrect {
 	// Test Methods
 	public void setCenter(float test, float test2){}		// Test correctness
 	public boolean setHeight(float test){ return false; }	// Test return type
-	public void setWidth(boolean test){}					// Test parameters
+	public void setWidth(boolean test, int test2){}			// Test parameters
 	private float getHeight(){ return 2; }					// Test access
+	public Colors setColor(Colors toSet){ return toSet; }	
 	
 }
