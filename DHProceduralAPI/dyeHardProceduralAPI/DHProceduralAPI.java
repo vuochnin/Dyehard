@@ -354,6 +354,8 @@ public class DHProceduralAPI extends DyeHardGame{
 	 */
 	public boolean apiColliding(int id1, int id2)
 	{
+		if(apiGetType(id1) == "Hero" && apiGetType(id2) == "Hero")
+			return false;
 		return ApiCollisionManager.rememberCollision(id1, id2) || ApiCollisionManager.rememberCollision(id2, id1);
 	}
 	
