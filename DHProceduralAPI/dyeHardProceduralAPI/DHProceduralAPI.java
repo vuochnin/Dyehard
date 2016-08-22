@@ -26,7 +26,8 @@ import dyehard.World.WormHole;
 
 /**
  * DHProceduralAPI class is a procedural API for Dye Hard game.
- * This API is designed to use as introductory computer science lessons.
+ * This API is designed to use as part of introductory computer 
+ * science lessons.
  * 
  * @author Vuochly (Nin) Ky
  * @author Holden
@@ -52,7 +53,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	public void initialize(){
 		window.requestFocusInWindow();
 		
-		// Sets the distance the player must travel to beat the game to a default value
+		// Sets the distance the player must travel to to beat the game. Sets to a default value
 		GameState.TargetDistance = ConfigurationFileParser.getInstance().getWorldData().getWorldMapLength();
 		
 		endMenu = new DyehardEndMenu();
@@ -77,8 +78,11 @@ public class DHProceduralAPI extends DyeHardGame{
         		endMenu.active(false);
         	}
 			UpdateManager.getInstance().update();
+			
+			// update the distance traveled by incrementing based on the default speed
 			distance += Speed;
 			GameState.DistanceTravelled = (int) distance;
+			
 			ApiDebrisGenerator.update();
 			ApiDyePackGenerator.update();
 			ApiEnemyGenerator.update();
@@ -87,7 +91,7 @@ public class DHProceduralAPI extends DyeHardGame{
 			ApiIDManager.cleanup();
 	        ApiIDManager.collectStrayObjects();
 
-			updateGame();
+			updateGame();	// call user code
 			break;
         case BEGIN:
         	start.showScreen(true);
@@ -100,7 +104,8 @@ public class DHProceduralAPI extends DyeHardGame{
 			}
         	break;
         case GAMEOVER:
-        	if(apiIsMouseLeftClicked()){
+        	// Handle when the user clicked on a button on the menu
+        	if(apiIsMouseLeftClicked()){ 
 				endMenu.select(mouse.getWorldX(), mouse.getWorldY(), true);
 			}else
 				endMenu.select(mouse.getWorldX(), mouse.getWorldY(), false);
@@ -164,7 +169,7 @@ public class DHProceduralAPI extends DyeHardGame{
 	public int apiStartHero(){					// Create new Hero
 		hero = new Hero();
 		ApiEnemyGenerator.initialize(hero);
-		// TODO: Look into possibility of separating individual UI elements into functions
+		// Look into possibility of separating individual UI elements into functions
 		ui = new DyehardUI(hero);
 		// Move cursor to the center of the hero
 		try{
@@ -299,7 +304,9 @@ public class DHProceduralAPI extends DyeHardGame{
 		background = new BackgroundScreen();
 		ApiTimeManager.reset();
         ApiIDManager.reset();
-        System.gc();
+        System.gc();	// run java garbage collector
+        
+        // Reset some necessary settings
         distance = 0;
         GameState.DistanceTravelled = 0;
         GameState.Score = 0;
@@ -308,29 +315,28 @@ public class DHProceduralAPI extends DyeHardGame{
 	}
 	
 	/**
-	 * Checks if the user has lose in the game(lost all the lives)
-	 * @return true if the user has lose, false otherwise
+	 * Check the game conditions and handle when the user is win or Lose. 
+	 * Display the winning menu when the user have reached the 
+	 * goal distance or goal score. Otherwise display the losing menu 
+	 * when the user have no remaining lives. 
 	 */
-	public boolean apiUserLose(){
-		return (GameState.RemainingLives <= 0);
+	public void apiHandleWinLose(){
+		if(GameState.RemainingLives <= 0){
+			apiGameLose();
+		}
+		else if(GameState.DistanceTravelled >= GameState.TargetDistance){
+			apiGameWin();
+		}else{
+			if(winningScore > 0){
+				if(GameState.Score >= winningScore){
+					apiGameWin();
+				}
+			}
+		}
 	}
 	
 	/**
-	 * Checks if the user has reach the target distance or target score
-	 * @return true if user has win the game, false otherwise
-	 */
-	public boolean apiUserWon(){
-		if(GameState.DistanceTravelled >= GameState.TargetDistance)
-			return true;
-		else{
-			if(winningScore > 0)
-				return GameState.Score >= winningScore;
-			return false;
-		}	
-	}
-	
-	/**
-	 * Quits the game
+	 * Terminate the game
 	 */
 	public void apiQuitGame(){
 		//window.close();
@@ -933,29 +939,23 @@ public class DHProceduralAPI extends DyeHardGame{
 	/**
 	 * Displays the Winning menu on the screen
 	 */
-	public void apiShowWinMenu(boolean show){
+	public void apiGameWin(){
 		DyeHardSound.play(DyeHardSound.winSound);
 		setState(State.GAMEOVER);
 		endMenu.setMenu(true);	// True for win menu
-		endMenu.active(show);
-		if(show)
-			endMenuActive = true;
-		else
-			endMenuActive = false;
+		endMenu.active(true);
+		endMenuActive = true;
 	}
 	
 	/**
 	 * Displays the Losing menu on the screen
 	 */
-	public void apiShowLoseMenu(boolean show){
+	public void apiGameLose(){
 		DyeHardSound.play(DyeHardSound.loseSound);
 		setState(State.GAMEOVER);
-		endMenu.setMenu(false);		// False for win menu
-		endMenu.active(show);
-		if(show)
-			endMenuActive = true;
-		else
-			endMenuActive = false;
+		endMenu.setMenu(false);	// False for Lose menu
+		endMenu.active(true);
+		endMenuActive = true;
 	}
 	
 	/**

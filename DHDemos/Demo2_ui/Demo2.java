@@ -61,12 +61,7 @@ public class Demo2 extends DHProceduralAPI {
 		}
 		
 		// MENUs
-		if(apiUserWon()){			// Check if the user win
-			apiShowWinMenu(true);
-		}
-		if(apiUserLose()){			// Check if the user lose
-			apiShowLoseMenu(true);
-		}
+		apiHandleWinLose();
 		
 		if(apiIsKeyboardButtonTapped(KeysEnum.Q)){
 			apiQuitGame();
