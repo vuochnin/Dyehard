@@ -1,0 +1,12 @@
+/---------------------------------------------\
+|    SOME REFERENCE FOR THE PROCEDURAL API    |
+\---------------------------------------------/
+
+
+List of all DyeHard Procedural API Functions and Types: http://goo.gl/zUWnqa
+
+
+Dyehard Teaching Materials (Write-ups): http://goo.gl/g5Hs6x
+
+
+
