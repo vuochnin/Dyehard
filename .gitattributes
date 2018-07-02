@@ -1,4 +1,5 @@
 procedural/doc/* linguist-vendored
+OO/doc/* linguist-vendored
 
 # Auto detect text files and perform LF normalization
 * text=auto
